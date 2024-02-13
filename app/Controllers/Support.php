@@ -164,7 +164,12 @@ class Support extends BaseController
 
             $save = $this->support_model->insert($data);
             $insert_id = $this->support_model->insertID();
-            
+            $notification_data = [
+                                    'description' =>'You got new message on support center',
+                                    'to_user_id' => 1,
+                                    'link' => base_url('support-request-center'),
+                                ];
+            add_notification($notification_data);  
         }
     }
 
@@ -182,6 +187,13 @@ class Support extends BaseController
 
             $save = $this->support_model->insert($data);
             $insert_id = $this->support_model->insertID();
+
+            $notification_data = [
+                                    'description' =>'You got new message on support center',
+                                    'to_user_id' => $data['sender_id'],
+                                    'link' => base_url('support-request-center'),
+                                ];
+            add_notification($notification_data);
             
         }
     }

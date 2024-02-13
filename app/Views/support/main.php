@@ -94,9 +94,9 @@
                                                 <ul class="list-inline user-chat-nav text-end mb-0">
                                                     <li class="list-inline-item">
                                                         <div class="dropdown">
-                                                            <button class="btn nav-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <!-- <button class="btn nav-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                 <i class="uil uil-search"></i>
-                                                            </button>
+                                                            </button> -->
                                                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-md">
                                                                 <!-- <form class="p-2">
                                                                     <div>
