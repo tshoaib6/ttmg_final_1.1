@@ -459,6 +459,10 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
                                 <a href="<?=base_url('order-index') ?>" class="dropdown-item">All Orders</a>
+                                <?php $camp=get_categories(); foreach($camp as $c) { ?>
+                                    <a href="<?= base_url('campaign-detail/' . $c['id']) ?>" class="dropdown-item"><?php echo $c['campaign_name'] ?></a>
+  
+                                <?php } ?>
                                 <a href="<?=base_url('create-order') ?>" class="dropdown-item">Create New Order</a>            
                             </div>
                         </li>

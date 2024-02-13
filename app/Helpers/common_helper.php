@@ -449,3 +449,10 @@ function generateStateSelect()
 
     return $selectHTML;
 }
+
+function get_categories(){
+    $db = \Config\Database::connect();
+    $builder = $db->table('campaign')->select('id,campaign_name');
+    $camp = $builder->get()->getResultArray();
+    return $camp;
+}
