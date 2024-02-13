@@ -35,8 +35,13 @@ class Home extends BaseController
 		];
 		$orders=$this->order_model->findAll(); 
 		$vendors=$this->auth_model->where('userrole',2)->findAll();
-		$clients=$this->auth_model->where('userrole',3)->findAll();
-		$lead_count=$this->lead_model->where('userrole',3)->countAll();
+		if(is_vendor()){
+			$clients=get_client("",get_user_id());
+		}
+		else{
+			$clients=$this->auth_model->where('userrole',3)->findAll();
+		}
+		$lead_count=$this->lead_model->countAll();
 
 
 
