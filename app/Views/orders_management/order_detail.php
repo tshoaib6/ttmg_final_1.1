@@ -122,6 +122,12 @@
                 order: [],
                 ajax:  {
                     url: "<?php echo site_url('leads-datatable') ?>/" + <?php echo $order['pkorderid'] ?>,
+                    data:function(d){
+                    d.lead_status = "";
+                    d.state="";
+                    d.client="";
+                
+                    }
                     
     },
                 "fnCreatedRow": function (nRow, aData, iDataIndex) {
