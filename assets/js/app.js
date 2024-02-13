@@ -7,55 +7,52 @@ Contact: themesbrand@gmail.com
 File: Main Js File
 */
 
-   function notification_read_unread(e)
-    {
-        var link = $(e).data('link');
-        var nid = $(e).data('id');
-        var bb_url = $('#base-url').data('target');
-        var blank = $(e).data('blank');
-        $.get(bb_url+"ajax-notifications-read/"+nid, function(data, status){
-            var dd = JSON.parse(data);
-            if(blank == 0)
-            {
-                window.location.href = link;
-                
-            }else{
+function notification_read_unread(e) {
+    var link = $(e).data('link');
+    var nid = $(e).data('id');
+    var bb_url = $('#base-url').data('target');
+    var blank = $(e).data('blank');
+    $.get(bb_url + "ajax-notifications-read/" + nid, function (data, status) {
+        var dd = JSON.parse(data);
+        if (blank == 0) {
+            window.location.href = link;
 
-                window.open(link);
-            }
-            
-        });
-    }
+        } else {
 
-    function notification_read_unread_all()
-    {
-        //var link = $(e).data('link');
-        //var nid = $(e).data('id');
-        var bb_url = $('#base-url').data('target');
-        $.get(bb_url+"ajax-notifications-read/all", function(data, status){
-            var dd = JSON.parse(data);
-            $.get(bb_url+"ajax-notifications", function(data, status){
-                   var dd2 = JSON.parse(data); 
-                   $('#top-notification-list').html(dd2['notifications']);
-                   $('#notifytotalcount').html(dd2['countnotifications']);
-                   
-                });
+            window.open(link);
+        }
+
+    });
+}
+
+function notification_read_unread_all() {
+    //var link = $(e).data('link');
+    //var nid = $(e).data('id');
+    var bb_url = $('#base-url').data('target');
+    $.get(bb_url + "ajax-notifications-read/all", function (data, status) {
+        var dd = JSON.parse(data);
+        $.get(bb_url + "ajax-notifications", function (data, status) {
+            var dd2 = JSON.parse(data);
+            $('#top-notification-list').html(dd2['notifications']);
+            $('#notifytotalcount').html(dd2['countnotifications']);
+
         });
-    }
+    });
+}
 
 (function ($) {
 
     'use strict';
 
-     var bb_url = $('#base-url').data('target');
-                $.get(bb_url+"ajax-notifications", function(data, status){
-                   var dd = JSON.parse(data); 
-                   $('#top-notification-list').html(dd['notifications']);
-                   $('#notifytotalcount').html(dd['countnotifications']);
-                   notification_top_list();
-                   
-                });
-                
+    var bb_url = $('#base-url').data('target');
+    $.get(bb_url + "ajax-notifications", function (data, status) {
+        var dd = JSON.parse(data);
+        $('#top-notification-list').html(dd['notifications']);
+        $('#notifytotalcount').html(dd['countnotifications']);
+        notification_top_list();
+
+    });
+
     function initMetisMenu() {
         //metis menu
         $("#side-menu").metisMenu();
@@ -80,11 +77,11 @@ File: Main Js File
             $('body').toggleClass('sidebar-enable');
             if ($(window).width() >= 992) {
                 if (currentSIdebarSize == null) {
-                    (document.body.getAttribute('data-sidebar-size') == null || document.body.getAttribute('data-sidebar-size') == "lg") ? document.body.setAttribute('data-sidebar-size', 'sm'): document.body.setAttribute('data-sidebar-size', 'lg')
+                    (document.body.getAttribute('data-sidebar-size') == null || document.body.getAttribute('data-sidebar-size') == "lg") ? document.body.setAttribute('data-sidebar-size', 'sm') : document.body.setAttribute('data-sidebar-size', 'lg')
                 } else if (currentSIdebarSize == "md") {
-                    (document.body.getAttribute('data-sidebar-size') == "md") ? document.body.setAttribute('data-sidebar-size', 'sm'): document.body.setAttribute('data-sidebar-size', 'md')
+                    (document.body.getAttribute('data-sidebar-size') == "md") ? document.body.setAttribute('data-sidebar-size', 'sm') : document.body.setAttribute('data-sidebar-size', 'md')
                 } else {
-                    (document.body.getAttribute('data-sidebar-size') == "sm") ? document.body.setAttribute('data-sidebar-size', 'lg'): document.body.setAttribute('data-sidebar-size', 'sm')
+                    (document.body.getAttribute('data-sidebar-size') == "sm") ? document.body.setAttribute('data-sidebar-size', 'lg') : document.body.setAttribute('data-sidebar-size', 'sm')
                 }
             }
         });
@@ -183,11 +180,11 @@ File: Main Js File
     }
 
     function initDropdownMenu() {
-        if(document.getElementById("topnav-menu-content")){
+        if (document.getElementById("topnav-menu-content")) {
             var elements = document.getElementById("topnav-menu-content").getElementsByTagName("a");
-            for(var i = 0, len = elements.length; i < len; i++) {
+            for (var i = 0, len = elements.length; i < len; i++) {
                 elements[i].onclick = function (elem) {
-                    if(elem.target.getAttribute("href") === "#") {
+                    if (elem.target.getAttribute("href") === "#") {
                         elem.target.parentElement.classList.toggle("active");
                         elem.target.nextElementSibling.classList.toggle("show");
                     }
@@ -199,8 +196,8 @@ File: Main Js File
 
     function updateMenu() {
         var elements = document.getElementById("topnav-menu-content").getElementsByTagName("a");
-        for(var i = 0, len = elements.length; i < len; i++) {
-            if(elements[i].parentElement.getAttribute("class") === "nav-item dropdown active") {
+        for (var i = 0, len = elements.length; i < len; i++) {
+            if (elements[i].parentElement.getAttribute("class") === "nav-item dropdown active") {
                 elements[i].parentElement.classList.remove("active");
                 elements[i].nextElementSibling.classList.remove("show");
             }
@@ -253,29 +250,28 @@ File: Main Js File
     function updateRadio(radioId) {
         document.getElementById(radioId).checked = true;
     }
-    function notification_top_list()
-    {
-            setTimeout( function() {
-                var bb_url = $('#base-url').data('target');
-                $.get(bb_url+"ajax-notifications", function(data, status){
-                   var dd = JSON.parse(data);
-                   notifytotalcount 
-                   $('#top-notification-list').html(dd['notifications']);
-                   $('#notifytotalcount').html(dd['countnotifications']);
-                   notification_top_list();
-                   
-                });
-              },15000);
-            
+    function notification_top_list() {
+        setTimeout(function () {
+            var bb_url = $('#base-url').data('target');
+            $.get(bb_url + "ajax-notifications", function (data, status) {
+                var dd = JSON.parse(data);
+                notifytotalcount
+                $('#top-notification-list').html(dd['notifications']);
+                $('#notifytotalcount').html(dd['countnotifications']);
+                notification_top_list();
+
+            });
+        }, 15000);
+
     }
 
- 
+
 
     function layoutSetting(id) {
         var body = document.getElementsByTagName("body")[0];
 
         $('#mode-setting-btn').on('click', function (e) {
-            if(body.hasAttribute("data-bs-theme") && body.getAttribute("data-bs-theme") == "dark") {
+            if (body.hasAttribute("data-bs-theme") && body.getAttribute("data-bs-theme") == "dark") {
                 document.body.setAttribute('data-bs-theme', 'light');
                 document.body.setAttribute('data-topbar', 'light');
                 document.body.setAttribute('data-sidebar', 'light');
@@ -302,27 +298,27 @@ File: Main Js File
             return;
         });
 
-        if(body.hasAttribute("data-layout") && body.getAttribute("data-layout") == "horizontal") {
+        if (body.hasAttribute("data-layout") && body.getAttribute("data-layout") == "horizontal") {
             updateRadio('layout-horizontal');
             $(".sidebar-setting").hide();
         } else {
             updateRadio('layout-vertical');
         }
-        (body.hasAttribute("data-bs-theme") && body.getAttribute("data-bs-theme") == "dark") ? updateRadio('layout-mode-dark'): updateRadio('layout-mode-light');
-        (body.hasAttribute("data-layout-size") && body.getAttribute("data-layout-size") == "boxed") ? updateRadio('layout-width-boxed'): updateRadio('layout-width-fuild');
-        (body.hasAttribute("data-topbar") && body.getAttribute("data-topbar") == "dark") ? updateRadio('topbar-color-dark'): updateRadio('topbar-color-light');
+        (body.hasAttribute("data-bs-theme") && body.getAttribute("data-bs-theme") == "dark") ? updateRadio('layout-mode-dark') : updateRadio('layout-mode-light');
+        (body.hasAttribute("data-layout-size") && body.getAttribute("data-layout-size") == "boxed") ? updateRadio('layout-width-boxed') : updateRadio('layout-width-fuild');
+        (body.hasAttribute("data-topbar") && body.getAttribute("data-topbar") == "dark") ? updateRadio('topbar-color-dark') : updateRadio('topbar-color-light');
         (body.hasAttribute("data-sidebar-size") && body.getAttribute("data-sidebar-size") == "sm") ? updateRadio('sidebar-size-small') : (body.hasAttribute("data-sidebar-size") && body.getAttribute("data-sidebar-size") == "md") ? updateRadio('sidebar-size-compact') : updateRadio('sidebar-size-default');
         (body.hasAttribute("data-sidebar") && body.getAttribute("data-sidebar") == "colored") ? updateRadio('sidebar-color-colored') : (body.hasAttribute("data-sidebar") && body.getAttribute("data-sidebar") == "dark") ? updateRadio('sidebar-color-dark') : updateRadio('sidebar-color-light');
-        (document.getElementsByTagName("html")[0].hasAttribute("dir") && document.getElementsByTagName("html")[0].getAttribute("dir") == "rtl") ? updateRadio('layout-direction-rtl'): updateRadio('layout-direction-ltr');
+        (document.getElementsByTagName("html")[0].hasAttribute("dir") && document.getElementsByTagName("html")[0].getAttribute("dir") == "rtl") ? updateRadio('layout-direction-rtl') : updateRadio('layout-direction-ltr');
 
         // on layou change
         $("input[name='layout']").on('change', function () {
-            window.location.href = ($(this).val() == "vertical") ? "index": "layouts-horizontal";
+            window.location.href = ($(this).val() == "vertical") ? "index" : "layouts-horizontal";
         });
-        
+
         // on layout mode change
         $("input[name='layout-mode']").on('change', function () {
-            if($(this).val() == "light") {
+            if ($(this).val() == "light") {
                 document.body.setAttribute('data-bs-theme', 'light');
                 document.body.setAttribute('data-topbar', 'light');
                 document.body.setAttribute('data-sidebar', 'light');
@@ -341,7 +337,7 @@ File: Main Js File
 
         // on RTL-LTR mode change
         $("input[name='layout-direction']").on('change', function () {
-            if($(this).val() == "ltr") {
+            if ($(this).val() == "ltr") {
                 document.getElementsByTagName("html")[0].removeAttribute("dir");
                 document.getElementById('bootstrap-style').setAttribute('href', 'assets/css/bootstrap.min.css');
                 document.getElementById('app-style').setAttribute('href', 'assets/css/app.min.css');
@@ -376,15 +372,74 @@ File: Main Js File
 
 })(jQuery)
 
-function generateLeadForm(col, orderId="",camp_id="") {
+function generateStateSelect() {
+    const states = {
+        "AK": "Alaska",
+        "AL": "Alabama",
+        "AR": "Arkansas",
+        "AZ": "Arizona",
+        "CA": "California",
+        "CO": "Colorado",
+        "CT": "Connecticut",
+        "DC": "District of Columbia",
+        "DE": "Delaware",
+        "FL": "Florida",
+        "GA": "Georgia",
+        "HI": "Hawaii",
+        "IA": "Iowa",
+        "ID": "Idaho",
+        "IL": "Illinois",
+        "IN": "Indiana",
+        "KS": "Kansas",
+        "KY": "Kentucky",
+        "LA": "Louisiana",
+        "MA": "Massachusetts",
+        "MD": "Maryland",
+        "ME": "Maine",
+        "MI": "Michigan",
+        "MN": "Minnesota",
+        "MO": "Missouri",
+        "MS": "Mississippi",
+        "MT": "Montana",
+        "NC": "North Carolina",
+        "ND": "North Dakota",
+        "NE": "Nebraska",
+        "NH": "New Hampshire",
+        "NJ": "New Jersey",
+        "NM": "New Mexico"
+    };
+
+    let selectHTML = '<div class="col-sm-6 mb-3">';
+    selectHTML += '<label class="form-label" for="formrow-campaign-input">State<span class="required"> * </span></label>';
+    selectHTML += '<select class="form-control select2" name="state" style="width: 100%;">';
+
+    Object.keys(states).forEach(abbreviation => {
+        selectHTML += `<option value="${abbreviation}">${states[abbreviation]}</option>`;
+    });
+
+    selectHTML += '</select>';
+    selectHTML += '</div>';
+
+    return selectHTML;
+}
+
+function generateLeadForm(col, orderId = "", camp_id = "") {
+
     var formElements = col.map(function (column) {
-        var label = `<label class="form-label" for="formrow-${column.col_slug}-input">${column.col_name}</label>`;
-        var input = `<input type="${column.col_type}" name="${column.col_slug}" class="form-control rform" required="" id="${column.col_slug}" value="${column.col_default}">`;
-        return `<div class="col-sm-6 mb-3">${label}${input}</div>`;
+        console.log(column);
+        if (column.col_slug == "state") {
+            return generateStateSelect();
+        }
+        else {
+            var label = `<label class="form-label" for="formrow-${column.col_slug}-input">${column.col_name}</label>`;
+            var input = `<input type="${column.col_type}" name="${column.col_slug}" class="form-control rform" required="" id="${column.col_slug}" value="${column.col_default}">`;
+            return `<div class="col-sm-6 mb-3">${label}${input}</div>`;
+        }
+
     });
     formElements.push('<div class="col-sm-12"><button type="submit"  id="btnaddlead" onClick="onformsubmit()" class="btn btn-primary" >Submit</button></div>');
     formElements.push('<input type="hidden" name="order_id" value="' + orderId + '">');
-    formElements.push('<input type="hidden" name="camp_id" value="' +camp_id + '">');
+    formElements.push('<input type="hidden" name="camp_id" value="' + camp_id + '">');
 
     var formHTML = `<form action='add-lead' id="lead-add-form" method="POST" class="row">${formElements.join('')}</form>`;
 

@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Models\Auth;
 use App\Models\ActivityLog as Activity;
+use App\Models\Lead;
 use App\Models\Order;
 
 
@@ -11,12 +12,16 @@ class Home extends BaseController
 	protected $activity_model;
 
 	protected $order_model;
+	protected $lead_model;
+
 	
 	public function __construct()
     {
         $this->request = \Config\Services::request();
         $this->session = session();
         $this->auth_model = new Auth;
+        $this->lead_model = new Lead;
+
         $this->activity_model = new Activity;
 		$this->order_model=new Order;
         $this->data = ['session' => $this->session];
@@ -30,9 +35,16 @@ class Home extends BaseController
 		];
 		$orders=$this->order_model->findAll(); 
 		$vendors=$this->auth_model->where('userrole',2)->findAll();
+		$clients=$this->auth_model->where('userrole',3)->findAll();
+		$lead_count=$this->lead_model->where('userrole',3)->countAll();
+
+
+
 
 		$data['orders']=$orders;
-
+		$data['vendors']=$vendors;
+		$data['clients']=$clients;
+		$data['lead_count']=$lead_count;
 
 		$data['activities'] = $this->activity_model->orderBy('id','desc')->limit(10)->get()->getResultArray();
 		return view('index', $data);

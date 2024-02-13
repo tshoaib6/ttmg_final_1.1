@@ -437,22 +437,7 @@
                         </li>
                         <?php }?>
 
-                        <?php if(is_admin() ){?>
-                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-cog me-2"></i>Settings <div class="arrow-down"></div>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
-
-                                <a href="<?=base_url('allEmail') ?>" class="dropdown-item">Email Template</a>
-                                <a href="<?=base_url('all-notifications') ?>" class="dropdown-item">Notifications</a>
-                                <a href="<?=base_url('all-activities') ?>" class="dropdown-item">Activity Logs</a>
-                                <a href="<?=base_url('support-request-center') ?>" class="dropdown-item">Support & Request</a>
-                                <a href="<?=base_url('settings') ?>" class="dropdown-item">System Settings</a> 
-                                
-                            </div>
-                        </li>
-                        <?php }?>
+                      
 
 
                         <?php if(is_admin()){?>
@@ -489,6 +474,7 @@
                             </div>
                         </li>
                         
+                        <?php if(is_admin() || is_vendor()){?>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
@@ -501,6 +487,25 @@
                                 
                             </div>
                         </li>
+                        <?php }?>
+
+
+                        <?php if(is_admin() ){?>
+                         <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                                <i class="uil-cog me-2"></i>Settings <div class="arrow-down"></div>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+
+                                <a href="<?=base_url('allEmail') ?>" class="dropdown-item">Email Template</a>
+                                <a href="<?=base_url('all-notifications') ?>" class="dropdown-item">Notifications</a>
+                                <a href="<?=base_url('all-activities') ?>" class="dropdown-item">Activity Logs</a>
+                                <a href="<?=base_url('support-request-center') ?>" class="dropdown-item">Support & Request</a>
+                                <a href="<?=base_url('settings') ?>" class="dropdown-item">System Settings</a> 
+                                
+                            </div>
+                        </li>
+                        <?php }?>
     
     
                     </ul>

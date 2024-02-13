@@ -47,7 +47,7 @@
                                             <div id="customers-chart" data-colors='["--bs-primary"]'> </div>
                                         </div>
                                         <div>
-                                            <h4 class="mb-1 mt-1"><span data-plugin="counterup">45,254</span></h4>
+                                            <h4 class="mb-1 mt-1"><span data-plugin="counterup"><?php echo count($vendors) ?></span></h4>
                                             <p class="text-muted mb-0">Vendors</p>
                                         </div>
                                     </div>
@@ -61,7 +61,7 @@
                                             <div id="clients-chart" data-colors='["--bs-warning"]'> </div>
                                         </div>
                                         <div>
-                                            <h4 class="mb-1 mt-1"><span data-plugin="counterup">45,254</span></h4>
+                                            <h4 class="mb-1 mt-1"><span data-plugin="counterup"><?php echo count($clients) ?></span></h4>
                                             <p class="text-muted mb-0">Clients</p>
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@
                                             <div id="total-revenue-chart" data-colors='["--bs-primary"]'></div>
                                         </div>
                                         <div>
-                                            <h4 class="mb-1 mt-1"><span data-plugin="counterup">34,152</span></h4>
+                                            <h4 class="mb-1 mt-1"><span data-plugin="counterup"><?php echo $lead_count ?></span></h4>
                                             <p class="text-muted mb-0">Total Leads</p>
                                         </div>
                                     </div>
@@ -144,7 +144,7 @@
 
                                         <h4 class="card-title mb-4">Recent Activity</h4>
 
-                                        <ol class="activity-feed mb-0 ps-2" data-simplebar style="max-height: 484px;">
+                                        <ol class="activity-feed mb-0 ps-2" data-simplebar style="max-height: 400px;">
                                             <?php foreach($activities as $activity){ ?>
                                             <li class="feed-item">
                                                 <div class="feed-item-list">
