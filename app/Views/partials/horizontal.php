@@ -426,7 +426,7 @@
                         <?php if(is_admin()){?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user me-2"></i>User Management <div class="arrow-down"></div>
+                                <i class="uil-user me-2"></i>Users <div class="arrow-down"></div>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
 
@@ -455,7 +455,7 @@
                         <?php if(is_admin() || is_vendor()){?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user me-2"></i>Order Management <div class="arrow-down"></div>
+                                <i class="uil-user me-2"></i>Orders <div class="arrow-down"></div>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
                                 <a href="<?=base_url('order-index') ?>" class="dropdown-item">All Orders</a>
@@ -466,7 +466,7 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user me-2"></i>Leads Management <div class="arrow-down"></div>
+                                <i class="uil-user me-2"></i>Leads <div class="arrow-down"></div>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
                                 <a href="<?=base_url('lead-index') ?>" class="dropdown-item">All Leads</a>
@@ -478,7 +478,7 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user-circle me-2"></i>Referral Program <div class="arrow-down"></div>
+                                <i class="uil-user-circle me-2"></i>Referrals <div class="arrow-down"></div>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
 
