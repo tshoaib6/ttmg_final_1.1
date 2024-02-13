@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class Lead extends Model
 {
-    protected $table            = 'Leads';
+    protected $table            = 'leads';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
