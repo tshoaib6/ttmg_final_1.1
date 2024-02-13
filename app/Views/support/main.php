@@ -98,11 +98,11 @@
                                                                 <i class="uil uil-search"></i>
                                                             </button>
                                                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-md">
-                                                                <form class="p-2">
+                                                                <!-- <form class="p-2">
                                                                     <div>
                                                                         <input type="text" class="form-control rounded" placeholder="Search...">
                                                                     </div>
-                                                                </form>
+                                                                </form> -->
                                                             </div>
                                                         </div>
                                                     </li>

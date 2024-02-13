@@ -504,12 +504,17 @@
                                 <a href="<?=base_url('allEmail') ?>" class="dropdown-item">Email Template</a>
                                 <a href="<?=base_url('all-notifications') ?>" class="dropdown-item">Notifications</a>
                                 <a href="<?=base_url('all-activities') ?>" class="dropdown-item">Activity Logs</a>
-                                <a href="<?=base_url('support-request-center') ?>" class="dropdown-item">Support & Request</a>
                                 <a href="<?=base_url('settings') ?>" class="dropdown-item">System Settings</a> 
                                 
                             </div>
                         </li>
                         <?php }?>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?=base_url('support-request-center') ?>">
+                                <i class="uil-megaphone me-2"></i> Support & Request
+                            </a>
+                        </li>
     
     
                     </ul>
