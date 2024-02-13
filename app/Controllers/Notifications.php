@@ -18,7 +18,7 @@ class Notifications extends BaseController
     public function index()
     {
         $session = session();
-        $limit = 1;
+        $limit = 10;
         $start = 0;
         $data=[];
         $data['page_title'] = "Notifications";
