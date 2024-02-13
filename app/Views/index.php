@@ -102,7 +102,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <h4 class="card-title mb-4">Sales Analytics</h4>
+                                        <h4 class="card-title mb-4">Leads Analytics</h4>
 
                                         <div class="mt-1">
                                             <ul class="list-inline main-chart mb-0">
@@ -110,7 +110,7 @@
                                                     <h3 class="text-primary">$<span data-plugin="counterup">2,371</span><span class="text-muted d-inline-block font-size-15 ms-3">Income</span></h3>
                                                 </li>
                                                 <li class="list-inline-item chart-border-left me-0">
-                                                    <h3><span data-plugin="counterup">258</span><span class="text-muted d-inline-block font-size-15 ms-3">Sales</span>
+                                                    <h3><span data-plugin="counterup">258</span><span class="text-muted d-inline-block font-size-15 ms-3">Leads</span>
                                                     </h3>
                                                 </li>
                                                 <li class="list-inline-item chart-border-left me-0">
@@ -164,7 +164,7 @@
                         </div> <!-- end row-->
 
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="float-end">
@@ -190,145 +190,21 @@
                                                         <th>Date</th>
                                                         <th>Total Leads</th>
                                                         <th>Remaining Leads</th>
-                                                        <th>Count</th>
-                                                        <th>View Details</th>
+                                                     
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                  <?php foreach($orders as $o){ ?>
+                                                    
                                                     <tr>
-                                                      
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2541</a> </td>
-                                                        <td>Jamal Burnett</td>
-                                                        <td>
-                                                            07 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $380
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-danger-subtle text-danger font-size-12">Chargeback</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-visa me-1"></i> Visa
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
+                                                        <td><?php echo $o['pkorderid'] ?></td>
+                                                        <td><?php $vendor_detail=get_vendors($o['fkvendorstaffid']); echo $vendor_detail[0]['firstname']." ".$vendor_detail[0]['lastname'] ?></td>
+                                                        <td><?php echo $o['orderdate'] ?> </td>
+                                                        <td><?php echo $o['lead_requested'] ?></td>
+                                                        <td><?php echo  $o['remainingLeads']?></td>
                                                     </tr>
-
-                                                    <tr>
-                                                      
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2541</a> </td>
-                                                        <td>Jamal Burnett</td>
-                                                        <td>
-                                                            07 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $380
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-danger-subtle text-danger font-size-12">Chargeback</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-visa me-1"></i> Visa
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                       
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2542</a> </td>
-                                                        <td>Juan Mitchell</td>
-                                                        <td>
-                                                            06 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $384
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-paypal me-1"></i> Paypal
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2543</a> </td>
-                                                        <td>Barry Dick</td>
-                                                        <td>
-                                                            05 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $412
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-mastercard me-1"></i> Mastercard
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                       
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2544</a> </td>
-                                                        <td>Ronald Taylor</td>
-                                                        <td>
-                                                            04 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $404
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-warning-subtle text-warning font-size-12">Refund</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-visa me-1"></i> Visa
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2545</a> </td>
-                                                        <td>Jacob Hunter</td>
-                                                        <td>
-                                                            04 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $392
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-paypal me-1"></i> Paypal
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
+                                                    
+                                                    <?php } ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -336,214 +212,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="float-end">
-                                            <div class="dropdown">
-                                                <a class="dropdown-toggle" href="#" id="dropdownMenuButton3"
-                                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <span class="text-muted">Filter<i class="mdi mdi-chevron-down ms-1"></i></span>
-                                                </a>
-
-                                               <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton3">
-                                                    <a class="dropdown-item" href="#">Today</a>
-                                                    <a class="dropdown-item" href="#">Yesterday</a>
-                                                </div> 
-                                            </div>
-                                        </div>
-                                        <h4 class="card-title mb-4">Latest Orders</h4>
-                                        <div class="table-responsive">
-                                            <table class="table table-centered table-nowrap mb-0">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th style="width: 20px;">
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck1">
-                                                                <label class="form-check-label" for="customCheck1">&nbsp;</label>
-                                                            </div>
-                                                        </th>
-                                                        <th>Order ID</th>
-                                                        <th>Billing Name</th>
-                                                        <th>Date</th>
-                                                        <th>Total</th>
-                                                        <th>Payment Status</th>
-                                                        <th>Payment Method</th>
-                                                        <th>View Details</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck2">
-                                                                <label class="form-check-label" for="customCheck2">&nbsp;</label>
-                                                            </div>
-                                                        </td>
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2540</a> </td>
-                                                        <td>Neal Matthews</td>
-                                                        <td>
-                                                            07 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $400
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-mastercard me-1"></i> Mastercard
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck3">
-                                                                <label class="form-check-label" for="customCheck3">&nbsp;</label>
-                                                            </div>
-                                                        </td>
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2541</a> </td>
-                                                        <td>Jamal Burnett</td>
-                                                        <td>
-                                                            07 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $380
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-danger-subtle text-danger font-size-12">Chargeback</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-visa me-1"></i> Visa
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck4">
-                                                                <label class="form-check-label" for="customCheck4">&nbsp;</label>
-                                                            </div>
-                                                        </td>
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2542</a> </td>
-                                                        <td>Juan Mitchell</td>
-                                                        <td>
-                                                            06 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $384
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-paypal me-1"></i> Paypal
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck5">
-                                                                <label class="form-check-label" for="customCheck5">&nbsp;</label>
-                                                            </div>
-                                                        </td>
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2543</a> </td>
-                                                        <td>Barry Dick</td>
-                                                        <td>
-                                                            05 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $412
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-mastercard me-1"></i> Mastercard
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck6">
-                                                                <label class="form-check-label" for="customCheck6">&nbsp;</label>
-                                                            </div>
-                                                        </td>
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2544</a> </td>
-                                                        <td>Ronald Taylor</td>
-                                                        <td>
-                                                            04 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $404
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-warning-subtle text-warning font-size-12">Refund</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-visa me-1"></i> Visa
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check font-size-16">
-                                                                <input type="checkbox" class="form-check-input" id="customCheck7">
-                                                                <label class="form-check-label" for="customCheck7">&nbsp;</label>
-                                                            </div>
-                                                        </td>
-                                                        <td><a href="javascript: void(0);" class="text-body fw-bold">#MB2545</a> </td>
-                                                        <td>Jacob Hunter</td>
-                                                        <td>
-                                                            04 Oct, 2019
-                                                        </td>
-                                                        <td>
-                                                            $392
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge rounded-pill bg-success-subtle text-success font-size-12">Paid</span>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fab fa-cc-paypal me-1"></i> Paypal
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">
-                                                                View Details
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-                                    </div>
-                                </div>
-                            </div>
+                            
                         </div>
                         <!-- end row -->
 
@@ -567,7 +236,8 @@
         <!-- apexcharts -->
         <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
 
-        <script src="assets/js/pages/dashboard.init.js"></script>
+        <?php require('assets/js/pages/dashboard.init-js.php'); ?>
+
 
         <!-- App js -->
         <script src="assets/js/app.js"></script>
