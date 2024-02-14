@@ -19,8 +19,8 @@ if (!function_exists('send_password_reset_email')) {
         $email->initialize([
             'mailType' => 'html',
             'protocol' => 'smtp',
-            'smtp_host' => 'mail.ttmg.biz',
-            'smtp_port' => 587,
+            'smtp_host' => 'ssl://mail.ttmg.biz',
+            'smtp_port' => 465,
             'smtp_user' => 'admin@ttmg.biz',
             'smtp_pass' => '2n4)},f{VH{b',
             'charset' => 'utf-8',
@@ -52,8 +52,8 @@ if (!function_exists('send_referral_email')) {
         $email->initialize([
             'mailType' => 'html',
             'protocol' => 'smtp',
-            'smtp_host' => 'mail.ttmg.biz',
-            'smtp_port' => 587,
+            'smtp_host' => 'ssl://mail.ttmg.biz',
+            'smtp_port' => 465,
             'smtp_user' => 'admin@ttmg.biz',
             'smtp_pass' => '2n4)},f{VH{b',
             'charset' => 'utf-8',
@@ -82,8 +82,8 @@ function send_email($to, $event)
     $email->initialize([
         'mailType' => 'html',
         'protocol' => 'smtp',
-        'smtp_host' => 'mail.ttmg.biz',
-        'smtp_port' => 587,
+        'smtp_host' => 'ssl://mail.ttmg.biz',
+        'smtp_port' => 465,
         'smtp_user' => 'admin@ttmg.biz',
         'smtp_pass' => '2n4)},f{VH{b',
         'charset' => 'utf-8',
