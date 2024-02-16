@@ -164,7 +164,7 @@ function option_exists($name)
 
     $count = $builder->where('name', $name)
         ->get()->getResult();
-    if(count($count)>1){
+    if(count($count) > 0){
         return true;
     }
     else{

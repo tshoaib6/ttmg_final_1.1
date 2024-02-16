@@ -40,11 +40,19 @@
 
         <?php } ?> 
 
-        <?php if(session()->getFlashdata('error')){ ?>
+        <?php if(session()->getFlashdata('error')){ 
 
-        toastr["error"]('<?= session()->getFlashdata('error') ?>');
+            if(is_array(session()->getFlashdata('error')))
+            {
+                $ee = implode(",",session()->getFlashdata('error') ) ; 
+            ?>
+                 toastr["error"]('<?= $ee ?>');
 
-         <?php } ?> 
+         <?php }else{ ?>
+
+                 toastr["error"]('<?= session()->getFlashdata('error') ?>');
+
+        <?php } } ?> 
     });
 </script>        
 

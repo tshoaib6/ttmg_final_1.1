@@ -4,7 +4,7 @@
         
         <?= $title_meta ?>
         <?= $this->include('./partials/head-css') ?>
-
+        <link href="<?=base_url('assets/libs/spectrum-colorpicker2/spectrum.min.css'); ?>" rel="stylesheet" type="text/css">
     </head>
 
     <?= $this->include('./partials/body') ?>
@@ -72,6 +72,28 @@
                         <label class="form-label" for="formrow-email-input">Logo width <small class="text-danger">maximum 206 px</small></label>
                         <input type="text" name="logowidth" value="<?php if(isset($cs_data['logowidth'])){echo $cs_data['logowidth']; }else{ echo set_value('logowidth'); }?>" class="form-control ">
                     </div>
+
+               <div class="col-sm-6 mb-3">
+                        <label class="form-label" for="formrow-email-input">Login Page Background</label>
+                        <input type="text" name="login_bg" class="form-control spectrum with-add-on colorpicker-showalpha" value="<?php if(isset($cs_data['login_bg'])){echo $cs_data['login_bg']; }else{echo "#5b8ce847";} ?>">
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label class="form-label" for="formrow-email-input">Header Color</label>
+                        <input type="text" name="headercolor" class="form-control spectrum with-add-on colorpicker-showalpha" value="<?php if(isset($cs_data['headercolor'])){echo $cs_data['headercolor']; }else{echo "#5b73e8";} ?>">
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label class="form-label" for="formrow-email-input">NavBar Background Color</label>
+                        <input type="text" name="navbar_bg" class="form-control spectrum with-add-on colorpicker-showalpha" value="<?php if(isset($cs_data['navbar_bg'])){echo $cs_data['navbar_bg']; }else{echo "#ffffff";} ?>">
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label class="form-label" for="formrow-email-input">Nav Text Color</label>
+                        <input type="text" name="nav_txt" class="form-control spectrum with-add-on colorpicker-showalpha" value="<?php if(isset($cs_data['nav_txt'])){echo $cs_data['nav_txt']; }else{echo "#7b8190";} ?>">
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label class="form-label" for="formrow-email-input">Nav Text Hover</label>
+                        <input type="text" name="nav_txt_hover" class="form-control spectrum with-add-on colorpicker-showalpha" value="<?php if(isset($cs_data['nav_txt_hover'])){echo $cs_data['nav_txt_hover']; }else{echo "#5b73e8";} ?>">
+                    </div> 
+
                     <div class="d-flex flex-wrap gap-3">
             <button type="submit" class="btn btn-primary waves-effect waves-light w-md" id="registeruserbtn">
                 Submit
@@ -104,11 +126,17 @@
 
         <?= $this->include('./partials/vendor-scripts') ?>
 
-
+        <script src="<?=base_url('assets/libs/spectrum-colorpicker2/spectrum.min.js'); ?>"></script>
         <!-- App js -->
          <?= $this->include('partials/top-alerts') ?>
         <script src="assets/js/app.js"></script>
-
+        <script>
+           $(function () {
+                $(".colorpicker-showalpha").spectrum({
+                    showAlpha: true
+                    });
+            });
+        </script>
 
    
 

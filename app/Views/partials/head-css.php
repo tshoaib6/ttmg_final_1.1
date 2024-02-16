@@ -8,11 +8,13 @@
 <link rel="stylesheet" type="text/css" href="<?=base_url('assets/libs/toastr/build/toastr.min.css'); ?>">
 
 <?php 
-	$headercolor = '#5b73e8';
-	$login_bg = '#5b8ce847';
-	$navbar_bg = '#ffffff';
-	$nav_txt = '#7b8190';
-	$nav_txt_hover = '#5b73e8';
+
+    $company_color_code = json_decode(get_option('companysettings'),1);
+	$headercolor = $company_color_code['headercolor'];//'#5b73e8';
+	$login_bg = $company_color_code['login_bg']; //'#5b8ce847';
+	$navbar_bg = $company_color_code['navbar_bg']; //'#ffffff';
+	$nav_txt = $company_color_code['nav_txt']; //'#7b8190';
+	$nav_txt_hover = $company_color_code['nav_txt_hover']; //'#5b73e8';
 
                 if(session()->has('branch_set'))
                 {

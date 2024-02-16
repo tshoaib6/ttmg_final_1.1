@@ -12,8 +12,9 @@
 
         <?php 
 
-                $company_logo = base_url('assets/images/ttmg-logo-crm.png');
-                $company_name = 'TTMG';
+                $company_logo_settings = json_decode(get_option('companysettings'),1);
+                $company_logo = base_url('uploads/').$company_logo_settings['companylogo'];
+                $company_name = $company_logo_settings['companyname'];
                 if($session->has('branch_set'))
                 {
                     $company_logo = base_url('uploads/users/').$session->branch_branchlogo;
@@ -117,7 +118,7 @@
                         </div>
 
                         <div class="mt-5 text-center">
-                            <p>© <script>document.write(new Date().getFullYear())</script> TTMG.</p>
+                            <p>© <script>document.write(new Date().getFullYear())</script> <?=$company_name ?>.</p>
                         </div>
 
                     </div>

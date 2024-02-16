@@ -40,20 +40,31 @@ class Settings extends BaseController
                         {
 
                             $logoname = json_decode(get_option('companysettings'),1);
-                            if(strlen($logoname['ttmg_companylogo']) > 0 )
+
+                            if(strlen($logoname['companylogo']) > 0 )
                             {
-                                if(is_file('uploads/'.$logoname['ttmg_companylogo']))
-                                 {
-                                     unlink('uploads/'.$logoname['ttmg_companylogo']);
-                                 }
+                                if(is_file('uploads/'.$logoname['companylogo']))
+                                {
+                                
+                                    unlink('uploads/'.$logoname['companylogo']);
+ 
+                                }
                             }
                         } 
 
-                         $newName = $companylogofile->getRandomName(); 
-                         $companylogofile->move('uploads/', $newName);
-                         $companylogofile = $newName;
+                        $newName = $companylogofile->getRandomName(); 
+                        $companylogofile->move('uploads/', $newName);
+                        $companylogofile = $newName;
+
+                         
                      }
 
+                }
+
+                if($companylogofile == ''){
+                     
+                    $logoname = json_decode(get_option('companysettings'),1);
+                    $companylogofile = $logoname['companylogo'];
                 } 
 
                 $idata = 
@@ -64,6 +75,11 @@ class Settings extends BaseController
                         'companylogo'   => $companylogofile,
                         'logoheight'   => $this->request->getPost('logoheight'),
                         'logowidth'    => $this->request->getPost('logowidth'),
+                        'login_bg'    => $this->request->getPost('login_bg'),
+                        'headercolor'    => $this->request->getPost('headercolor'),
+                        'navbar_bg'    => $this->request->getPost('navbar_bg'),
+                        'nav_txt'    => $this->request->getPost('nav_txt'),
+                        'nav_txt_hover'    => $this->request->getPost('nav_txt_hover'),
                    ];
 
             update_option('companysettings',json_encode($idata));

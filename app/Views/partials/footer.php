@@ -28,13 +28,18 @@
         </div>
 </div>
 
+<?php 
 
+    $company_logo_settings = json_decode(get_option('companysettings'),1);
+    $company_name = $company_logo_settings['companyname'];
+
+ ?>
 
 <footer class="footer">
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <?=date('Y') ?> © TTMG.
+                <?=date('Y') ?> © <?=$company_name ?>.
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end d-none d-sm-block">
