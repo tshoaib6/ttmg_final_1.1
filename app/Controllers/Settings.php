@@ -94,4 +94,39 @@ class Settings extends BaseController
         $data['session'] = $session;
         return view('settings/system-settings',$data);
     }
+
+    public function notification_action()
+    {
+        $data=[];
+        $session = session();
+        $data['page_title'] = "Email Notification Actions";
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'Email Notification Actions']),
+            'page_title' => view('partials/page-title', ['title' => 'Email Notification Actions', 'pagetitle' => 'Settings'])
+        ];
+        if($this->request->getMethod() == 'post')
+        {
+            $idata = 
+                   [      
+                        'admincampaign'  => $this->request->getPost('admincampaign'),
+                        'adminleads'     => $this->request->getPost('adminleads'),
+                        'adminaccept'    => $this->request->getPost('adminaccept'),
+                        'adminnewclient' => $this->request->getPost('adminnewclient'),
+                        'vendorleads'    => $this->request->getPost('vendorleads'),
+                        'vendornewclient'=> $this->request->getPost('vendornewclient'),
+                        'clientleads'    => $this->request->getPost('clientleads'),
+                   ];
+
+            update_option('emailaction',json_encode($idata));
+
+            $session->setFlashdata('success','Email notification action saved successfully!');
+
+        }
+        if(option_exists('emailaction'))
+        {
+            $data['cs_data'] = json_decode(get_option('emailaction'),1);
+        }
+        $data['session'] = $session;
+        return view('settings/email-action',$data);
+    }
 }

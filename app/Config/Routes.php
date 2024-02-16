@@ -71,6 +71,8 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes)
     //settings
     $routes->get('/settings', 'Settings::index');
     $routes->post('/settings', 'Settings::index');
+    $routes->get('/email-action', 'Settings::notification_action');
+    $routes->post('/email-action', 'Settings::notification_action');
 
     //Notifications ajax_top_notification
     $routes->get('/all-notifications', 'Notifications::index');
