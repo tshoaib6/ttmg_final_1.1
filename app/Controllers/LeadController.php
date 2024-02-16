@@ -301,7 +301,71 @@ class LeadController extends BaseController
 
     public function sync_lead_api()
     {
-        $category_name = "";
+
+        $token = $this->request->getServer('HTTP_AUTHORIZATION');
+
+        if ($token == 'Bearer ' . get_option("token")) {
+            $apiResponseString = $this->request->getPost();
+            // echo json_encode($apiResponseString['leads']);
+            // $apiResponseString = '{
+            //     "leads": [
+            //         {
+            //             "review_status": "reject",
+            //             "complete_lead": "[{\\"date\\":\\"02-14-2024\\"},{\\"agent_name\\":\\"Jeff - 8075\\"},{\\"phone_number\\":\\"2162667490\\"},{\\"last_name\\":\\"Washington \\"},{\\"address\\":\\"1794 Cedar Ct\\"},{\\"phone_number\\":\\"2162667490\\"},{\\"city\\":\\"Euclid\\"},{\\"state\\":\\"OH\\"},{\\"zip\\":\\"44117\\"},{\\"age\\":\\"64\\"},{\\"smoker\\":\\"No\\"},{\\"coverage\\":\\"20,000\\"},{\\"beneficient\\":\\"Spouse (Patricia)\\"},{\\"hobby\\":\\"Blue\\"},{\\"call_back_time\\":\\"Evening\\"},{\\"local_agent_name\\":\\"Dean Voelker\\"},{\\"recording_link_1\\":\\"\\"},{\\"recording_link_2\\":\\"\\"},{\\"custom1\\":\\"\\"},{\\"custom2\\":\\"\\"},{\\"custom3\\":\\"\\"},{\\"forwardable_comments\\":\\"Email Address: N\\/A- Marital Status - (Married) - Preferred callback time after 05:00PM\\"},{\\"qa_comments\\":\\"Customer have email but agent didn\'t verified customer,s email\\"},{\\"rejection_comments\\":\\"\\"},{\\"qa_status\\":\\"approved\\"}]"
+            //         },
+            //         {
+            //             "review_status": "reject",
+            //             "complete_lead": "[{\\"date\\":\\"02-14-2024\\"},{\\"agent_name\\":\\"Sam - 8063\\"},{\\"phone_number\\":\\"2524257761\\"},{\\"last_name\\":\\"Satterwhite\\"},{\\"address\\":\\"7647 Jack Adcock Rd\\"},{\\"phone_number\\":\\"2524257761\\"},{\\"city\\":\\"Oxford\\"},{\\"state\\":\\"NC\\"},{\\"zip\\":\\"27565\\"},{\\"age\\":\\"67\\"},{\\"smoker\\":\\"No\\"},{\\"coverage\\":\\"5,10,& 20,000\\"},{\\"beneficient\\":\\"Decide Later\\"},{\\"hobby\\":\\"Red\\"},{\\"call_back_time\\":\\"Anytime\\"},{\\"local_agent_name\\":\\"Ira Sarbone\\"},{\\"recording_link_1\\":\\"\\"},{\\"recording_link_2\\":\\"\\"},{\\"custom1\\":\\"\\"},{\\"custom2\\":\\"\\"},{\\"custom3\\":\\"\\"},{\\"forwardable_comments\\":\\"Email Address: N\\/A - Bank Account - Yes\\"},{\\"qa_comments\\":\\"After beneficiary question customer said \\\\\\" well i don,t know i gotta check my daughter had some kind of stuff on me i just gotta find out what that was\\\\\\" agent used decide later option....customer repeated the same thing after quote question (\\\\\\" well i don,t know i gotta check my daughter had some kind of stuff on me i just gotta find out what that was\\\\\\" i don\'t know what i can afford right now and i ain\'t got no whole lot of money coming in right now) agent right used rebut & used all plan option (decision maker confirmed) after reminder 1 objections (can,t afford) agent used right rebut.......6 Objections Forced Lead Lead Rejected\\"},{\\"rejection_comments\\":\\"\\"},{\\"qa_status\\":\\"reject\\"}]"
+            //         }
+            //     ],
+            //     "category_id": "9"
+            // }';
+            // $apiResponseJson = json_decode($apiResponseString, true);
+
+            $apiResponseJson = $apiResponseString;
+            $leads = $apiResponseJson['leads'];
+            $camp = $this->campaign_model->find($apiResponseJson['category_id']);
+            $crm_camp_col = json_decode($camp['campaign_columns'], true);
+
+            $batch_leads = [];
+            foreach ($leads as $lead) {
+                $post_data = [];
+                $complete_lead = array_merge(...json_decode($lead['complete_lead'], 1));
+                foreach ($crm_camp_col as $col) {
+                    foreach ($complete_lead as $key => $cl) {
+                        if ($col['col_slug'] == $key) {
+                            $post_data[$key] = $cl;
+                        }
+                    }
+                }
+                $lead_data = [
+                    "phone_number" => isset($post_data['phone_number']) ? $post_data['phone_number'] : "",
+                    "agent_name" => isset($post_data['agent_name']) ? $post_data['agent_name'] : "",
+                    "firstname" => isset($post_data['first_name']) ? $post_data['first_name'] : "",
+                    "lastname" => isset($post_data['last_name']) ? $post_data['last_name'] : "",
+                    "state" => isset($post_data['state']) ? $post_data['state'] : "",
+                    "complete_lead" => json_encode($post_data),
+                    "order_id" => "",
+                    "status" => 3,
+                    "camp_id" => $apiResponseJson['category_id'],
+                    "vendor_id" => "",
+                    "client_id" => "",
+                    "master_search" => json_encode($post_data),
+                ];
+                array_push($batch_leads, $lead_data);
+            }
+
+            $response = $this->lead_master_model->insertBatch($batch_leads);
+            echo json_encode($response);
+
+        } else {
+            http_response_code(401);
+            echo json_encode(['message' => 'Unauthorized']);
+        }
+
+
+
+
     }
 
     public function assign_lead()

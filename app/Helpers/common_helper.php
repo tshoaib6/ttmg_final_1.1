@@ -121,7 +121,7 @@ function add_option($name, $value = '')
         }
     }
 
-    return false;
+    return true;
 }
 
 function update_option($name, $value)
@@ -163,8 +163,13 @@ function option_exists($name)
     $builder = $db->table('options');
 
     $count = $builder->where('name', $name)
-        ->countAll();
-    return $count;
+        ->get()->getResult();
+    if(count($count)>1){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 function delete_option($name)

@@ -38,6 +38,18 @@ class CampaignController extends BaseController
         return view('campaigns/index', $data);
     }
 
+    public function get_campaign_api(){
+        helper('text');
+       $camp= $this->campaign_model->select('id,campaign_name')->findAll();
+        $token=random_string('alnum','40');
+        update_option("token",$token);
+       $data=array(
+        "camp" => $camp,
+        'token' => $token
+       );
+        echo json_encode($data);
+    }
+
     public function ajaxDataTables()
     {
         $db = db_connect();

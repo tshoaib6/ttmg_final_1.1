@@ -274,6 +274,14 @@ $routes->get('maps-google', 'ComponentController::show_maps_google');
 $routes->get('maps-vector', 'ComponentController::show_maps_vector');
 $routes->get('maps-leaflet', 'ComponentController::show_maps_leaflet');
 
+//Api 
+
+$routes->get('get-campaigns-types', 'CampaignController::get_campaign_api');
+$routes->post('test-api', 'LeadController::sync_lead_api');
+
+
+
+
 
 /**
  * --------------------------------------------------------------------
