@@ -3,23 +3,13 @@
 <head>
 
     <?php $title_meta ?>
-    <!-- DataTables -->
-    <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-    <!-- Toastr  CSS-->
-    <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet" type="text/css" />
     <!-- datepicker css -->
     <link rel="stylesheet" href="<?php echo base_url('assets/libs/flatpickr/flatpickr.min.css') ?>">
-    <link href="<?php echo base_url('assets/libs/select2/css/select2.min.css') ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('assets/libs/select2/css/select2.min.css') ?>" rel="stylesheet" type="text/css" />   
 
-    <!-- Responsive datatable examples -->
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-
-    </style>
-
+    <?= $this->include('partials/datatable-css') ?>
     <?= $this->include('partials/head-css') ?>
+
 
     <style>
         .offcanvas.offcanvas-end {
@@ -113,11 +103,11 @@
                                         <label class="form-label" for="formrow-campaign-input">Client<span
                                                 class="required"> </span></label>
                                         <select class="form-control select2" name="fkclientid" style="width: 100%;">
-                                        <?php foreach ($client as $c) { ?>
+                                            <?php foreach ($client as $c) { ?>
                                                 <option value="<?php echo $c['id'] ?>">
-                                                    <?php echo $c['firstname']. " ".$c['lastname'] ?>
+                                                    <?php echo $c['firstname'] . " " . $c['lastname'] ?>
                                                 </option>
-                                            <?php } ?>                                           
+                                            <?php } ?>
 
                                         </select>
                                     </div>
@@ -169,23 +159,25 @@
                                 <button id="filter-btn" class="btn btn-primary mb-3">Filter</button>
 
                                 <div class="row  " id="assign-container" style="display:none !important;">
-                                    <div class="col-sm-6 mb-3">
-                                        <label class="form-label" for="formrow-campaign-input">Order<span
-                                                class="required"> * </span></label>
-                                        <select class="form-control select2" name="order_id" required
-                                            style="width: 100%;">
-                                            <?php foreach ($order as $o) { ?>
-                                                <option value="<?php echo $o['pkorderid'] ?>">
-                                                    <?php echo $o['agent'] ?>
-                                                </option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3 mt-4">
-
-                                        <button id="assign-btn" class="btn btn-primary mb-3">Assign </button>
-
-                                    </div>
+                                    <form id="lead_assign_form" action="<?= base_url() ?>assign-leads/" method="POST">
+                                        <div class="col-sm-6 mb-3">
+                                            <label class="form-label" for="formrow-campaign-input">Order<span
+                                                    class="required"> * </span></label>
+                                            <select class="form-control select2" name="order_id" required
+                                                style="width: 100%;">
+                                                <?php foreach ($order as $o) { ?>
+                                                    <option value="<?php echo $o['pkorderid'] ?>">
+                                                        <?php echo $o['agent'] ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                            <input id="lead_id" type="hidden" value="" name="leadId">
+                                        </div>
+                                        <div class="col-md-3 mt-4">
+                                            <button id="assign-btn" type="button" class="btn btn-primary mb-3">Assign
+                                            </button>
+                                        </div>
+                                    </form>
 
                                 </div>
 
@@ -325,35 +317,16 @@
 <!-- END layout-wrapper -->
 
 <?= $this->include('partials/right-sidebar') ?>
-
 <?= $this->include('partials/vendor-scripts') ?>
+<?= $this->include('partials/datatable-scripts') ?>
 
-<!-- Required datatable js -->
-<script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<!-- Buttons examples -->
-<script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-<script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-<script src="assets/libs/jszip/jszip.min.js"></script>
-<script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
-<script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
-<script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
-<script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
-<script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+
 <script src="assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="assets/libs/select2/js/select2.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
-<!-- Toastr Lib JS -->
-<!-- <script src="assets/libs/build/toastr.min.js"></script> -->
-<script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js">
 
 
-
-
-    <!-- Responsive examples -->
-    <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-<script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
 
 </script>
 <script type="text/javascript">
@@ -411,12 +384,20 @@
                 return listItem;           
 }
 
+
+
                 $(document).ready(function () {
                     var radioValue="";
                 var checkedIds = [];
 
+//                 function assign_form_submit() {
 
-                $(".select2").select2();
+                    //                     console.log("PRESEDEd ")
+                    // $("#lead_id").val(checkedIds.toString())
+                    //                 $("#lead_assign_form").submit();
+                    // }
+
+                    $(".select2").select2();
 
                 flatpickr('#datepicker-datetime', {
                     enableTime: true,
@@ -531,8 +512,8 @@
                     url: "<?php echo site_url('leads-datatable') ?>/" + 0,
                 data:function(d){
                     d.lead_status = radioValue;
-                    d.state=$("#state").val();
-                    d.client=$('select[name="fkclientid"]').val();
+                d.state=$("#state").val();
+                d.client=$('select[name="fkclientid"]').val();
                 
                     }
     },
@@ -628,31 +609,18 @@
 
                         });
 
-                $('#assign-btn').click(function () {
-                    console.log("SHOAA", checkedIds);
 
-                $.ajax({
-                    url: '<?= base_url() ?>assign-leads/',
-                type: 'post',
-                data: {
-                leadId: JSON.stringify(checkedIds), // Convert array to JSON string
-                order_id: $("select[name=order_id]").val() // Retrieve value of order_id input field
-    },
-                success: function(data) {
-                    console.log("Shoaib", data);
-                toastr.success('Lead Assigned', 'Lead Assinged Successfully');
-        // $('#rejectLeadModal').modal('hide');
-        $('#table').DataTable().ajax.reload(); // Reload DataTable
-    }
-});
+                $('select[name=fkclientid]').change(function(){
 
-            });
+                });
 
-            $('select[name=fkclientid]').change(function(){
 
-            });
-                       
-             
+
+                $("#assign-btn").click(function(){
+                    console.log("PRESEDEd ")
+$("#lead_id").val(checkedIds.toString())
+                $("#lead_assign_form").submit();
+                });
 
    
 

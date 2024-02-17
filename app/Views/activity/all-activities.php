@@ -5,12 +5,7 @@
         <?= $title_meta ?>
 
         <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-        <!-- DataTables -->
-        <link href="<?=base_url('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" />
-        <link href="<?=base_url('assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" />
-
-        <!-- Responsive datatable examples -->
-        <link href="<?=base_url('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" /> 
+        <?= $this->include('partials/datatable-css') ?>
         <?= $this->include('./partials/head-css') ?>
         
     </head>
@@ -107,22 +102,8 @@
         <?= $this->include('./partials/right-sidebar') ?>
 
         <?= $this->include('./partials/vendor-scripts') ?>
-        <!-- Required datatable js -->
-        <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-        <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-        <!-- Buttons examples -->
-        <script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-        <script src="assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-        <script src="assets/libs/jszip/jszip.min.js"></script>
-        <script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
-        <script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
-        <script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
-        <script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
-        <script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
-        
-        <!-- Responsive examples -->
-        <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-        <script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+        <?= $this->include('partials/datatable-scripts') ?>
+
 
         <script src="assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
@@ -132,7 +113,6 @@
     <script type="text/javascript">
  
     $(document).ready(function() {
-        // Select2
         $(".select2").select2();
         $(".select3").select2();
         var table = $('#table').DataTable({ 
@@ -145,10 +125,7 @@
                     searchable: false
                 },
             ],
-           /* dom: 'Blfrtip',
-            buttons: [
-                      'csv', 'excel', 'print','colvis',
-                    ],*/
+        
             order: [[0, 'desc']], //init datatable not ordering
             ajax:{
                 url:"<?php echo site_url('ajax-activities-datatable')?>",

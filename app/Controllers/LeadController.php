@@ -104,7 +104,7 @@ class LeadController extends BaseController
     {
         $db = db_connect();
 
-        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
         if ($id != 0) {
             $builder->where('order_id', $id);
         }
@@ -306,22 +306,6 @@ class LeadController extends BaseController
 
         if ($token == 'Bearer ' . get_option("token")) {
             $apiResponseString = $this->request->getPost();
-            // echo json_encode($apiResponseString['leads']);
-            // $apiResponseString = '{
-            //     "leads": [
-            //         {
-            //             "review_status": "reject",
-            //             "complete_lead": "[{\\"date\\":\\"02-14-2024\\"},{\\"agent_name\\":\\"Jeff - 8075\\"},{\\"phone_number\\":\\"2162667490\\"},{\\"last_name\\":\\"Washington \\"},{\\"address\\":\\"1794 Cedar Ct\\"},{\\"phone_number\\":\\"2162667490\\"},{\\"city\\":\\"Euclid\\"},{\\"state\\":\\"OH\\"},{\\"zip\\":\\"44117\\"},{\\"age\\":\\"64\\"},{\\"smoker\\":\\"No\\"},{\\"coverage\\":\\"20,000\\"},{\\"beneficient\\":\\"Spouse (Patricia)\\"},{\\"hobby\\":\\"Blue\\"},{\\"call_back_time\\":\\"Evening\\"},{\\"local_agent_name\\":\\"Dean Voelker\\"},{\\"recording_link_1\\":\\"\\"},{\\"recording_link_2\\":\\"\\"},{\\"custom1\\":\\"\\"},{\\"custom2\\":\\"\\"},{\\"custom3\\":\\"\\"},{\\"forwardable_comments\\":\\"Email Address: N\\/A- Marital Status - (Married) - Preferred callback time after 05:00PM\\"},{\\"qa_comments\\":\\"Customer have email but agent didn\'t verified customer,s email\\"},{\\"rejection_comments\\":\\"\\"},{\\"qa_status\\":\\"approved\\"}]"
-            //         },
-            //         {
-            //             "review_status": "reject",
-            //             "complete_lead": "[{\\"date\\":\\"02-14-2024\\"},{\\"agent_name\\":\\"Sam - 8063\\"},{\\"phone_number\\":\\"2524257761\\"},{\\"last_name\\":\\"Satterwhite\\"},{\\"address\\":\\"7647 Jack Adcock Rd\\"},{\\"phone_number\\":\\"2524257761\\"},{\\"city\\":\\"Oxford\\"},{\\"state\\":\\"NC\\"},{\\"zip\\":\\"27565\\"},{\\"age\\":\\"67\\"},{\\"smoker\\":\\"No\\"},{\\"coverage\\":\\"5,10,& 20,000\\"},{\\"beneficient\\":\\"Decide Later\\"},{\\"hobby\\":\\"Red\\"},{\\"call_back_time\\":\\"Anytime\\"},{\\"local_agent_name\\":\\"Ira Sarbone\\"},{\\"recording_link_1\\":\\"\\"},{\\"recording_link_2\\":\\"\\"},{\\"custom1\\":\\"\\"},{\\"custom2\\":\\"\\"},{\\"custom3\\":\\"\\"},{\\"forwardable_comments\\":\\"Email Address: N\\/A - Bank Account - Yes\\"},{\\"qa_comments\\":\\"After beneficiary question customer said \\\\\\" well i don,t know i gotta check my daughter had some kind of stuff on me i just gotta find out what that was\\\\\\" agent used decide later option....customer repeated the same thing after quote question (\\\\\\" well i don,t know i gotta check my daughter had some kind of stuff on me i just gotta find out what that was\\\\\\" i don\'t know what i can afford right now and i ain\'t got no whole lot of money coming in right now) agent right used rebut & used all plan option (decision maker confirmed) after reminder 1 objections (can,t afford) agent used right rebut.......6 Objections Forced Lead Lead Rejected\\"},{\\"rejection_comments\\":\\"\\"},{\\"qa_status\\":\\"reject\\"}]"
-            //         }
-            //     ],
-            //     "category_id": "9"
-            // }';
-            // $apiResponseJson = json_decode($apiResponseString, true);
-
             $apiResponseJson = $apiResponseString;
             $leads = $apiResponseJson['leads'];
             $camp = $this->campaign_model->find($apiResponseJson['category_id']);
@@ -363,21 +347,47 @@ class LeadController extends BaseController
             echo json_encode(['message' => 'Unauthorized']);
         }
 
-
-
-
     }
 
     public function assign_lead()
     {
         $leadIds = $this->request->getPost('leadId');
         $orderId = $this->request->getPost('order_id');
-        $leadIds = json_decode($leadIds);
-
+        $order=$this->order_model->find($orderId);
+        $leadIds=explode(",",$leadIds);
+        $order= $this->order_model->find($orderId);
+        $leads_to_assign=[];
         foreach ($leadIds as $id) {
-            $response = $this->lead_model->update($id, ['order_id' => $orderId]);
+            $lead=$this->lead_master_model->find($id);
+            $assigned_lead=$this->lead_model->where('phone_number',$lead['phone_number'])->where('client_id',$order['fkclientid'])->where('camp_id',$order['categoryname'])->get()->getResult();
+           
+            if(count($assigned_lead)>0 || $order['remainingLeads']==0){
+                if($order['remainingLeads']==0){
+                    $lead['duplicate']="3";
+                }else{
+                    $lead['duplicate']="1";
+                }
+            array_push($leads_to_assign,$lead);
+            }
+            else{
+                $lead['order_id']=$orderId;
+                $lead['client_id']=$order['fkclientid'];
+                $lead['vendor_id']=$order['fkvendorstaffid'];
+                unset($lead['rejected_lead']);
+                $id=$this->lead_model->insert($lead);
+                $this->order_model->update_order(1, $orderId);
+                $lead['duplicate']=0;
+                array_push($leads_to_assign,$lead);
+            }
         }
 
-        echo json_encode($orderId);
+        
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'Assigned Leads']),
+            'page_title' => view('partials/page-title', ['title' => 'Assigned Leads', 'pagetitle' => 'TTMG']),
+        ];
+        $data['leads']=$leads_to_assign;
+
+        return view('leads_management/assigned_leads',$data);
     }
 }
