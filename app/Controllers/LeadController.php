@@ -390,4 +390,11 @@ class LeadController extends BaseController
 
         return view('leads_management/assigned_leads',$data);
     }
+
+    public function test_mail(){
+        
+        // $response =send_email("tshoaib10@gmail.com","Add Lead");
+
+        return 0;
+    }
 }

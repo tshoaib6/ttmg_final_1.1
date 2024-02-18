@@ -44,3 +44,12 @@ function get_campaign_columns($camp_id){
     $camp =  $builder->get()->getResultArray();
     return json_encode($camp);
 }
+
+function vendor_smtp($id){
+    $db = \Config\Database::connect();
+    $builder = $db->table('users');
+    $builder->select('smtpemail,smtppassword,smtpincomingserver,smtpoutgoingserver,smtpport');
+    $builder->where('userrole', 2)->where('block', 0)->where('id',$id);
+    $users = $builder->get()->getResultArray();
+    return $users[0];
+}

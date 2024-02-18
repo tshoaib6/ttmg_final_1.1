@@ -68,34 +68,73 @@ if (!function_exists('send_referral_email')) {
     }
 }
 
-function send_email($to, $event)
+function send_email($to, $event,$vendor_id="")
 {
-    $db = \Config\Database::connect();
-    $builder = $db->table('emailtemplate')->select('subject,message');
-    $email_template = $builder->where('event', $event)->get()->getResultArray();
+    
+    try {
+        $db = \Config\Database::connect();
+        $builder = $db->table('emailtemplate')->select('subject,message');
+        $email_template = $builder->where('event', $event)->get()->getResultArray();
 
-    $htmlMessage = view('emails\header');
-    $htmlMessage .= view('emails\body', ['message' => $email_template[0]['message']]);
-    $htmlMessage .= view('emails\footer');
+        $htmlMessage = view('emails\header');
+        $htmlMessage .= view('emails\body', ['message' => $email_template[0]['message']]);
+        $htmlMessage .= view('emails\footer');
 
-    $email = \Config\Services::email();
-    $email->initialize([
-        'mailType' => 'html',
-        'protocol' => 'smtp',
-        'smtp_host' => 'ssl://mail.ttmg.biz',
-        'smtp_port' => 465,
-        'smtp_user' => 'admin@ttmg.biz',
-        'smtp_pass' => '2n4)},f{VH{b',
-        'charset' => 'utf-8',
-        'validation' => TRUE,
-    ]);
+        $email = \Config\Services::email();
+        if($vendor_id!=""){
+           $vendor= vendor_smtp($vendor_id);
+           $smtp_host=$vendor['smtpincomingserver'];
+           $smtp_port=$vendor['smtpport'];
+           $smtp_user=$vendor['smtpemail'];
+           $smtp_pass=$vendor['smtppassword'];
+        }else{
+            $smtp_host='smtp.gmail.com';
+           $smtp_port=587;
+           $smtp_user='tshoaib10@gmail.com';
+           $smtp_pass='saac vsof mruj cmkh';
+        }
+        $email->initialize([
+            'mailType' => 'html',
+            'protocol' => 'smtp',
+            'SMTPHost' => $smtp_host, // Correct parameter name for SMTP hostname
+            'SMTPPort' => $smtp_port, // Correct parameter name for SMTP port
+            'SMTPUser' => $smtp_user,
+            'SMTPPass' => $smtp_pass,
+            'charset' => 'utf-8',
+            'fromEmail' => 'XYZ@gmail.com',
+            'fromName' => 'Lead CRM',
+        ]);
 
-    $email->setTo($to);
-    $email->setSubject($email_template[0]['subject']);
-    $email->setMessage($htmlMessage);
+        $email->setNewline("\r\n");
+        $email->setCRLF("\r\n");
+        $email->setTo($to);
+        $email->setSubject($email_template[0]['subject']);
+        $email->setMessage($htmlMessage);
 
-    return $email->send();
+        if (!$email->send()) {
+            throw new \Exception('Email sending failed: ' . $email->printDebugger(['headers']));
+        }
+
+        return true; // Email sent successfully
+    } catch (\Exception $e) {
+        // Log or handle the error
+        log_message('error', 'Email sending failed: ' . $e->getMessage());
+        return $e->getMessage(); // Email sending failed
+    }
+
 }
+
+function email_allowed($event){
+    $action=get_option('emailaction');
+    $action=json_decode($action,1);
+    if($action[$event]==1){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 
 
 
@@ -164,10 +203,9 @@ function option_exists($name)
 
     $count = $builder->where('name', $name)
         ->get()->getResult();
-    if(count($count) > 0){
+    if (count($count) > 0) {
         return true;
-    }
-    else{
+    } else {
         return false;
     }
 }
@@ -455,7 +493,8 @@ function generateStateSelect()
     return $selectHTML;
 }
 
-function get_categories(){
+function get_categories()
+{
     $db = \Config\Database::connect();
     $builder = $db->table('campaign')->select('id,campaign_name');
     $camp = $builder->get()->getResultArray();

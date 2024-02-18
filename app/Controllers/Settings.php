@@ -115,7 +115,15 @@ class Settings extends BaseController
                         'vendorleads'    => $this->request->getPost('vendorleads'),
                         'vendornewclient'=> $this->request->getPost('vendornewclient'),
                         'clientleads'    => $this->request->getPost('clientleads'),
-                   ];
+                        'neworderadmin'    => $this->request->getPost('neworderadmin'),
+                        'newordervendor'    => $this->request->getPost('newordervendor'),
+                        'neworderclient'    => $this->request->getPost('neworderclient'),
+                        'ordercompleteadmin'    => $this->request->getPost('ordercompleteadmin'),
+                        'ordercompletevendor'    => $this->request->getPost('ordercompletevendor'),
+                        'ordercompleteclient'    => $this->request->getPost('ordercompleteclient'),
+
+
+                    ];
 
             update_option('emailaction',json_encode($idata));
 

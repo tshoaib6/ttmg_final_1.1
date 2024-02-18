@@ -280,6 +280,8 @@ $routes->get('maps-leaflet', 'ComponentController::show_maps_leaflet');
 
 $routes->get('get-campaigns-types', 'CampaignController::get_campaign_api');
 $routes->post('test-api', 'LeadController::sync_lead_api');
+$routes->get('test-email', 'LeadController::test_mail');
+
 
 
 

@@ -248,9 +248,9 @@ class OrdersContoller extends BaseController
                     'link' => base_url() . "order-detail/" . $data['order_id'],
                 ];
                 add_notification($notification_data);
-                if (!is_vendor()) {
-                    send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
-                }
+                // if (!is_vendor() && email_allowed('')) {
+                //     send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
+                // } // Order Complete Email
             }
 
             $notification_data = [
@@ -260,11 +260,17 @@ class OrdersContoller extends BaseController
             ];
 
             add_notification($notification_data);
-            if (!is_vendor()) {
+
+            if(email_allowed('vendorleads')){
                 send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
             }
-            send_email(get_email_by_user_id($post_data['client_id']), "Add Lead");
-
+            if(email_allowed('clientleads')){
+              send_email(get_email_by_user_id($post_data['client_id']), "Add Lead",$post_data['vendor_id']);
+            }
+            if(email_allowed('adminleads')){
+                send_email("tshoaib10@gmail.com", "Add Lead");
+            }
+            
             $notification_data = [
                 'description' => '1 Lead Added to Order',
                 'to_user_id' => $order_detail['fkvendorstaffid'],

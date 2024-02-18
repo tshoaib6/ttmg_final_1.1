@@ -137,9 +137,11 @@ class CampaignController extends BaseController
 
 
                 $this->campaign_model->insert($data);
+                if(is_admin() && email_allowed("admincampaign") ){
+                    send_email(get_email_by_user_id(get_user_id()),"Add Campaign");
+                }
                 session()->setFlashdata('success', 'Campaign Added Successful!');
                 log_activity("Campaign : " . $data["campaign_name"] . " Added", get_user_id());
-
                 return redirect()->to('campaign-index');
             } else {
                 session()->setFlashdata('error', 'Campaign name must be unique.');

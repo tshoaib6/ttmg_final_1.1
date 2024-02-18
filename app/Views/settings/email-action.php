@@ -83,6 +83,30 @@
                         <label for="switch4" data-on-label="On" data-off-label="Off"> </label> 
                         </div>
                     </div>
+
+                    <div class="inner mb-3 row">
+                        <div class="col-md-10 col-8">
+                            New Order Add  
+                        </div>    
+                        <div class="col-md-2 col-4">
+                        <input type="checkbox" id="switch10" switch="none" name="neworderadmin" value="1" <?php if ($cs_data['neworderadmin']=="1") {
+                        echo "checked";
+                    } ?> />
+                        <label for="switch10" data-on-label="On" data-off-label="Off"> </label> 
+                        </div>
+                    </div>
+
+                    <div class="inner mb-3 row">
+                        <div class="col-md-10 col-8">
+                            Order Complete  
+                        </div>    
+                        <div class="col-md-2 col-4">
+                        <input type="checkbox" id="switch13" switch="none" name="ordercompleteadmin" value="1" <?php if ($cs_data['ordercompleteadmin']=="1") {
+                        echo "checked";
+                    } ?> />
+                        <label for="switch13" data-on-label="On" data-off-label="Off"> </label> 
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
@@ -112,6 +136,28 @@
                         <label for="switch6" data-on-label="On" data-off-label="Off"> </label> 
                         </div>
                     </div>
+                    <div class="inner mb-3 row">
+                        <div class="col-md-10 col-8">
+                            New Order Add  
+                        </div>    
+                        <div class="col-md-2 col-4">
+                        <input type="checkbox" id="switch12" switch="none" name="newordervendor" value="1" <?php if ($cs_data['newordervendor']=="1") {
+                        echo "checked";
+                    } ?> />
+                        <label for="switch12" data-on-label="On" data-off-label="Off"> </label> 
+                        </div>
+                    </div>
+                    <div class="inner mb-3 row">
+                        <div class="col-md-10 col-8">
+                            Order Complete  
+                        </div>    
+                        <div class="col-md-2 col-4">
+                        <input type="checkbox" id="switch14" switch="none" name="ordercompletevendor" value="1" <?php if ($cs_data['ordercompletevendor']=="1") {
+                        echo "checked";
+                    } ?> />
+                        <label for="switch14" data-on-label="On" data-off-label="Off"> </label> 
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
@@ -130,8 +176,32 @@
                         <label for="switch7" data-on-label="On" data-off-label="Off"> </label> 
                         </div>
                     </div>
+
+                    <div class="inner mb-3 row">
+                        <div class="col-md-10 col-8">
+                            New Order Add  
+                        </div>    
+                        <div class="col-md-2 col-4">
+                        <input type="checkbox" id="switch11" switch="none" name="neworderclient" value="1" <?php if ($cs_data['neworderclient']=="1") {
+                        echo "checked";
+                    } ?> />
+                        <label for="switch11" data-on-label="On" data-off-label="Off"> </label> 
+                        </div>
+                    </div>
+                    <div class="inner mb-3 row">
+                        <div class="col-md-10 col-8">
+                            Order Complete  
+                        </div>    
+                        <div class="col-md-2 col-4">
+                        <input type="checkbox" id="switch15" switch="none" name="ordercompleteclient" value="1" <?php if ($cs_data['ordercompleteclient']=="1") {
+                        echo "checked";
+                    } ?> />
+                        <label for="switch15" data-on-label="On" data-off-label="Off"> </label> 
+                        </div>
+                    </div>
                     
                 </div>
+
             </div>
             
             </div>
