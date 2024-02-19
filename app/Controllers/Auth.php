@@ -322,25 +322,25 @@ class Auth extends BaseController
 
                 $role = $this->request->getPost('role');
                 $agentpic = '';
-                if($agentpic = $this->request->getFile('agentpicture')) 
-                { 
-
-                    $input = $this->validate([
-                     'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],'
-                     ]);
-
-                    if (!$input) 
+                    if($agentpic = $this->request->getFile('agentpicture')) 
                     { 
-                       $agentpic = '';
-                       //$session->setFlashdata('error','Agent Picture not found.');
-                    }else{ 
 
-                         $newName = $agentpic->getRandomName(); 
-                         $agentpic->move('uploads/users', $newName);
-                         $agentpic = $newName;
-                     }
+                        $input = $this->validate([
+                         'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],'
+                         ]);
 
-                } 
+                        if (!$input) 
+                        { 
+                           $agentpic = '';
+                           //$session->setFlashdata('error','Agent Picture not found.');
+                        }else{ 
+
+                             $newName = $agentpic->getRandomName(); 
+                             $agentpic->move('uploads/users', $newName);
+                             $agentpic = $newName;
+                         }
+
+                    } 
                 if($role == 1) //admin
                 {
                    $idata = 
@@ -364,11 +364,11 @@ class Auth extends BaseController
                     if($branchlogo = $this->request->getFile('branchlogo')) 
                     { 
 
-                        $input = $this->validate([
+                        $input2 = $this->validate([
                          'branchlogo' => 'uploaded[branchlogo]|max_size[branchlogo,1024]|ext_in[branchlogo,jpg,jpeg,png],'
                          ]);
 
-                        if (!$input) 
+                        if (!$input2) 
                         { 
                            $branchlogo = '';
 
@@ -380,6 +380,7 @@ class Auth extends BaseController
                          }
 
                     } 
+                  
                     $idata = 
                     [    'firstname' => $this->request->getPost('firstname'),
                         'lastname' => $this->request->getPost('lastname'),
@@ -409,7 +410,8 @@ class Auth extends BaseController
                         'branchlogoheight' => $this->request->getPost('branchlogoheight'),
                         'branchlogowidth' => $this->request->getPost('branchlogowidth'),
                         'userrole' => 2,
-                        'block' => 0     
+                        'block' => 0,
+                        'referred_to' => implode(', ',$this->request->getPost('subvendor')),     
                         ];  
                 }else if ($role == 3) //client
                 {
@@ -508,8 +510,11 @@ class Auth extends BaseController
                 { 
 
                     $input = $this->validate([
-                     'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],'
+                     'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],',
+
+
                      ]);
+                    
 
                     if (!$input) 
                     { 
@@ -547,29 +552,29 @@ class Auth extends BaseController
                         ];   
                 }else if ($role == 2) //vendor
                 {
-                    $branchlogo = '';
-                    if($branchlogo = $this->request->getFile('branchlogo')) 
+                    $branchlogopic = '';
+                    if($branchlogopic = $this->request->getFile('branchlogo')) 
                     { 
 
-                        $input = $this->validate([
+                       /* $input2 = $this->validate([
                          'branchlogo' => 'uploaded[branchlogo]|max_size[branchlogo,1024]|ext_in[branchlogo,jpg,jpeg,png],'
                          ]);
-
-                        if (!$input) 
+                        
+                        if (!$input2) 
                         { 
-                           $branchlogo = $duser[0]['branchlogo'];
+                           $branchlogopic = $duser[0]['branchlogo'];
 
-                        }else{ 
+                        }else{ */
 
-                             $newName = $branchlogo->getRandomName(); 
-                             $branchlogo->move('uploads/users', $newName);
-                             $branchlogo = $newName;
+                             $newNamebranch = $branchlogopic->getRandomName(); 
+                             $branchlogopic->move('uploads/users', $newNamebranch);
+                             $branchlogopic = $newNamebranch;
 
                              if(is_file('uploads/users/'.$duser[0]['branchlogo']))
                              {
-                                 unlink('uploads/users/'.$duser[0]['userbranchlogouimage']);
+                                 unlink('uploads/users/'.$duser[0]['branchlogo']);
                              }
-                         }
+                        // }
 
                     } 
                     $idata = 
@@ -597,11 +602,12 @@ class Auth extends BaseController
                         'branchnavbar' => $this->request->getPost('branchnavbar'),
                         'branchnavtext' => $this->request->getPost('branchnavtext'),
                         'branchnavhover' => $this->request->getPost('branchnavhover'),
-                        'branchlogo' => $branchlogo,
+                        'branchlogo' => $branchlogopic,
                         'branchlogoheight' => $this->request->getPost('branchlogoheight'),
                         'branchlogowidth' => $this->request->getPost('branchlogowidth'),
                         'userrole' => 2,
-                        'block' => 0     
+                        'block' => 0,
+                        'referred_to' => implode(', ',$this->request->getPost('subvendor')),
                         ];  
                 }else if ($role == 3) //client
                 {

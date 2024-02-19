@@ -111,6 +111,22 @@
 
  
             <div class="row" id="vendor_settings" style="display:none;">
+
+                <h4 class="mb-3 mt-3">Select Referrer</h4>
+                <?php 
+                        $s_vendors = explode(", ",$duser[0]['referred_to']);
+
+                ?>
+                <div class="col-* mb-3" >
+                    <label class="form-label" for="sub-vendor">Select Sub-Vendor</label>
+                    <select class="select2 form-control select2-multiple" multiple="multiple" data-parsley-min="1" id="sub-vendor" name="subvendor[]" >
+                            <option value="0">Select Sub-Vendor</option>
+                            <?php foreach ($vendors as $value) {?>
+                              <option value="<?=$value['id']?>" <?php if(in_array($value['id'], $s_vendors)){ echo 'selected';} ?>><?=$value['firstname'].' '.$value['lastname']?></option>
+                            <?php } ?>
+                    </select>
+                </div>
+
                 <h4 class="mb-3 mt-3">Mail Setting</h4>
                     <div class="col-sm-6 mb-3">
                         <label class="form-label" for="formrow-email-input">SMTP Email / Username</label>
@@ -220,20 +236,21 @@
         <?php if($duser[0]['userrole'] == '1'){ ?>
          var role = $('#role>option:eq(0)').attr('selected',true);
          changerole(role);
-         $('.custom-validation').parsley().reset();
+         //$('.custom-validation').parsley().reset();
          $('.custom-validation').parsley({
-                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select[name=vendor]'
+                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select#vendor'
             });
     <?php }elseif($duser[0]['userrole'] == '2'){ ?>
          var role =$('#role>option:eq(1)').attr('selected',true); 
          changerole(role); 
-         $('.custom-validation').parsley().reset();
-            $('.custom-validation').parsley({excluded:'select[name=vendor]'});    
+         $(".select2").select2({width: '100%'});
+         //$('.custom-validation').parsley().reset();
+            $('.custom-validation').parsley({excluded:'select#vendor'});    
      <?php }elseif($duser[0]['userrole'] == '3'){ ?>
          var role =$('#role>option:eq(2)').attr('selected',true);
          changerole(role);
          $(".select2").select2({width: '100%'});
-         $('.custom-validation').parsley().reset();
+         //$('.custom-validation').parsley().reset();
             $('.custom-validation').parsley({
                 excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress]'
             });
@@ -255,15 +272,15 @@
             $(".colorpicker-showalpha").spectrum({
             showAlpha: true
             });
-            $('.custom-validation').parsley().reset();
-            $('.custom-validation').parsley({excluded:'select[name=vendor]'});
+            //$('.custom-validation').parsley().reset();
+            $('.custom-validation').parsley({excluded:'select#vendor'});
             //$('.custom-validation').parsley();
           }
           else if(str=="3")
           {
             $("#client_settings").show();
             $("#vendor_settings").hide();
-            $('.custom-validation').parsley().reset();
+            //$('.custom-validation').parsley().reset();
             $('.custom-validation').parsley({
                 excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress]'
             });
@@ -273,9 +290,9 @@
           {
             $("#client_settings").hide();
             $("#vendor_settings").hide();
-            $('.custom-validation').parsley().reset();
+            //$('.custom-validation').parsley().reset();
            $('.custom-validation').parsley({
-                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select[name=vendor]'
+                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select#vendor'
             });
           }
         }

@@ -102,10 +102,19 @@
                           <option value="<?=$value['id']?>"><?=$value['firstname'].' '.$value['lastname']?></option>
                         <?php } ?>
                 </select>
-            </div>
-
+            </div>  
  
             <div class="row" id="vendor_settings" style="display:none;">
+                <h4 class="mb-3 mt-3">Select Referrer</h4>
+                <div class="col-* mb-3" >
+                    <label class="form-label" for="sub-vendor">Select Sub-Vendor</label>
+                    <select class="select2 form-control select2-multiple" multiple="multiple" data-parsley-min="1" id="sub-vendor" name="subvendor[]" >
+                            <option value="0">Select Sub-Vendor</option>
+                            <?php foreach ($vendors as $value) {?>
+                              <option value="<?=$value['id']?>"><?=$value['firstname'].' '.$value['lastname']?></option>
+                            <?php } ?>
+                    </select>
+                </div>
                 <h4 class="mb-3 mt-3">Mail Setting</h4>
                     <div class="col-sm-6 mb-3">
                         <label class="form-label" for="formrow-email-input">SMTP Email / Username *</label>
@@ -228,7 +237,7 @@
             $(".colorpicker-showalpha").spectrum({
             showAlpha: true
             });
-            $('.custom-validation').parsley('reset');//.reset();
+            //$('.custom-validation').parsley('reset');//.reset();
             $('.custom-validation').parsley({excluded:'select#vendor'});
             //$('.custom-validation').parsley();
           }
