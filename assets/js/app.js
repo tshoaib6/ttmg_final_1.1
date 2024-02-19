@@ -248,7 +248,10 @@ function notification_read_unread_all() {
     }
 
     function updateRadio(radioId) {
-        document.getElementById(radioId).checked = true;
+        if(radioId != 'null')
+        {
+            document.getElementById(radioId).checked = true;
+        }   
     }
     function notification_top_list() {
         setTimeout(function () {
@@ -358,12 +361,12 @@ function notification_read_unread_all() {
         initMenuItemScroll();
         initFullScreen();
         initHoriMenuActive();
-        initRightSidebar();
+       // initRightSidebar();
         initDropdownMenu();
         initComponents();
         initSettings();
         initPreloader();
-        layoutSetting();
+        //layoutSetting();
         Waves.init();
         notification_top_list();
     }

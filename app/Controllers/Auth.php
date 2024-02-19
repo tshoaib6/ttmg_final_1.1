@@ -441,11 +441,11 @@ class Auth extends BaseController
                                     'link' => base_url(),
                                 ];
                     add_notification($notification_data);            
-                    return redirect()->to('all-referral');
+                    return redirect()->to('allUsers');
                 }else
                 {
                     $session->setFlashdata('error','Failed to perform request.');
-                    return redirect()->to('all-referral');
+                    return redirect()->to('allUsers');
                 }
             }
 

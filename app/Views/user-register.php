@@ -211,7 +211,7 @@
         $(".select2").select2({width: '100%'});
 
         $('.custom-validation').parsley({
-                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select[name=vendor]'
+                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select#vendor'
             });
         
         
@@ -228,15 +228,15 @@
             $(".colorpicker-showalpha").spectrum({
             showAlpha: true
             });
-            $('.custom-validation').parsley().reset();
-            $('.custom-validation').parsley({excluded:'select[name=vendor]'});
+            $('.custom-validation').parsley('reset');//.reset();
+            $('.custom-validation').parsley({excluded:'select#vendor'});
             //$('.custom-validation').parsley();
           }
           else if(str=="3")
           {
             $("#client_settings").show();
             $("#vendor_settings").hide();
-            $('.custom-validation').parsley().reset();
+            //$('.custom-validation').parsley().reset();
             $('.custom-validation').parsley({
                 excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress]'
             });
@@ -246,9 +246,9 @@
           {
             $("#client_settings").hide();
             $("#vendor_settings").hide();
-            $('.custom-validation').parsley().reset();
+            //$('.custom-validation').parsley().reset();
            $('.custom-validation').parsley({
-                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select[name=vendor]'
+                excluded:'#smtpemail,#smtppassword,#smtpincomingserver,#smtpoutgoingserver,#smtpport,input[name=branchname],input[name=branchslug],input[name=branchcountry],input[name=branchaddress],select#vendor'
             });
           }
         }
