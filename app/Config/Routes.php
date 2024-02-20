@@ -67,6 +67,7 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes)
 
 	//dashboard
     $routes->get('home', 'Home::index');
+    $routes->get('ajax-dashboard-lead-chart/(:any)', 'Home::ajaxDashboardLeadChart/$1');
 
     //settings
     $routes->get('/settings', 'Settings::index');

@@ -43,7 +43,52 @@ class Home extends BaseController
 		}
 		$lead_count=$this->lead_model->countAll();
 
+		/* Chart data start*/
 
+		$label_dates = '';
+       	$current_year = date('Y');
+		for($_month = 1 ; $_month <= 12; $_month++){
+			$month_t = date('m-d-Y',mktime(0, 0, 0, $_month, 01, $current_year));
+
+		$label_dates .= "'".$month_t."',";
+				
+		}
+		$data['label_dates'] = rtrim($label_dates, ',');
+
+		for($lead_month = 1 ; $lead_month <= 12; $lead_month++){
+			$month_t = date('m-Y',mktime(0, 0, 0, $lead_month, 01, $current_year));
+
+			if(is_admin())
+			{
+				$data['total_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->countAllResults();
+				$data['total_accepted_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('status',1)->countAllResults();
+				$data['total_rejected_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('status',2)->countAllResults();
+			}	
+
+			if(is_vendor())
+			{
+				$data['total_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('vendor_id',get_user_id())->countAllResults();
+
+				$data['total_accepted_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('vendor_id',get_user_id())->where('status',1)->countAllResults();
+
+				$data['total_rejected_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('vendor_id',get_user_id())->where('status',2)->countAllResults();
+			}
+
+			if(is_client())
+			{
+				$data['total_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('client_id',get_user_id())->countAllResults();
+
+				$data['total_accepted_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('client_id',get_user_id())->where('status',1)->countAllResults();
+				
+				$data['total_rejected_leads'][] = $this->lead_model->where("DATE_FORMAT(lead_date,'%m-%Y')", $month_t)->where('client_id',get_user_id())->where('status',2)->countAllResults();
+			}
+		}
+
+		$data['total_leads'] = implode(',', $data['total_leads']);	
+		$data['total_accepted_leads'] = implode(',', $data['total_accepted_leads']);
+		$data['total_rejected_leads'] = implode(',', $data['total_rejected_leads']);
+
+		/* Chart data end*/
 
 
 		$data['orders']=$orders;
@@ -53,6 +98,22 @@ class Home extends BaseController
 
 		$data['activities'] = $this->activity_model->orderBy('id','desc')->limit(10)->get()->getResultArray();
 		return view('index', $data);
+	}
+
+	public function ajaxDashboardLeadChart($sort)
+	{
+		if($sort == 'yearly')
+		{
+
+		}else if($sort == 'monthly')
+		{
+
+
+
+		}else{
+
+				$data['label_dates'] = 'Mon,Tue,Wed,Thu,Fri,Sat';
+		}
 	}
 
 	public function show_layouts_horizontal(){

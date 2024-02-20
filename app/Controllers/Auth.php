@@ -364,7 +364,7 @@ class Auth extends BaseController
                     if($branchlogo = $this->request->getFile('branchlogo')) 
                     { 
 
-                        $input2 = $this->validate([
+                        /*$input2 = $this->validate([
                          'branchlogo' => 'uploaded[branchlogo]|max_size[branchlogo,1024]|ext_in[branchlogo,jpg,jpeg,png],'
                          ]);
 
@@ -372,12 +372,12 @@ class Auth extends BaseController
                         { 
                            $branchlogo = '';
 
-                        }else{ 
+                        }else{ */
 
                              $newName = $branchlogo->getRandomName(); 
                              $branchlogo->move('uploads/users', $newName);
                              $branchlogo = $newName;
-                         }
+                         //}
 
                     } 
                   
