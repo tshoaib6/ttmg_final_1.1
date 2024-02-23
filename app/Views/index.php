@@ -108,17 +108,18 @@
                                             <ul class="list-inline main-chart mb-0">
     
                                                 <li class="list-inline-item chart-border-left me-0">
-                                                    <h3><span data-plugin="counterup">258</span><span class="text-muted d-inline-block font-size-15 ms-3">Leads</span>
+                                                    <h3><span data-plugin="counterup" id="dashboard-total-leads">258</span><span class="text-muted d-inline-block font-size-15 ms-3">Leads</span>
                                                     </h3>
                                                 </li>
-                                                <li class="list-inline-item chart-border-left me-0">
+                                               <!--  <li class="list-inline-item chart-border-left me-0">
                                                     <h3><span data-plugin="counterup">3.6</span>%<span class="text-muted d-inline-block font-size-15 ms-3">Conversation Ratio</span></h3>
-                                                </li>
+                                                </li> -->
                                             </ul>
                                         </div>
 
                                         <div class="mt-3">
                                             <div id="sales-analytics-chart" data-colors='["--bs-primary", "#dfe2e6", "--bs-warning"]' class="apex-charts" dir="ltr"></div>
+                                            
                                         </div>
                                     </div> <!-- end card-body-->
                                 </div> <!-- end card-->

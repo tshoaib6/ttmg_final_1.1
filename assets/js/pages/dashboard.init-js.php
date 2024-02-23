@@ -271,6 +271,7 @@ chart2.render();
 
 //
 // Sales Analytics Chart
+var dashboard_chart;
 var LinechartsalesColors = getChartColorsArray("sales-analytics-chart");
 if (LinechartsalesColors) {
 var options = {
@@ -316,18 +317,19 @@ var options = {
             stops: [0, 100, 100, 100]
         }
     },
-   /* labels: ['01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003', '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'],*/
-    labels: [<?=$label_dates ?>],
+ 
+    
     markers: {
         size: 0
     },
 
     xaxis: {
-        type: 'datetime'
+        type: 'category',
+        categories: [<?=$label_dates ?>],
     },
     yaxis: {
         title: {
-            text: 'Leads',
+            text: 'Number of Leads',
         },
     },
     tooltip: {
@@ -348,7 +350,7 @@ var options = {
     }
   }
   
-  var dashboard_chart = new ApexCharts(
+  dashboard_chart = new ApexCharts(
     document.querySelector("#sales-analytics-chart"),
     options
   );
@@ -356,29 +358,36 @@ var options = {
   dashboard_chart.render();
 }
 
+$(function(){
+    $("#dashboard-total-leads").html(<?=$dash_total_leads?>);
+});
+
 function dashboard_lead(sort)
 {
     var url = '<?=base_url('ajax-dashboard-lead-chart/') ?>'+sort;
 
 $.getJSON(url, function(response) {
-  dashboard_chart.updateSeries([{
-        name: 'Leads',
-        type: 'column',
-        data: response.total_leads
-    }, {
-        name: 'Accepted',
-        type: 'area',
-        data: response.total_accepted_leads
-    }, {
-        name: 'Rejected',
-        type: 'line',
-        data: response.total_rejected_leads
-    }]);
-  dashboard_chart.updateOptions({
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat'],
-  })
-});
+
+    $("#dashboard-total-leads").html(response.dash_total_leads);
+    dashboard_chart.updateOptions({
+            series: [{
+            name: 'Leads',
+            type: 'column',
+            data: response.total_leads
+            }, {
+                name: 'Accepted',
+                type: 'area',
+                data: response.total_accepted_leads
+            }, {
+                name: 'Rejected',
+                type: 'line',
+                data: response.total_rejected_leads
+            }],
+            xaxis: {
+            type:'category',
+            categories:response.label_dates
+          },
+        })
+    });
 }
-
-
 </script>
