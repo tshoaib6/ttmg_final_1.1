@@ -271,6 +271,7 @@ chart2.render();
 
 //
 // Sales Analytics Chart
+var dashboard_chart;
 var LinechartsalesColors = getChartColorsArray("sales-analytics-chart");
 if (LinechartsalesColors) {
 var options = {
@@ -295,15 +296,15 @@ var options = {
     series: [{
         name: 'Leads',
         type: 'column',
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
+        data: [<?=$total_leads ?>]
     }, {
         name: 'Accepted',
         type: 'area',
-        data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
+        data: [<?=$total_accepted_leads ?>]
     }, {
         name: 'Rejected',
         type: 'line',
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39]
+        data: [<?=$total_rejected_leads ?>]
     }],
     fill: {
         opacity: [0.85, 0.25, 1],
@@ -316,17 +317,19 @@ var options = {
             stops: [0, 100, 100, 100]
         }
     },
-    labels: ['01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003', '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'],
+ 
+    
     markers: {
         size: 0
     },
 
     xaxis: {
-        type: 'datetime'
+        type: 'category',
+        categories: [<?=$label_dates ?>],
     },
     yaxis: {
         title: {
-            text: 'Points',
+            text: 'Number of Leads',
         },
     },
     tooltip: {
@@ -335,7 +338,7 @@ var options = {
         y: {
             formatter: function (y) {
                 if (typeof y !== "undefined") {
-                    return y.toFixed(0) + " points";
+                    return y.toFixed(0) + " Leads";
                 }
                 return y;
   
@@ -347,13 +350,44 @@ var options = {
     }
   }
   
-  var chart = new ApexCharts(
+  dashboard_chart = new ApexCharts(
     document.querySelector("#sales-analytics-chart"),
     options
   );
 
-  chart.render();
+  dashboard_chart.render();
 }
 
+$(function(){
+    $("#dashboard-total-leads").html(<?=$dash_total_leads?>);
+});
 
+function dashboard_lead(sort)
+{
+    var url = '<?=base_url('ajax-dashboard-lead-chart/') ?>'+sort;
+
+$.getJSON(url, function(response) {
+
+    $("#dashboard-total-leads").html(response.dash_total_leads);
+    dashboard_chart.updateOptions({
+            series: [{
+            name: 'Leads',
+            type: 'column',
+            data: response.total_leads
+            }, {
+                name: 'Accepted',
+                type: 'area',
+                data: response.total_accepted_leads
+            }, {
+                name: 'Rejected',
+                type: 'line',
+                data: response.total_rejected_leads
+            }],
+            xaxis: {
+            type:'category',
+            categories:response.label_dates
+          },
+        })
+    });
+}
 </script>

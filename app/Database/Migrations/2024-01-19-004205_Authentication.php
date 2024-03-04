@@ -152,6 +152,11 @@ class Authentication extends Migration
                 'constraint' => 1,
                 'default' => 1,
             ],
+            'referred_to' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '250',
+                'null' => true,
+            ],
             'last_login datetime default NULL ',
             'created_at datetime default current_timestamp',
             'updated_at datetime default current_timestamp on update current_timestamp'
