@@ -303,8 +303,8 @@ class LeadController extends BaseController
     {
 
         $token = $this->request->getServer('HTTP_AUTHORIZATION');
-
-        if ($token == 'Bearer ' . get_option("token")) {
+        // $token == 'Bearer ' . get_option("token")
+        if ($token == 'Bearer '."ABC") {
             $apiResponseString = $this->request->getPost();
             $apiResponseJson = $apiResponseString;
             $leads = $apiResponseJson['leads'];
@@ -394,7 +394,8 @@ class LeadController extends BaseController
     public function test_mail(){
         
         // $response =send_email("tshoaib10@gmail.com","Add Lead");
-
+        $a= has_subvendors();
+        var_dump($a);
         return 0;
     }
 }

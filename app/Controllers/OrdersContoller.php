@@ -37,13 +37,77 @@ class OrdersContoller extends BaseController
 
     }
 
-    public function index()
+    public function index($vend_id="")
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
             'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
         ];
         return view('orders_management/index', $data);
+    }
+    public function sub_vendor_index($sub_ven="",$sv_id)
+    {
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
+            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
+        ];
+        $data['sv_id']=$sv_id;
+        return view('orders_management/sub_vendor_index', $data);
+    }
+    public function ajax_sv_datatables_orders($id = "")
+    {
+        $db = db_connect();
+        $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+
+        if ($id != 0) {
+            $builder->where('fkvendorstaffid', $id);
+        }
+
+        // if (is_vendor()) {
+        //     $builder->where('fkvendorstaffid', get_user_id());
+        // } elseif (is_client()) {
+        //     $builder->where('fkclientid', get_user_id());
+        // }
+        $data = DataTable::of($builder)->edit('agent', function ($row) {
+            return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
+        })->edit('pkorderid', function ($row) {
+            $btn = '<a href="' . site_url('create-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
+            if (is_admin()) {
+                if ($row->status == 0) {
+                    $btn .= '<a href="#" onclick="unblockOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="fas fa-lock font-size-18"></i></a>';
+                } else {
+                    $btn .= '<a href="#" onclick="blockOrder(' . $row->pkorderid . ')" class="px-3 text-success"><i class="fas fa-lock-open font-size-18"></i></a>';
+                }
+                return $btn;
+            }
+
+        })->edit('fkvendorstaffid', function ($row) {
+            $vendor = get_vendors($row->fkvendorstaffid);
+            return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+        })->edit('status', function ($row) {
+            $status = '';
+            if ($row->status == 0) {
+                $status = '<span class="badge bg-danger">Blocked</span>';
+            } else if ($row->status == 1) {
+                $status = '<span class="badge bg-primary">Active</span>';
+            } else if ($row->status = 3) {
+                $status = '<span class="badge bg-success">Completed</span>';
+            }
+            return $status;
+
+
+        })
+            ->edit('id', function ($row) {
+                if (is_admin() && $row->status != 0 && $row->status != 3) {
+                    return '<button class="btn btn-primary px-3" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>'
+                        . '<button class="btn btn-secondary px-3 mx-2" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>';
+                } else {
+                    return "N/A";
+                }
+            })->addNumbering()
+            ->toJson();
+        return $data;
+
     }
     public function ajax_Datatable_orders($id = "")
     {
@@ -194,6 +258,19 @@ class OrdersContoller extends BaseController
         $camp = $this->campaign_model->select('id,campaign_name,campaign_columns')->find($camp_id['categoryname']);
         echo json_encode($camp);
     }
+
+    public function get_orders_api(){
+        helper('text');
+       $order= $this->order_model->select('id,agent_name')->findAll();
+        $token=random_string('alnum','40');
+        update_option("token",$token);
+       $data=array(
+        "camp" => $order,
+        'token' => $token
+       );
+        echo json_encode($data);
+    }
+
 
     public function lead_add()
     {
@@ -381,6 +458,7 @@ class OrdersContoller extends BaseController
         if ($o_id != "") {
             foreach ($leads as $l) {
                 $temp_post_data = [
+                    
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
                     "firstname" => $l['first_name'],

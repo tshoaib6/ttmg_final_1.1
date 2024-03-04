@@ -104,7 +104,7 @@ function send_email($to, $event,$vendor_id="")
             'fromEmail' => 'XYZ@gmail.com',
             'fromName' => 'Lead CRM',
         ]);
-
+        
         $email->setNewline("\r\n");
         $email->setCRLF("\r\n");
         $email->setTo($to);
