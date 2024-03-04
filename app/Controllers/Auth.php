@@ -867,4 +867,9 @@ class Auth extends BaseController
         })
         ->toJson();
     }
+
+    public function get_subvendors(){
+        $sv=has_subvendors();
+        echo json_encode($sv);
+    }
 }

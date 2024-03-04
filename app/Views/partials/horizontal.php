@@ -3,38 +3,38 @@
         <div class="d-flex">
             <!-- LOGO -->
 
-            <?php 
-                $company_logo_settings = json_decode(get_option('companysettings'),1);
-                $company_logo = base_url('uploads/').$company_logo_settings['companylogo'];
-                $company_name = $company_logo_settings['companyname'];
-                if(session()->has('branch_set'))
-                {
-                    $company_logo = base_url('uploads/users/').session()->branch_branchlogo;
-                }
+            <?php
+            $company_logo_settings = json_decode(get_option('companysettings'), 1);
+            $company_logo = base_url('uploads/') . $company_logo_settings['companylogo'];
+            $company_name = $company_logo_settings['companyname'];
+            if (session()->has('branch_set')) {
+                $company_logo = base_url('uploads/users/') . session()->branch_branchlogo;
+            }
 
 
-             ?>
+            ?>
             <div class="navbar-brand-box">
                 <a href="/" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="<?=$company_logo ?>" alt="" height="60">
+                        <img src="<?= $company_logo ?>" alt="" height="60">
                     </span>
                     <span class="logo-lg">
-                        <img src="<?=$company_logo ?>" alt="" height="60">
+                        <img src="<?= $company_logo ?>" alt="" height="60">
                     </span>
                 </a>
 
                 <a href="/home" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="<?=$company_logo ?>" alt="" height="60">
+                        <img src="<?= $company_logo ?>" alt="" height="60">
                     </span>
                     <span class="logo-lg">
-                        <img src="<?=$company_logo ?>" alt="" height="60">
+                        <img src="<?= $company_logo ?>" alt="" height="60">
                     </span>
                 </a>
             </div>
 
-            <button type="button" class="btn btn-sm px-3 font-size-16 d-lg-none header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+            <button type="button" class="btn btn-sm px-3 font-size-16 d-lg-none header-item waves-effect waves-light"
+                data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
                 <i class="fa fa-fw fa-bars"></i>
             </button>
 
@@ -56,13 +56,15 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
                     aria-labelledby="page-header-search-dropdown">
-                    
+
                     <form class="p-3">
                         <div class="m-0">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="<?= lang('Files.Search') ?> ..." aria-label="Recipient's username">
+                                <input type="text" class="form-control" placeholder="<?= lang('Files.Search') ?> ..."
+                                    aria-label="Recipient's username">
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
+                                    <button class="btn btn-primary" type="submit"><i
+                                            class="mdi mdi-magnify"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -70,12 +72,12 @@
                 </div>
             </div>
             <?php
-                        $session = \Config\Services::session();
-                        ?>
+            $session = \Config\Services::session();
+            ?>
 
-           
 
-           
+
+
 
             <div class="dropdown d-none d-lg-inline-block ms-1">
                 <button type="button" class="btn header-item noti-icon waves-effect" data-bs-toggle="fullscreen">
@@ -84,24 +86,30 @@
             </div>
 
             <div class="dropdown d-inline-block">
-                <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn header-item noti-icon waves-effect"
+                    id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
                     <i class="uil-bell"></i>
                     <span class="badge bg-danger rounded-pill" id="notifytotalcount">0</span>
                 </button>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
+                    aria-labelledby="page-header-notifications-dropdown">
                     <div class="p-3">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h5 class="m-0 font-size-16"> <?= lang('Files.Notifications') ?> </h5>
+                                <h5 class="m-0 font-size-16">
+                                    <?= lang('Files.Notifications') ?>
+                                </h5>
                             </div>
                             <div class="col-auto">
-                                <a href="javascript:void(0);" onClick="notification_read_unread_all()" class="small"> <?= lang('Files.Mark all as read') ?></a>
+                                <a href="javascript:void(0);" onClick="notification_read_unread_all()" class="small">
+                                    <?= lang('Files.Mark all as read') ?>
+                                </a>
                             </div>
                         </div>
                     </div>
                     <div data-simplebar style="max-height: 100%;" id="top-notification-list">
-                       
+
                         <!--  <a href="javascript:void(0);" class="text-dark notification-item">
                             <div class="d-flex align-items-start">
                                 <div class="flex-shrink-0 me-3">
@@ -116,12 +124,14 @@
                                 </div>
                             </div>
                         </a>  -->
-                    
+
                     </div>
                     <div class="p-2 border-top">
                         <div class="d-grid">
-                            <a class="btn btn-sm btn-link font-size-14 text-center" href="<?=base_url('all-notifications') ?>">
-                                <i class="uil-arrow-circle-right me-1"></i> <?= lang('Files.View More') ?>..
+                            <a class="btn btn-sm btn-link font-size-14 text-center"
+                                href="<?= base_url('all-notifications') ?>">
+                                <i class="uil-arrow-circle-right me-1"></i>
+                                <?= lang('Files.View More') ?>..
                             </a>
                         </div>
                     </div>
@@ -131,20 +141,31 @@
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="<?php echo base_url('uploads/users/').$session->get('login_useruimage'); ?>"
+                    <img class="rounded-circle header-profile-user"
+                        src="<?php echo base_url('uploads/users/') . $session->get('login_useruimage'); ?>"
                         alt="Header Avatar">
-                    <span class="d-none d-xl-inline-block ms-1 fw-medium font-size-15"><?=$session->get('login_firstname'); ?></span>
+                    <span class="d-none d-xl-inline-block ms-1 fw-medium font-size-15">
+                        <?= $session->get('login_firstname'); ?>
+                    </span>
                     <i class="uil-angle-down d-none d-xl-inline-block font-size-15"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item" href="<?=base_url('profile') ?>"><i class="uil uil-user-circle font-size-18 align-middle text-muted me-1"></i> <span class="align-middle"><?= lang('Files.View Profile') ?></span></a>
+                    <a class="dropdown-item" href="<?= base_url('profile') ?>"><i
+                            class="uil uil-user-circle font-size-18 align-middle text-muted me-1"></i> <span
+                            class="align-middle">
+                            <?= lang('Files.View Profile') ?>
+                        </span></a>
 
                     <!-- <a class="dropdown-item" href="javascript:void(0)"><i class="uil uil-wallet font-size-18 align-middle me-1 text-muted"></i> <span class="align-middle"><?= lang('Files.My Wallet') ?></span></a>
                     <a class="dropdown-item d-block" href="javascript:void(0)"><i class="uil uil-cog font-size-18 align-middle me-1 text-muted"></i> <span class="align-middle"><?= lang('Files.Settings') ?></span> <span class="badge bg-success-subtle text-success rounded-pill mt-1 ms-2">03</span></a>
                     <a class="dropdown-item" href="auth-lock-screen"><i class="uil uil-lock-alt font-size-18 align-middle me-1 text-muted"></i> <span class="align-middle"><?= lang('Files.Lock screen') ?></span></a> -->
-                    
-                    <a class="dropdown-item" href="<?= base_url('logout') ?>"><i class="uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"></i> <span class="align-middle"><?= lang('Files.Sign out') ?></span></a>
+
+                    <a class="dropdown-item" href="<?= base_url('logout') ?>"><i
+                            class="uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"></i> <span
+                            class="align-middle">
+                            <?= lang('Files.Sign out') ?>
+                        </span></a>
                 </div>
             </div>
 
@@ -153,23 +174,24 @@
                     <i class="uil-cog"></i>
                 </button>
             </div> -->
-            
+
         </div>
     </div>
     <div class="container-fluid">
         <div class="topnav">
 
             <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
-    
+
                 <div class="collapse navbar-collapse" id="topnav-menu-content">
                     <ul class="navbar-nav">
 
                         <li class="nav-item">
-                            <a class="nav-link" href="<?=base_url() ?>">
-                                <i class="uil-home-alt me-2"></i> <?= lang('Files.Dashboard') ?>
+                            <a class="nav-link" href="<?= base_url() ?>">
+                                <i class="uil-home-alt me-2"></i>
+                                <?= lang('Files.Dashboard') ?>
                             </a>
                         </li>
-    
+
                         <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-uielement" role="button">
                                 <i class="uil-flask me-2"></i><?= lang('Files.UI Elements') ?> <div class="arrow-down"></div>
@@ -217,7 +239,7 @@
 
                             </div>
                         </li> -->
-    
+
                         <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
                                 <i class="uil-apps me-2"></i><?= lang('Files.Apps') ?> <div class="arrow-down"></div>
@@ -277,7 +299,7 @@
                                 </div>
                             </div> -->
                         </li>
-    
+
                         <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-components" role="button"
                                >
@@ -424,105 +446,132 @@
                             </div>
                         </li> -->
 
-                        <?php if(is_admin()){?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user me-2"></i>Users <div class="arrow-down"></div>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                        <?php if (is_admin()) { ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                                    <i class="uil-user me-2"></i>Users <div class="arrow-down"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-pages">
 
-                                <a href="<?=base_url('allUsers') ?>" class="dropdown-item">All Users</a>
-                                <a href="<?=base_url('register') ?>" class="dropdown-item">User Registration</a>
-                                
-                            </div>
-                        </li>
-                        <?php }?>
+                                    <a href="<?= base_url('allUsers') ?>" class="dropdown-item">All Users</a>
+                                    <a href="<?= base_url('register') ?>" class="dropdown-item">User Registration</a>
 
-                      
+                                </div>
+                            </li>
+                        <?php } ?>
+
+                        <?php if (count(has_subvendors()) > 0) { ?>
+                            <li class="nav-item dropdown">
+                                <button class="nav-link  arrow-none link-subvendor" href="#" id="topnav-pages link-subvendor" role="button">
+                                    <i class="uil-user me-2"></i>Sub Vendors <div class=""></div>
+                                </button>
+                                <!--  -->
+                            </li>
+                        <?php } ?>
 
 
-                        <?php if(is_admin()){?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user me-2"></i>Campaigns <div class="arrow-down"></div>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                                <a href="<?=base_url('campaign-index') ?>" class="dropdown-item">All Campaigns</a>
-                                <a href="<?=base_url('create-campaign') ?>" class="dropdown-item">Create Campaign</a>            
-                            </div>
-                        </li>
-                        <?php }?>
 
-                        <?php if(is_admin() || is_vendor()){?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user me-2"></i>Orders <div class="arrow-down"></div>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                                <a href="<?=base_url('order-index') ?>" class="dropdown-item">All Orders</a>
-                                <?php $camp=get_categories(); foreach($camp as $c) { ?>
-                                    <a href="<?= base_url('campaign-detail/' . $c['id']) ?>" class="dropdown-item"><?php echo $c['campaign_name'] ?></a>
-  
-                                <?php } ?>
-                                <a href="<?=base_url('create-order') ?>" class="dropdown-item">Create New Order</a>            
-                            </div>
-                        </li>
-                        <?php }?>
+
+                        <?php if (is_admin()) { ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                                    <i class="uil-user me-2"></i>Campaigns <div class="arrow-down"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                    <a href="<?= base_url('campaign-index') ?>" class="dropdown-item">All Campaigns</a>
+                                    <a href="<?= base_url('create-campaign') ?>" class="dropdown-item">Create Campaign</a>
+                                </div>
+                            </li>
+                        <?php } ?>
+
+                        <?php if (is_admin() || is_vendor()) { ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                                    <i class="uil-user me-2"></i>Orders <div class="arrow-down"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                                    <a href="<?= base_url('order-index') ?>" class="dropdown-item">All Orders</a>
+                                    <?php $camp = get_categories();
+                                    foreach ($camp as $c) { ?>
+                                        <a href="<?= base_url('campaign-detail/' . $c['id']) ?>" class="dropdown-item">
+                                            <?php echo $c['campaign_name'] ?>
+                                        </a>
+
+                                    <?php } ?>
+                                    <a href="<?= base_url('create-order') ?>" class="dropdown-item">Create New Order</a>
+                                </div>
+                            </li>
+                        <?php } ?>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
                                 <i class="uil-user me-2"></i>Leads <div class="arrow-down"></div>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                                <a href="<?=base_url('lead-index') ?>" class="dropdown-item">All Leads</a>
-                                <a href="<?=base_url('add-lead') ?>" class="dropdown-item">Add Lead</a>            
+                                <a href="<?= base_url('lead-index') ?>" class="dropdown-item">All Leads</a>
+                                <a href="<?= base_url('add-lead') ?>" class="dropdown-item">Add Lead</a>
                             </div>
                         </li>
-                        
-                        <?php if(is_admin() || is_vendor()){?>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-user-circle me-2"></i>Referrals <div class="arrow-down"></div>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                        <?php if (is_admin() || is_vendor()) { ?>
 
-                                <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#referralModal" >Send Referral</a>
-                                <a href="<?=base_url('all-referral') ?>" class="dropdown-item">My Referrals</a>                    
-                                
-                            </div>
-                        </li>
-                        <?php }?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                                    <i class="uil-user-circle me-2"></i>Referrals <div class="arrow-down"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-pages">
+
+                                    <a href="#" class="dropdown-item" data-bs-toggle="modal"
+                                        data-bs-target="#referralModal">Send Referral</a>
+                                    <a href="<?= base_url('all-referral') ?>" class="dropdown-item">My Referrals</a>
+
+                                </div>
+                            </li>
+                        <?php } ?>
 
 
-                        <?php if(is_admin() ){?>
-                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                                <i class="uil-cog me-2"></i>Settings <div class="arrow-down"></div>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                        <?php if (is_admin()) { ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                                    <i class="uil-cog me-2"></i>Settings <div class="arrow-down"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-pages">
 
-                                <a href="<?=base_url('allEmail') ?>" class="dropdown-item">Email Template</a>
-                                <a href="<?=base_url('email-action') ?>" class="dropdown-item">Email Action</a>
-                                <a href="<?=base_url('all-notifications') ?>" class="dropdown-item">Notifications</a>
-                                <a href="<?=base_url('all-activities') ?>" class="dropdown-item">Activity Logs</a>
-                                <a href="<?=base_url('settings') ?>" class="dropdown-item">System Settings</a> 
-                                
-                            </div>
-                        </li>
-                        <?php }?>
+                                    <a href="<?= base_url('allEmail') ?>" class="dropdown-item">Email Template</a>
+                                    <a href="<?= base_url('email-action') ?>" class="dropdown-item">Email Action</a>
+                                    <a href="<?= base_url('all-notifications') ?>" class="dropdown-item">Notifications</a>
+                                    <a href="<?= base_url('all-activities') ?>" class="dropdown-item">Activity Logs</a>
+                                    <a href="<?= base_url('settings') ?>" class="dropdown-item">System Settings</a>
+
+                                </div>
+                            </li>
+                        <?php } ?>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="<?=base_url('support-request-center') ?>">
+                            <a class="nav-link" href="<?= base_url('support-request-center') ?>">
                                 <i class="uil-megaphone me-2"></i> Support & Request
                             </a>
                         </li>
-    
-    
+
+
                     </ul>
                 </div>
             </nav>
         </div>
     </div>
 </header>
-    
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Sub Vendor Details</h5>
+        <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body" id="sv_details">
+
+    </div>
+</div>
+
+<script>
+   
+   
+</script>

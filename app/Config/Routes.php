@@ -119,8 +119,10 @@ $routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1'
 $routes->match(["get", "post"], "/create-order", 'OrdersContoller::create',['filter' => 'authenticate']);
 $routes->get('/create-order/(:any)', 'OrdersContoller::create/$1',['filter' => 'authenticate']);
 $routes->get('/order-index', 'OrdersContoller::index',['filter' => 'authenticate']);
+$routes->get('(:any)?/order-index/(:any)', 'OrdersContoller::sub_vendor_index/$1/$2',['filter' => 'authenticate']);
 
 $routes->get('/orders-datatable/(:any)?', 'OrdersContoller::ajax_Datatable_orders/$1');
+$routes->get('/sv_orders-datatable/(:any)?', 'OrdersContoller::ajax_sv_datatables_orders/$1');
 $routes->get('/lead-form-ajax', 'OrdersContoller::getLeadFormData');
 $routes->post('/add-lead', 'OrdersContoller::lead_add');
 $routes->get('/import-csv/(:any)', 'OrdersContoller::importCsv/$1',['filter' => 'authenticate']);
@@ -139,6 +141,8 @@ $routes->post('/unblock-order', 'OrdersContoller::unblock_order',['filter' => 'a
 $routes->get('/lead-index', 'LeadController::index',['filter' => 'authenticate']);
 $routes->get('/add-lead', 'LeadController::add_lead',['filter' => 'authenticate']);
 $routes->get('/add-lead/(:any)', 'LeadController::add_lead/$1',['filter' => 'authenticate']);
+$routes->get('/get-sv', 'Auth::get_subvendors',['filter' => 'authenticate']);
+
 
 
 $routes->get('/leads-datatable/(:any)?', 'LeadController::ajax_Datatable_leads/$1',['filter' => 'authenticate']);
@@ -279,6 +283,7 @@ $routes->get('maps-leaflet', 'ComponentController::show_maps_leaflet');
 //Api 
 
 $routes->get('get-campaigns-types', 'CampaignController::get_campaign_api');
+$routes->get('get-orders', 'OrderController::get_orders_api');
 $routes->post('test-api', 'LeadController::sync_lead_api');
 $routes->get('test-email', 'LeadController::test_mail');
 

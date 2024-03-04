@@ -34,8 +34,6 @@
     <!-- ============================================================== -->
     <!-- Start right Content here -->
     <!-- ============================================================== -->
-
-    
     <div class="main-content">
 
         <div class="page-content">
@@ -222,7 +220,7 @@
             ],
             order: [],
             ajax: {
-                url: "<?php echo site_url('orders-datatable') ?>/" + <?php echo "0" ?>,
+                url: "<?php echo site_url('sv_orders-datatable') ?>/" + <?php echo $sv_id ?>,
 
             },
             "fnCreatedRow": function (nRow, aData, iDataIndex) {

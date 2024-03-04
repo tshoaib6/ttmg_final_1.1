@@ -26,8 +26,7 @@ function notification_read_unread(e) {
 }
 
 function notification_read_unread_all() {
-    //var link = $(e).data('link');
-    //var nid = $(e).data('id');
+
     var bb_url = $('#base-url').data('target');
     $.get(bb_url + "ajax-notifications-read/all", function (data, status) {
         var dd = JSON.parse(data);
@@ -247,12 +246,12 @@ function notification_read_unread_all() {
         }
     }
 
-    function updateRadio(radioId) {
-        if(radioId != 'null')
-        {
-            document.getElementById(radioId).checked = true;
-        }   
-    }
+    // function updateRadio(radioId) {
+    //     if(radioId != 'null')
+    //     {
+    //         document.getElementById(radioId).checked = true;
+    //     }   
+    // }
     function notification_top_list() {
         setTimeout(function () {
             var bb_url = $('#base-url').data('target');
@@ -361,7 +360,7 @@ function notification_read_unread_all() {
         initMenuItemScroll();
         initFullScreen();
         initHoriMenuActive();
-       // initRightSidebar();
+        // initRightSidebar();
         initDropdownMenu();
         initComponents();
         initSettings();
@@ -448,3 +447,31 @@ function generateLeadForm(col, orderId = "", camp_id = "") {
 
     return formHTML;
 }
+
+
+
+var offcanvasright = document.getElementById('offcanvasRight')
+$(".link-subvendor").on('click', function (e) {
+
+    $.ajax({
+        url: 'get-sv',
+        type: 'get',
+        success: function (data) {
+            sv = JSON.parse(data);
+            a = $.map(sv, function (subVendor) {
+
+                card2 = '<div class="card">' +
+                    '<div class="card-body">' +
+                    '<p><b> Sub Vendor Name  : </b> <span>' + subVendor.firstname + ' ' + subVendor.lastname + '</span> </p>' +
+                    '<p><b> Orders   : </b> <a href="'  +subVendor.firstname+  '/order-index/'+subVendor.id+ '">' + subVendor.id + '</a> </p>' +
+                    '</div>' +
+                    '</div>';
+                return card2;
+            });
+            $("#sv_details").html(a);
+        }
+    });
+    var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasright);
+    bsOffcanvas2.show();
+});
+
