@@ -96,15 +96,17 @@
                                         <li class="nav-item">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#about" role="tab">
                                                 <i class="uil uil-user-circle font-size-20"></i>
-                                                <span class="d-none d-sm-block">Orders</span> 
+                                                <span class="d-none d-sm-block">Personalization</span> 
                                             </a>
                                         </li>
+                                        <?php if(is_vendor() || is_admin()){ ?>
                                          <li class="nav-item">
                                             <a class="nav-link" data-bs-toggle="tab" href="#tasks" role="tab">
                                                 <i class="uil uil-clipboard-notes font-size-20"></i>
-                                                <span class="d-none d-sm-block">Clients</span> 
+                                                <span class="d-none d-sm-block">Appearance</span> 
                                             </a>
                                         </li>
+                                    <?php } ?>
                                        <!-- <li class="nav-item">
                                             <a class="nav-link" data-bs-toggle="tab" href="#messages" role="tab">
                                                 <i class="uil uil-envelope-alt font-size-20"></i>
@@ -112,146 +114,66 @@
                                             </a>
                                         </li> -->
                                     </ul>
-                                    <!-- Tab content -->
-                                <div class="tab-content p-4">
-                                    <div class="tab-pane active" id="about" role="tabpanel">
-                                            <div>
-                                                <div>
-                                                    <h5 class="font-size-16 mb-4">Orders</h5>
+    <!-- Tab content -->
+    <div class="tab-content p-4">
+        <div class="tab-pane active" id="about" role="tabpanel">
+        <div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h5 class="font-size-18 mb-3">Update Personal information</h5><br>
+                    <form action="<?php echo base_url("editUser/").$duser[0]['id'];?>" method="post" class="custom-validation" id="registeruserform" accept-charset="utf-8" enctype="multipart/form-data">
+                    <div class="row">
+                       <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-email-input">First Name *</label>
+                            <input type="text" name="firstname" class="form-control rform" required="" id="fname" value="<?= $duser[0]['firstname']?>">
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-email-input">Last Name *</label>
+                            <input type="text" name="lastname" class="form-control rform" required="" id="lname" value="<?= $duser[0]['lastname']?>">
+                        </div>
+                                                
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-phone-input">Phone</label>
+                            <input type="text" name="phone" value="<?= $duser[0]['phone']?>" class="form-control" id="phone">
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-address-input">Address</label>
+                             <input type="text" name="address" value="<?= $duser[0]['address']?>" class="form-control"  id="address">
+                        </div>
 
-                                                    <div class="table-responsive">
-                                                     S   <table class="table table-nowrap table-hover mb-0">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th scope="col">#</th>
-                                                                    <th scope="col">Projects</th>
-                                                                    <th scope="col">Date</th>
-                                                                    <th scope="col">Status</th>
-                                                                    <th scope="col" style="width: 120px;">Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th scope="row">01</th>
-                                                                    <td><a href="#" class="text-reset ">Brand Logo Design</a></td>
-                                                                    <td>
-                                                                        18 Jun, 2020
-                                                                    </td>
-                                                                    <td>
-                                                                        <span class="badge bg-primary-subtle text-primary font-size-12">Open</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="dropdown">
-                                                                            <a class="text-muted dropdown-toggle font-size-18 px-2" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true">
-                                                                                <i class="uil uil-ellipsis-v"></i>
-                                                                            </a>
-                                                                        
-                                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                                <a class="dropdown-item" href="#">Action</a>
-                                                                                <a class="dropdown-item" href="#">Another action</a>
-                                                                                <a class="dropdown-item" href="#">Something else here</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th scope="row">02</th>
-                                                                    <td><a href="#" class="text-reset ">Minible Admin</a></td>
-                                                                    <td>
-                                                                        06 Jun, 2020
-                                                                    </td>
-                                                                    <td>
-                                                                        <span class="badge bg-primary-subtle text-primary font-size-12">Open</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="dropdown">
-                                                                            <a class="text-muted dropdown-toggle font-size-18 px-2" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true">
-                                                                                <i class="uil uil-ellipsis-v"></i>
-                                                                            </a>
-                                                                        
-                                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                                <a class="dropdown-item" href="#">Action</a>
-                                                                                <a class="dropdown-item" href="#">Another action</a>
-                                                                                <a class="dropdown-item" href="#">Something else here</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th scope="row">03</th>
-                                                                    <td><a href="#" class="text-reset ">Chat app Design</a></td>
-                                                                    <td>
-                                                                        28 May, 2020
-                                                                    </td>
-                                                                    <td>
-                                                                        <span class="badge bg-success-subtle text-success font-size-12">Complete</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="dropdown">
-                                                                            <a class="text-muted dropdown-toggle font-size-18 px-2" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true">
-                                                                                <i class="uil uil-ellipsis-v"></i>
-                                                                            </a>
-                                                                        
-                                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                                <a class="dropdown-item" href="#">Action</a>
-                                                                                <a class="dropdown-item" href="#">Another action</a>
-                                                                                <a class="dropdown-item" href="#">Something else here</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th scope="row">04</th>
-                                                                    <td><a href="#" class="text-reset ">Minible Landing</a></td>
-                                                                    <td>
-                                                                        13 May, 2020
-                                                                    </td>
-                                                                    <td>
-                                                                        <span class="badge bg-success-subtle text-success font-size-12">Complete</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="dropdown">
-                                                                            <a class="text-muted dropdown-toggle font-size-18 px-2" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true">
-                                                                                <i class="uil uil-ellipsis-v"></i>
-                                                                            </a>
-                                                                        
-                                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                                <a class="dropdown-item" href="#">Action</a>
-                                                                                <a class="dropdown-item" href="#">Another action</a>
-                                                                                <a class="dropdown-item" href="#">Something else here</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th scope="row">05</th>
-                                                                    <td><a href="#" class="text-reset ">Authentication Pages</a></td>
-                                                                    <td>
-                                                                        06 May, 2020
-                                                                    </td>
-                                                                    <td>
-                                                                        <span class="badge bg-success-subtle text-success font-size-12">Complete</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="dropdown">
-                                                                            <a class="text-muted dropdown-toggle font-size-18 px-2" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true">
-                                                                                <i class="uil uil-ellipsis-v"></i>
-                                                                            </a>
-                                                                        
-                                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                                <a class="dropdown-item" href="#">Action</a>
-                                                                                <a class="dropdown-item" href="#">Another action</a>
-                                                                                <a class="dropdown-item" href="#">Something else here</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-website-input">Website</label>
+                             <input type="text" name="website"value="<?= $duser[0]['website']?>" class="form-control"  id="website">
+                        </div>
+
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-website-input">Coverage Area</label>
+                             <input type="text" name="coverage" value="<?= $duser[0]['coverage']?>" class="form-control"  id="coverage">
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="form-label" for="formrow-website-input">Linkedin Profile</label>
+                             <input type="text" name="linkedin" value="<?= $duser[0]['linkedin']?>" class="form-control"  id="linkedin">
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                        <label class="form-label" for="formrow-email-input">Display Picture</label>
+                        <input type="file" class="form-control" name="agentpicture"><br>
+                        <img class="rounded" src="<?=base_url('uploads/users/').$duser[0]['useruimage'] ?>" height="50">
+                        </div>
+                        <div class="col-sm-12 mb-3">
+                        <label class="form-label" for="formrow-email-input">Change Password *</label>
+                         <input type="password" name="password" class="form-control" placeholder="Password" minlength="6" id="password" >
+                        </div>
+                    <div class="d-flex flex-wrap gap-3">
+                    <button type="submit" class="btn btn-primary waves-effect waves-light w-md" id="registeruserbtn">
+                        Update
+                    </button>
+                </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
                                         <div class="tab-pane" id="tasks" role="tabpanel">
                                             <div>
                                                 <h5 class="font-size-16 mb-3">Active</h5>

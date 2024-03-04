@@ -109,8 +109,8 @@ class Auth extends BaseController
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Profile']),
             'page_title' => view('partials/page-title', ['title' => 'Profile', 'pagetitle' => 'Home'])
-
         ];
+        $data['duser'] = $this->auth_model->where('id',get_user_id())->findAll();
         $data['session'] = $session;
         return view('user-profile',$data);
     }
