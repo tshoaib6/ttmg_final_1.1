@@ -460,12 +460,11 @@
                             </li>
                         <?php } ?>
 
-                        <?php if (count(has_subvendors()) > 0) { ?>
+                        <?php if (count(has_subvendors()) > 0 && !is_admin()) { ?>
                             <li class="nav-item dropdown">
                                 <button class="nav-link  arrow-none link-subvendor" href="#" id="topnav-pages link-subvendor" role="button">
                                     <i class="uil-user me-2"></i>Sub Vendors <div class=""></div>
                                 </button>
-                                <!--  -->
                             </li>
                         <?php } ?>
 
@@ -508,7 +507,10 @@
                                 <i class="uil-user me-2"></i>Leads <div class="arrow-down"></div>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                                <a href="<?= base_url('lead-index') ?>" class="dropdown-item">All Leads</a>
+                            <?php if(is_admin()){ ?>
+                            <a href="<?= base_url('master-lead-index') ?>" class="dropdown-item">Master Leads (Leads Center)</a>
+                            <?php }?>
+                            <a href="<?= base_url('lead-index') ?>" class="dropdown-item">Client Leads</a>
                                 <a href="<?= base_url('add-lead') ?>" class="dropdown-item">Add Lead</a>
                             </div>
                         </li>

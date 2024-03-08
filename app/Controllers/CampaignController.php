@@ -148,8 +148,6 @@ class CampaignController extends BaseController
                 return redirect()->to('create-campaign')->withInput();
             }
         } elseif ($id != "") {
-
-
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Campaign']),
                 'page_title' => view('partials/page-title', ['title' => 'Edit Campaign', 'pagetitle' => 'TTMG']),
@@ -173,7 +171,7 @@ class CampaignController extends BaseController
 
         $result = $this->campaign_model->deleteCampaign($id);
         log_activity("Campaign Deleted" . json_encode($result), get_user_id());
-        redirect()->to('campaign-index');
+        return  redirect()->to('campaign-index');
     }
 
     public function campaign_detail($id)

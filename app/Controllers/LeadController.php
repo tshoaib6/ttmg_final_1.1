@@ -62,6 +62,20 @@ class LeadController extends BaseController
         return view('leads_management/index', $data);
     }
 
+    public function master_index()
+    {
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'Master Leads (Leads Center)']),
+            'page_title' => view('partials/page-title', ['title' => 'Master Leads (Leads Center)', 'pagetitle' => 'TTMG']),
+        ];
+        $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
+        $client = get_client();
+        $data['order'] = $orders;
+        $data['client'] = $client;
+
+        return view('leads_management/master-lead-index', $data);
+    }
+
     public function add_lead($id = "")
     {
         if ($this->request->getMethod() === 'post') {
@@ -103,8 +117,7 @@ class LeadController extends BaseController
     public function ajax_Datatable_leads($id = "")
     {
         $db = db_connect();
-
-        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
         if ($id != 0) {
             $builder->where('order_id', $id);
         }
@@ -132,9 +145,7 @@ class LeadController extends BaseController
                     return '<span class="badge bg-success">Approved</span>';
                 }
 
-            })->add('CHe', function ($row) {
-                return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
-            }, 'last')->hide('status')->hide('order_id')
+            })->hide('status')->hide('order_id')
             ->filter(function ($builder, $request) {
 
                 if ($request->state) {
@@ -145,6 +156,57 @@ class LeadController extends BaseController
                 }
                 if ($request->lead_status == 'un') {
                     $builder->where('order_id', 0);
+                }
+                if ($request->client) {
+                    $builder->where('client_id', $request->client);
+                }
+
+
+            })
+
+            ->toJson();
+
+
+        return $data;
+
+    }
+
+    public function ajax_Datatable_master_leads($id = "")
+    {
+        $db = db_connect();
+        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
+        if ($id != 0) {
+            $builder->where('order_id', $id);
+        }
+        if (is_vendor()) {
+            $builder->where('vendor_id', get_user_id());
+        } else if (is_client()) {
+            $builder->where('client_id', get_user_id());
+        }
+
+        $data = DataTable::of($builder)
+            ->edit('lead_id', function ($row) {
+                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
+                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
+                    <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
+            })
+
+
+        ->add('CHe', function ($row) {
+                return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
+            }, 'last')->hide('status')->hide('order_id')
+            ->filter(function ($builder, $request) {
+
+                if ($request->state) {
+                    $builder->where('state', $request->state);
+                }
+                if ($request->lead_status == '0') {
+                }
+                if ($request->lead_status == '1') {
+                    $builder->where('assigned', 0);
+                }
+                if ($request->lead_status == '2') {
+                    $builder->where('assigned',1);
                 }
                 if ($request->client) {
                     $builder->where('client_id', $request->client);
@@ -355,30 +417,29 @@ class LeadController extends BaseController
         $orderId = $this->request->getPost('order_id');
         $order=$this->order_model->find($orderId);
         $leadIds=explode(",",$leadIds);
-        $order= $this->order_model->find($orderId);
         $leads_to_assign=[];
+        $duplicate=[];
+
         foreach ($leadIds as $id) {
             $lead=$this->lead_master_model->find($id);
-            $assigned_lead=$this->lead_model->where('phone_number',$lead['phone_number'])->where('client_id',$order['fkclientid'])->where('camp_id',$order['categoryname'])->get()->getResult();
-           
-            if(count($assigned_lead)>0 || $order['remainingLeads']==0){
-                if($order['remainingLeads']==0){
-                    $lead['duplicate']="3";
-                }else{
-                    $lead['duplicate']="1";
-                }
+            $lead_check=$this->lead_model->where('phone_number',$lead['phone_number'])->where('client_id',$order['fkclientid'])->where('camp_id',$order['categoryname'])->first();
+          
+            $lead['order_id']=$orderId;
+            $lead['client_id']=$order['fkclientid'];
+            $lead['vendor_id']=$order['fkvendorstaffid'];
+
+            if(!$lead_check){
             array_push($leads_to_assign,$lead);
+            unset($lead['rejected_lead']);
+
+            $id=$this->lead_model->insert($lead);
+            $this->lead_master_model->update($id,['assigned'=>1]);
+            $this->order_model->update_order(1, $orderId);
             }
             else{
-                $lead['order_id']=$orderId;
-                $lead['client_id']=$order['fkclientid'];
-                $lead['vendor_id']=$order['fkvendorstaffid'];
-                unset($lead['rejected_lead']);
-                $id=$this->lead_model->insert($lead);
-                $this->order_model->update_order(1, $orderId);
-                $lead['duplicate']=0;
-                array_push($leads_to_assign,$lead);
+                array_push($duplicate,$lead);
             }
+
         }
 
         
@@ -386,9 +447,9 @@ class LeadController extends BaseController
             'title_meta' => view('partials/title-meta', ['title' => 'Assigned Leads']),
             'page_title' => view('partials/page-title', ['title' => 'Assigned Leads', 'pagetitle' => 'TTMG']),
         ];
-        $data['leads']=$leads_to_assign;
-
-        return view('leads_management/assigned_leads',$data);
+        $data['post_data']=$leads_to_assign;
+        $data['duplicate']=$duplicate;
+        return view('leads_management/bulk_lead_added_view',$data);
     }
 
     public function test_mail(){

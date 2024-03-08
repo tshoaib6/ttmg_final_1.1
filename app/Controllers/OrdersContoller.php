@@ -9,6 +9,8 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\Campaign;
 use App\Models\Order;
 use App\Models\Lead;
+use App\Models\Auth as Auth_Model;
+
 
 
 use \Hermawan\DataTables\DataTable;
@@ -24,6 +26,7 @@ class OrdersContoller extends BaseController
     protected $lead_model;
     protected $lead_master_model;
 
+    protected $auth_model;
 
 
 
@@ -34,24 +37,28 @@ class OrdersContoller extends BaseController
         $this->order_model = new Order;
         $this->lead_model = new Lead;
         $this->lead_master_model = new LeadMaster;
+        $this->auth_model = new Auth_Model;
+
 
     }
 
-    public function index($vend_id="")
+    public function index($vend_id = "")
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
             'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
         ];
+        $data['clients'] = $this->auth_model->select('id,firstname,lastname')->where('userrole',3)->findAll();
+        $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole',2)->findAll();
         return view('orders_management/index', $data);
     }
-    public function sub_vendor_index($sub_ven="",$sv_id)
+    public function sub_vendor_index($sub_ven = "", $sv_id)
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
             'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
         ];
-        $data['sv_id']=$sv_id;
+        $data['sv_id'] = $sv_id;
         return view('orders_management/sub_vendor_index', $data);
     }
     public function ajax_sv_datatables_orders($id = "")
@@ -182,6 +189,7 @@ class OrdersContoller extends BaseController
                 // 'fblink' => $this->request->getPost('fblink'),
                 'notes' => $this->request->getPost('notes'),
                 'orderdate' => $this->request->getPost('orderdate'),
+                'status' => "1"
             ];
             $insert_id = $this->order_model->insert($data);
             $notification_data = [
@@ -259,41 +267,47 @@ class OrdersContoller extends BaseController
         echo json_encode($camp);
     }
 
-    public function get_orders_api(){
+    public function get_orders_api()
+    {
         helper('text');
-       $order= $this->order_model->select('id,agent_name')->findAll();
-        $token=random_string('alnum','40');
-        update_option("token",$token);
-       $data=array(
-        "camp" => $order,
-        'token' => $token
-       );
+        $order = $this->order_model->select('id,agent_name')->findAll();
+        $token = random_string('alnum', '40');
+        update_option("token", $token);
+        $data = array(
+            "camp" => $order,
+            'token' => $token
+        );
         echo json_encode($data);
     }
 
 
     public function lead_add()
     {
+      
         $data = $this->request->getPost();
 
 
         if ($data['order_id'] != "") {
             $order_detail = $this->order_model->select('fkclientid,fkvendorstaffid,categoryname')->find($data['order_id']);
-            $post_data = [
-                "phone_number" => $data['phone_number'],
-                "agent_name" => $data['agent_name'],
-                "firstname" => $data['first_name'],
-                "lastname" => $data['last_name'],
-                "state" => $data['state'],
-                "complete_lead" => json_encode($data),
-                "order_id" => $data['order_id'],
-                "status" => 3,
-                "camp_id" => $order_detail['categoryname'],
-                "vendor_id" => $order_detail['fkvendorstaffid'],
-                "client_id" => $order_detail['fkclientid'],
-                "master_search" => json_encode($data),
-            ];
-
+            $lead_check = $this->lead_model->where('phone_number', $data['phone_number'])->where('client_id', $order_detail['fkclientid'])->where('camp_id', $order_detail['categoryname'])->first();
+            
+                $post_data = [
+                    "phone_number" => $data['phone_number'],
+                    "agent_name" => $data['agent_name'],
+                    "firstname" => $data['first_name'],
+                    "lastname" => $data['last_name'],
+                    "state" => $data['state'],
+                    "complete_lead" => json_encode($data),
+                    "order_id" => $data['order_id'],
+                    "status" => 3,
+                    "camp_id" => $order_detail['categoryname'],
+                    "vendor_id" => $order_detail['fkvendorstaffid'],
+                    "client_id" => $order_detail['fkclientid'],
+                    "master_search" => json_encode($data),
+                    "lead_date" => $data['date'],
+                    "assigned" => 1
+                ];
+            
         } else {
             $post_data = [
                 "phone_number" => $data['phone_number'],
@@ -308,13 +322,20 @@ class OrdersContoller extends BaseController
                 "vendor_id" => "",
                 "client_id" => "",
                 "master_search" => json_encode($data),
+                "lead_date" => $data['date'],
+
             ];
         }
-
-
         $insert_id = $this->lead_master_model->insert($post_data);
 
+        
+
         if ($data['order_id'] != "") {
+            if ($lead_check) {
+                $session = session();
+                $session->setFlashdata('error', 'Duplicate Lead Detected.');
+                return redirect()->to('order-index')->withInput();
+            }
             $this->lead_model->insert($post_data);
             $remaining = $this->order_model->update_order(1, $data['order_id']);
             if ($remaining == 0 || $remaining < 0) {
@@ -338,16 +359,16 @@ class OrdersContoller extends BaseController
 
             add_notification($notification_data);
 
-            if(email_allowed('vendorleads')){
+            if (email_allowed('vendorleads')) {
                 send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
             }
-            if(email_allowed('clientleads')){
-              send_email(get_email_by_user_id($post_data['client_id']), "Add Lead",$post_data['vendor_id']);
+            if (email_allowed('clientleads')) {
+                send_email(get_email_by_user_id($post_data['client_id']), "Add Lead", $post_data['vendor_id']);
             }
-            if(email_allowed('adminleads')){
+            if (email_allowed('adminleads')) {
                 send_email("tshoaib10@gmail.com", "Add Lead");
             }
-            
+
             $notification_data = [
                 'description' => '1 Lead Added to Order',
                 'to_user_id' => $order_detail['fkvendorstaffid'],
@@ -361,8 +382,13 @@ class OrdersContoller extends BaseController
         }
 
         $session = session();
-        $session->setFlashdata('success', 'Lead Added sucessfully.');
-        return redirect()->to('lead-index')->withInput();
+        $session->setFlashdata('success', 'Lead Added Sucessfully.');
+        if($data['order_id'] == ""){
+            return redirect()->to('master-lead-index')->withInput();
+        }else
+        {
+            return redirect()->to('order-index')->withInput();
+        }
     }
 
 
@@ -371,7 +397,6 @@ class OrdersContoller extends BaseController
         $id = $this->request->getPost('orderId');
         $camp_col = $this->order_model->get_campain_col_by_order_id($id);
         echo json_encode($camp_col);
-
     }
     public function upload_lead()
     {
@@ -429,6 +454,11 @@ class OrdersContoller extends BaseController
     }
     public function importLeads()
     {
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
+            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
+        ];
+
         $session = session();
         $o_id = $this->request->getPost('cid');
         $camp_id = $this->request->getPost('camp_id');
@@ -455,10 +485,11 @@ class OrdersContoller extends BaseController
         }
 
         $post_data = array();
+        $duplicate= array();
         if ($o_id != "") {
             foreach ($leads as $l) {
+                $lead_check = $this->lead_model->where('phone_number', $l['phone_number'])->where('client_id', $order_detail['fkclientid'])->where('camp_id', $camp_id)->first();
                 $temp_post_data = [
-                    
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
                     "firstname" => $l['first_name'],
@@ -471,9 +502,17 @@ class OrdersContoller extends BaseController
                     "client_id" => $order_detail['fkclientid'],
                     "status" => 3,
                     "master_search" => json_encode($l),
-                ];
+                    "assigned"=>1,
+                    "lead_date" => $l['date'],
 
-                array_push($post_data, $temp_post_data);
+
+                ];
+                if(!$lead_check){
+                    array_push($post_data, $temp_post_data);
+                }
+                else{
+                    array_push($duplicate, $temp_post_data);
+                }
             }
         } else {
             foreach ($leads as $l) {
@@ -484,42 +523,40 @@ class OrdersContoller extends BaseController
                     "lastname" => $l['last_name'],
                     "state" => $l['state'],
                     "complete_lead" => json_encode($l),
-                    "order_id" => $o_id,
+                    "order_id" => "",
                     "camp_id" => $camp_id,
                     "vendor_id" => "",
                     "client_id" => "",
                     "status" => 3,
                     "master_search" => json_encode($l),
-                ];
+                    "lead_date" => $l['date'],
 
+                ];
                 array_push($post_data, $temp_post_data);
             }
         }
 
-
-
-        $this->lead_master_model->insertBatch($post_data);
-
-
-
-
+        $data['post_data']=$post_data;
+        $data['duplicate']=$duplicate;
+            $this->lead_master_model->insertBatch(array_merge($post_data,$duplicate));
         if ($o_id != "") {
+            if($post_data){
 
-
-            $this->lead_model->insertBatch($post_data);
+                $this->lead_model->insertBatch($post_data);
+            }
             $this->order_model->update_order(count($post_data), $o_id);
             $notification_data = [
                 'description' => count($post_data) . 'Lead Added to Order',
                 'to_user_id' => $order_detail['fkclientid'],
                 'link' => base_url() . "order-detail/" . $o_id,
             ];
-
             add_notification($notification_data);
             if (!is_vendor()) {
                 send_email(get_email_by_user_id($temp_post_data['vendor_id']), "Add Lead");
             }
 
             send_email(get_email_by_user_id($temp_post_data['client_id']), "Add Lead");
+
             log_activity("Leads Added " . count($post_data), get_user_fullname());
             $notification_data = [
                 'description' => count($post_data) . ' Lead Added to Order',
@@ -527,15 +564,16 @@ class OrdersContoller extends BaseController
                 'link' => base_url() . "order-detail/" . $o_id,
             ];
             add_notification($notification_data);
-            return redirect()->to('order-index');
+            $session = session();
+            $session->setFlashdata('success', 'Leads Added.');
+            return view('leads_management/bulk_lead_added_view',$data);
         } else {
             log_activity("Leads Added " . count($post_data), get_user_fullname());
-
         }
 
-        return redirect()->to('lead-index');
-
-
+        $session = session();
+        $session->setFlashdata('success', 'Leads Added.');
+        return view('leads_management/bulk_lead_added_view',$data);
     }
 
     public function order_detail($id)

@@ -35,19 +35,17 @@
     <!-- Start right Content here -->
     <!-- ============================================================== -->
 
-    
+
     <div class="main-content">
 
         <div class="page-content">
             <div class="container-fluid">
 
                 <?php echo $page_title ?>
+             
 
                 <div class="row">
-                    <?= $this->include('partials/add-alert') ?>
                     <?= $this->include('orders_management/order-table') ?>
-
-
                 </div>
 
             </div> <!-- container-fluid -->
@@ -124,10 +122,10 @@
             $.ajax({
                 url: '<?php echo site_url('block-order') ?>',
                 type: 'POST',
-                data: { orderId:  id},
+                data: { orderId: id },
                 success: function (response) {
-                console.log(response);
-                $('#table').DataTable().ajax.reload();
+                    console.log(response);
+                    $('#table').DataTable().ajax.reload();
 
                 },
                 error: function (error) {
@@ -139,15 +137,15 @@
         }
     }
 
-    function unblockOrder(id="") {
+    function unblockOrder(id = "") {
         if (confirm("Do you want to Unblock the Order ?") == true) {
             $.ajax({
                 url: '<?php echo site_url('unblock-order') ?>',
                 type: 'POST',
-                data: { orderId:  id},
+                data: { orderId: id },
                 success: function (response) {
-                console.log(response);
-                $('#table').DataTable().ajax.reload();
+                    console.log(response);
+                    $('#table').DataTable().ajax.reload();
 
                 },
                 error: function (error) {
@@ -160,7 +158,6 @@
     }
 
     function addLeadToOrder(orderId) {
-
         $.ajax({
             url: '<?php echo site_url('lead-form-ajax') ?>',
             type: 'GET',
@@ -178,8 +175,6 @@
         });
         var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasLeadForm);
         bsOffcanvas2.show();
-
-
     }
 
     function downloadSample(orderId) {
@@ -215,6 +210,14 @@
 
     $(document).ready(function () {
 
+        <?php if(session()->getFlashdata('error')): ?>
+            toastr.error('Error!', '<?= session()->getFlashdata('error') ?>')
+        <?php endif; ?>
+        <?php if(session()->getFlashdata('success')): ?>
+            toastr.success('Success!', '<?= session()->getFlashdata('success') ?>')
+        <?php endif; ?>
+
+
         var table = $('#table').DataTable({
             processing: true,
             serverSide: true,
@@ -232,23 +235,6 @@
 
         });
 
-
-        var offcanvasright = document.getElementById('offcanvasRight')
-        table.on('click', 'tr:not(:first)', function (e) {
-            if ($(e.target).is($(this).find('td:last')) || $(e.target).is($(this).find('i')) || $(e.target).is($(this).find('button'))) {
-                return;
-            }
-            var uid = $(this).attr('id');
-            $.ajax({
-                url: '<?= base_url() ?>/getuserid/' + uid,
-                type: 'get',
-                success: function (data) {
-                    $("#userDetails").html(data);
-                }
-            });
-            var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasright);
-            bsOffcanvas2.show();
-        });
 
     });
 </script>

@@ -3,18 +3,16 @@
         console.log("Test Campain JS")
 
         var columns = [
-            { col_name: 'Agent Name', col_slug: 'agent_name', col_type: 'text', col_default: 'DefaultAgent' },
-            { col_name: 'First Name', col_slug: 'first_name', col_type: 'text', col_default: 'DefaultFirst' },
-            { col_name: 'Last Name', col_slug: 'last_name', col_type: 'text', col_default: 'DefaultLast' },
-            { col_name: 'Phone Number', col_slug: 'phone_number', col_type: 'text', col_default: 'DefaultPhone' },
-            { col_name: 'Date', col_slug: 'date', col_type: 'date', col_default: 'DefaultDate' },
-            { col_name: 'State', col_slug: 'state', col_type: 'text', col_default: 'DefaulState' }
+            { col_name: 'Agent Name', col_slug: 'agent_name', col_type: 'text', col_default: '' },
+            { col_name: 'First Name', col_slug: 'first_name', col_type: 'text', col_default: '' },
+            { col_name: 'Last Name', col_slug: 'last_name', col_type: 'text', col_default: '' },
+            { col_name: 'Phone Number', col_slug: 'phone_number', col_type: 'text', col_default: '' },
+            { col_name: 'Date', col_slug: 'date', col_type: 'date', col_default: '' },
+            { col_name: 'State', col_slug: 'state', col_type: 'text', col_default: '' }
 
         ];
 
-        // Iterate over each data-repeater-item
         $('.fields-row').each(function (index) {
-            // Get the current row
             var $row = $(this);
             var columnData = columns[index];
             $row.find('.col_name').val(columnData.col_name);
@@ -64,35 +62,34 @@
                                                 </div>
                                             </div>
                                         </div>`);
-            console.log("Addded");
         });
 
-        $(".delete").click(function () {
-        $(this).closest('.fields-row').remove();
+        $(document).on("click",".delete",function () {
+          $(this).closest('.fields-row').remove();
         });
 
 
 
         <?php if (isset($camp)) { ?>
-            console.log("Fired Up")
+            console.log("Fired Up Shoaib")
             camp_data = <?= json_encode($camp); ?>;
-            console.log("Camp Data", camp_data);
 
             var campaignColumnsData = JSON.parse(camp_data.campaign_columns);
-            template = $('[data-repeater-item]').first();
-            $('[data-repeater-item]').remove();
+            console.log("Camp Data", campaignColumnsData);
+
+            template = $('.fields-row').first();
+            console.log("Hey", template);
+            $('.fields-row').remove();
             // Iterate through the data and populate the fields
             $.each(campaignColumnsData, function (index, item) {
                 var newItem = template.clone(); // Clone the first repeater item
-
-                // Populate the cloned item with data
                 newItem.find('.col_name').val(item.col_name);
                 newItem.find('.col_slug').val(item.col_slug);
                 newItem.find('.col_type').val(item.col_type);
                 newItem.find('.col_default').val(item.col_default);
 
                 // Append the cloned item to the repeater list
-                $('[data-repeater-list="group-a"]').append(newItem);
+                $('.repeater-fields').append(newItem);
             });
         <?php } ?>
 

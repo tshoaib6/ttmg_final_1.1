@@ -73,6 +73,12 @@ class Leads extends Migration
             'vendor_id' => [
                 'type' => 'INT',
             ],
+            'lead_date' => [
+                'type' => 'DATE',
+            ],
+            'created_at' => [
+                'type' => 'DATETIME',
+            ],
             
         ]);
 

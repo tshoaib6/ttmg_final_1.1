@@ -29,7 +29,7 @@ class Database extends Config
         'hostname'     => 'localhost',
         'username'     => 'root',
         'password'     => '',
-        'database'     => 'ttmg_merged',
+        'database'     => 'ttmg_new',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => 'ttmg_',
         'pConnect'     => false,

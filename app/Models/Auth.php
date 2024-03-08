@@ -12,7 +12,7 @@ class Auth extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['firstname','lastname','email','password','phone','address','website','coverage','linkedin','useruimage','vendor','userrole','smtpemail','smtppassword','smtpincomingserver','smtpoutgoingserver','smtpport','branchname','branchslug','branchcountry','branchaddress','brancheader','branchnavbar','branchnavtext','branchnavhover','branchlogo','branchlogoheight','branchlogowidth','block','referred_to','last_login'];
+    protected $allowedFields    = ['firstname','lastname','email','password','phone','address','website','coverage','linkedin','useruimage','vendor','userrole','smtpemail','smtppassword','smtpincomingserver','smtpoutgoingserver','smtpport','branchname','branchslug','branchcountry','branchaddress','brancheader','branchnavbar','branchnavtext','branchnavhover','branchlogo','branchlogoheight','branchlogowidth','block','referred_to','last_login','token'];
 
     // Dates
     protected $useTimestamps = false;

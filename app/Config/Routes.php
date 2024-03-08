@@ -140,6 +140,9 @@ $routes->post('/unblock-order', 'OrdersContoller::unblock_order',['filter' => 'a
 
 //Leads
 $routes->get('/lead-index', 'LeadController::index',['filter' => 'authenticate']);
+$routes->get('/master-lead-index', 'LeadController::master_index',['filter' => 'authenticate']);
+
+
 $routes->get('/add-lead', 'LeadController::add_lead',['filter' => 'authenticate']);
 $routes->get('/add-lead/(:any)', 'LeadController::add_lead/$1',['filter' => 'authenticate']);
 $routes->get('/get-sv', 'Auth::get_subvendors',['filter' => 'authenticate']);
@@ -147,6 +150,9 @@ $routes->get('/get-sv', 'Auth::get_subvendors',['filter' => 'authenticate']);
 
 
 $routes->get('/leads-datatable/(:any)?', 'LeadController::ajax_Datatable_leads/$1',['filter' => 'authenticate']);
+$routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_master_leads/$1',['filter' => 'authenticate']);
+
+
 $routes->get('/getleaddetail/(:any)', 'LeadController::get_lead_detail/$1',['filter' => 'authenticate']);
 $routes->post('/reject-lead', 'LeadController::reject_lead',['filter' => 'authenticate']);
 $routes->post('/accept-lead', 'LeadController::accept_lead',['filter' => 'authenticate']);
@@ -287,6 +293,8 @@ $routes->get('get-campaigns-types', 'CampaignController::get_campaign_api');
 $routes->get('get-orders', 'OrderController::get_orders_api');
 $routes->post('test-api', 'LeadController::sync_lead_api');
 $routes->get('test-email', 'LeadController::test_mail');
+$routes->post('login-api', 'Auth::sync_lead_api');
+
 
 
 

@@ -11,9 +11,8 @@
                         <th>Last Name</th>
                         <th>State</th>
                         <th>Phone Number</th>
-                        <th> Reason </th>
-                        <th>Options</th>
                         <th>Action </th>
+                        <th> Check </th>
                     </tr>
                 </thead>
                 <tbody></tbody>
