@@ -411,7 +411,7 @@ class LeadController extends BaseController
 
     }
 
-    public function assign_lead()
+    public function  assign_lead()
     {
         $leadIds = $this->request->getPost('leadId');
         $orderId = $this->request->getPost('order_id');
@@ -440,9 +440,7 @@ class LeadController extends BaseController
                 array_push($duplicate,$lead);
             }
 
-        }
-
-        
+        }       
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Assigned Leads']),
             'page_title' => view('partials/page-title', ['title' => 'Assigned Leads', 'pagetitle' => 'TTMG']),
@@ -451,9 +449,7 @@ class LeadController extends BaseController
         $data['duplicate']=$duplicate;
         return view('leads_management/bulk_lead_added_view',$data);
     }
-
     public function test_mail(){
-        
         // $response =send_email("tshoaib10@gmail.com","Add Lead");
         $a= has_subvendors();
         var_dump($a);

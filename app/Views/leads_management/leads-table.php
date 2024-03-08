@@ -4,7 +4,6 @@
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-
                         <th>Check </th>
                         <th>Agent Name</th>
                         <th>First Name</th>
@@ -18,7 +17,6 @@
                 </thead>
                 <tbody></tbody>
             </table>
-
         </div>
     </div>
 </div>
