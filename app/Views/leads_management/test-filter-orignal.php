@@ -176,22 +176,21 @@
                 </button>
             </div>
             <div class="modal-body">
-
-                <div id="query-container">
-
-                    <div class="query-row row">
-
-                        <select hidden="" name="condition[]">
-                            <option value="and">and</option>
-                        </select>
-
-                        <div class="row">
-                            <div class="col-md-2 d-flex jusitify-content-end">
-                                <label>WHERE </label>
-                            </div>
+                <form id="filterform">
+                    <div id="datahere">
 
 
-                            <div class="col-md-3">
+                        <span class="row">
+                            <input type="hidden" name="filterActive" value="0 " type="text">
+
+                            <span class="col-sm-1"></span>
+                            <span class="col-sm-1">
+                                <label class="" style="font-weight: 480;font-size: 14px;margin-top: 10px;" style="">Where</label>
+                            </span>
+                            <select hidden="" name="condition[]">
+                                <option value="and">and</option>
+                            </select>
+                            <span class="pl- col-sm-3">
                                 <select class="form-control" name="column[]" id="column" onchange="searchKeyChange(this)">
                                     <option value="agent_name">Agent</option>
                                     <option value="name">Name </option>
@@ -199,8 +198,9 @@
                                     <option value="address">Address</option>
                                     <option value="state">State</option>
                                 </select>
-                            </div>
-                            <div class="col-md-3">
+                            </span>
+
+                            <span class=" col-sm-3">
                                 <select class="form-control" name="operator[]" style="width: 170px;font-size: 14px;display: inline;" id="operator">
                                     <option value="is">is</option>
                                     <option value="is not">is not</option>
@@ -210,38 +210,32 @@
                                     <option value="is not blank">is not blank</option>
 
                                 </select>
-                            </div>
-                            <div class="col-md-3 value-div">
-                                <select class="form-control" name="value[]" class="search" style="width: 170px;font-size: 14px;display: inline-block;">
+                            </span>
+                            <span class=" col-sm-3" id="searchdiv">
+                                <select class="form-control" name="value[]" id="search" style="width: 170px;font-size: 14px;display: inline-block;">
 
                                 </select>
-                            </div>
-                        </div>
-
+                            </span>
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-primary ml-5 mt-4" onclick="addRow()"><i class="fa fa-plus-circle"></i> Add filter</button>
+                    <div class="form-group">
+                        <span class="col-sm-1">
+                            <label class="" style="font-weight: 480;font-size: 14px;margin-top: 10px;">AND
+                                Category
+                            </label>
+                        </span>
+                        <select class="form-control" name="catid" id="catid">
+                            <option value="0">Select Category</option>
+                            <?php foreach ($camp_name as $cn) { ?>
+                                <option value="<?php echo $cn['id'] ?>"><?php echo $cn['campaign_name'] ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
 
-                </div>
-
-
-                <button type="button" class="btn btn-primary ml-5 mt-4" onclick="addRow()"><i class="fa fa-plus-circle"></i> Add filter</button>
-                <div class="form-group">
-                    <span class="col-sm-1">
-                        <label class="" style="font-weight: 480;font-size: 14px;margin-top: 10px;">AND
-                            Category
-                        </label>
-                    </span>
-                    <select class="form-control" name="catid" id="catid">
-                        <option value="0">Select Category</option>
-                        <?php foreach ($camp_name as $cn) { ?>
-                            <option value="<?php echo $cn['id'] ?>"><?php echo $cn['campaign_name'] ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="filterSubmit()" data-dismiss="modal">Submit</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="filterSubmit()" data-dismiss="modal">Submit</button>
+                    </div>
             </div>
         </div>
     </div>
@@ -301,12 +295,11 @@
         var num = 0;
 
         function addRow() {
-            var orignalRow = $('.query-row').first;
-            var newRow = originalRow.clone();
-            newRow.find('select[name="condition[]"]').addClass('form-control col-md-12').css("width", "30px");
-            // newRow.find('select[name="condition[]"]').removeAttr('hidden').html('');
-            // newRow.find('select[name="condition[]"]').append('<option value="AND"> AND </option> <option value="OR" >OR </option>')
-            // newRow.appendTo('#query-container');
+            var t = '<span id="cloneform' + num + '" class="pt-5"><div class="row"><div class="  col-2"><select class="form-control ml-5 mt-3" name="condition[]"style="width: 70px;font-size: 14px;display: inline;"><option value="AND">and</option><option value="OR">or</option></select></div><div class="col-3 " style="padding-right:unset;"><select class="form-control mt-3" name="column[]" id="column' + num + '" style="width: 170px;font-size: 14px;display: inline;" onchange="searchKeyChange(this,num)"><option value="agent_name">Agent</option><option value="name">Name</option><option value="phone_number">Phone Number</option><option value="address">Address</option><option value="state">State</option></select></div><div class="col-sm-3 " id="operator' + num + '"><select class="form-control mt-3" id="oprtr' + num + '" onchange="operatfunc(this)"  name="operator[]" width="170px"><option value="is">is</option><option value="is not">is not</option><option value="contains">contains</option><option value="does not contain">does not contain</option><option value="is blank">is blank</option><option value="is not blank">is not blank</option></select></div><div class=" col-lg-3 mt-3" id="searchdiv' + num + '"><select class="form-control " id="search' + num + '" name="value[]" ></select></div><div class="col-sm-1 mt-3 " style="padding-left:unset;"><a href="javascript:;" class="text-center " id="' + num + '" onclick="removeRow(this)" style="vertical-align:sub;color: #00396D;"><i class="fa fa-minus-circle"></i></a></div></div></span>';
+            $("#datahere").append(t);
+            $("#search" + num).select2();
+            getAgent(num);
+            num++;
         }
 
         function removeRow(e) {
@@ -317,244 +310,219 @@
         }
 
         function searchKeyChange(e, num = "") {
-            value = $(e).val();
-            console.log("Value is", value);
+
+            console.log("ALL is WLL", num)
+
+            var d = $(e);
+            id = d.prop("id");
+            console.log("id", id)
+            var str = $("#" + id).val();
+            console.log("Str", str);
+            
+            if (str == "agent_name") {
+
+                if (num != "") {
+
+                    $("#searchdiv" + num).html('<select class="form-control " id="search' + num + '" name="value[]"></select>');
+                    $("#search" + num).select2({
+                        placeholder: {
+                            dropdownParent: $("#searchdiv" + num),
+                            id: '-1', // the value of the option
+                            text: 'Type to search'
+                        }
+                    })
+                    $.ajax({
+                        url: '<?= base_url() ?>get-agents/',
+                        dataType: 'json',
+                        success: function(data) {
+                            $("#search" + num).empty();
+
+                            $.each(data, function(i, item) {
+                                $('#search' + num).append($('<option>', {
+                                    value: item.agent_name,
+                                    text: item.agent_name
+                                }));
+                            });
+                            $('#search' + num).trigger('change');
+                        }
+                    });
+
+                } else {
+
+                    $("#searchdiv").html('<select class="form-control " id="search" name="value[]"></select>');
+                    $("#search").select2({
+                        placeholder: {
+                            dropdownParent: $("#searchdiv"),
+                            id: '-1', // the value of the option
+                            text: 'Type to search'
+                        }
+                    })
+                    $.ajax({
+                        url: '<?= base_url() ?>get-agents/',
+                        dataType: 'json',
+                        success: function(data) {
+                            $("#search").empty();
+
+                            $.each(data, function(i, item) {
+                                $('#search').append($('<option>', {
+                                    value: item.agent_name,
+                                    text: item.agent_name
+                                }));
+                            });
+                            $('#search').trigger('change');
+                        }
+                    });
+                }
 
 
-            console.log("Test", $(e).parent().parent().children('.value-div').children())
 
-            if (value == "agent_name") {
-                searchSelector = $(e).parent().parent().children('.value-div').children();
-                searchSelector.select2({
-                    placeholder: {
-                        id: '-1',
-                        text: 'Type to search'
-                    }
-                })
-                $.ajax({
-                    url: '<?= base_url() ?>get-agents/',
-                    dataType: 'json',
-                    success: function(data) {
-                        searchSelector.empty();
-                        $.each(data, function(i, item) {
-                            searchSelector.append($('<option>', {
-                                value: item.agent_name,
-                                text: item.agent_name
-                            }));
-                        });
-                        searchSelector.trigger('change');
-                    }
-                });
+            } else if (str == "state") {
+
+                if (num != "") {
+                    $("#searchdiv" + num).html('<select class="form-control " id="search' + num + '" name="value[]"></select>');
+
+                    $("#search" + num).select2({
+                        placeholder: {
+                            dropdownParent: $("#searchdiv" + num),
+                            id: '-1', // the value of the option
+                            text: 'Type to search'
+                        }
+                    })
+                    const usStates = [
+                        "Alabama",
+                        "Alaska",
+                        "Arizona",
+                        "Arkansas",
+                        "California",
+                        "Colorado",
+                        "Connecticut",
+                        "Delaware",
+                        "Florida",
+                        "Georgia",
+                        "Hawaii",
+                        "Idaho",
+                        "Illinois",
+                        "Indiana",
+                        "Iowa",
+                        "Kansas",
+                        "Kentucky",
+                        "Louisiana",
+                        "Maine",
+                        "Maryland",
+                        "Massachusetts",
+                        "Michigan",
+                        "Minnesota",
+                        "Mississippi",
+                        "Missouri",
+                        "Montana",
+                        "Nebraska",
+                        "Nevada",
+                        "New Hampshire",
+                        "New Jersey",
+                        "New Mexico",
+                        "New York",
+                        "North Carolina",
+                        "North Dakota",
+                        "Ohio",
+                        "Oklahoma",
+                        "Oregon",
+                        "Pennsylvania",
+                        "Rhode Island",
+                        "South Carolina",
+                        "South Dakota",
+                        "Tennessee",
+                        "Texas",
+                        "Utah",
+                        "Vermont",
+                        "Virginia",
+                        "Washington",
+                        "West Virginia",
+                        "Wisconsin",
+                        "Wyoming"
+                    ];
+                    usStates.forEach(state => {
+                        $('#search' + num).append($('<option>', {
+                            value: state,
+                            text: state
+                        }));
+
+                    });
+
+                } else {
+                    $("#searchdiv").html('<select class="form-control " id="search" name="value[]"></select>');
+
+                    $("#search").select2({
+                        placeholder: {
+                            dropdownParent: $("#searchdiv"),
+                            id: '-1', // the value of the option
+                            text: 'Type to search'
+                        }
+                    })
+                    const usStates = [
+                        "Alabama",
+                        "Alaska",
+                        "Arizona",
+                        "Arkansas",
+                        "California",
+                        "Colorado",
+                        "Connecticut",
+                        "Delaware",
+                        "Florida",
+                        "Georgia",
+                        "Hawaii",
+                        "Idaho",
+                        "Illinois",
+                        "Indiana",
+                        "Iowa",
+                        "Kansas",
+                        "Kentucky",
+                        "Louisiana",
+                        "Maine",
+                        "Maryland",
+                        "Massachusetts",
+                        "Michigan",
+                        "Minnesota",
+                        "Mississippi",
+                        "Missouri",
+                        "Montana",
+                        "Nebraska",
+                        "Nevada",
+                        "New Hampshire",
+                        "New Jersey",
+                        "New Mexico",
+                        "New York",
+                        "North Carolina",
+                        "North Dakota",
+                        "Ohio",
+                        "Oklahoma",
+                        "Oregon",
+                        "Pennsylvania",
+                        "Rhode Island",
+                        "South Carolina",
+                        "South Dakota",
+                        "Tennessee",
+                        "Texas",
+                        "Utah",
+                        "Vermont",
+                        "Virginia",
+                        "Washington",
+                        "West Virginia",
+                        "Wisconsin",
+                        "Wyoming"
+                    ];
+                    usStates.forEach(state => {
+                        $('#search').append($('<option>', {
+                            value: state,
+                            text: state
+                        }));
+
+                    });
+                }
 
 
-
+            } else {
+                $("#searchdiv" + num).html('<input type="text" class="form-control" name="value[]">');
             }
-
-
-            // if (str == "agent_name") {
-
-            //     if (num != "") {
-
-            //         $("#searchdiv" + num).html('<select class="form-control " id="search' + num + '" name="value[]"></select>');
-            //         $("#search" + num).select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv" + num),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         $.ajax({
-            //             url: '<?= base_url() ?>get-agents/',
-            //             dataType: 'json',
-            //             success: function(data) {
-            //                 $("#search" + num).empty();
-
-            //                 $.each(data, function(i, item) {
-            //                     $('#search' + num).append($('<option>', {
-            //                         value: item.agent_name,
-            //                         text: item.agent_name
-            //                     }));
-            //                 });
-            //                 $('#search' + num).trigger('change');
-            //             }
-            //         });
-
-            //     } else {
-
-            //         $("#searchdiv").html('<select class="form-control " id="search" name="value[]"></select>');
-            //         $("#search").select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv"),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         $.ajax({
-            //             url: '<?= base_url() ?>get-agents/',
-            //             dataType: 'json',
-            //             success: function(data) {
-            //                 $("#search").empty();
-
-            //                 $.each(data, function(i, item) {
-            //                     $('#search').append($('<option>', {
-            //                         value: item.agent_name,
-            //                         text: item.agent_name
-            //                     }));
-            //                 });
-            //                 $('#search').trigger('change');
-            //             }
-            //         });
-            //     }
-
-
-
-            // } else if (str == "state") {
-
-            //     if (num != "") {
-            //         $("#searchdiv" + num).html('<select class="form-control " id="search' + num + '" name="value[]"></select>');
-
-            //         $("#search" + num).select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv" + num),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         const usStates = [
-            //             "Alabama",
-            //             "Alaska",
-            //             "Arizona",
-            //             "Arkansas",
-            //             "California",
-            //             "Colorado",
-            //             "Connecticut",
-            //             "Delaware",
-            //             "Florida",
-            //             "Georgia",
-            //             "Hawaii",
-            //             "Idaho",
-            //             "Illinois",
-            //             "Indiana",
-            //             "Iowa",
-            //             "Kansas",
-            //             "Kentucky",
-            //             "Louisiana",
-            //             "Maine",
-            //             "Maryland",
-            //             "Massachusetts",
-            //             "Michigan",
-            //             "Minnesota",
-            //             "Mississippi",
-            //             "Missouri",
-            //             "Montana",
-            //             "Nebraska",
-            //             "Nevada",
-            //             "New Hampshire",
-            //             "New Jersey",
-            //             "New Mexico",
-            //             "New York",
-            //             "North Carolina",
-            //             "North Dakota",
-            //             "Ohio",
-            //             "Oklahoma",
-            //             "Oregon",
-            //             "Pennsylvania",
-            //             "Rhode Island",
-            //             "South Carolina",
-            //             "South Dakota",
-            //             "Tennessee",
-            //             "Texas",
-            //             "Utah",
-            //             "Vermont",
-            //             "Virginia",
-            //             "Washington",
-            //             "West Virginia",
-            //             "Wisconsin",
-            //             "Wyoming"
-            //         ];
-            //         usStates.forEach(state => {
-            //             $('#search' + num).append($('<option>', {
-            //                 value: state,
-            //                 text: state
-            //             }));
-
-            //         });
-
-            //     } else {
-            //         $("#searchdiv").html('<select class="form-control " id="search" name="value[]"></select>');
-
-            //         $("#search").select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv"),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         const usStates = [
-            //             "Alabama",
-            //             "Alaska",
-            //             "Arizona",
-            //             "Arkansas",
-            //             "California",
-            //             "Colorado",
-            //             "Connecticut",
-            //             "Delaware",
-            //             "Florida",
-            //             "Georgia",
-            //             "Hawaii",
-            //             "Idaho",
-            //             "Illinois",
-            //             "Indiana",
-            //             "Iowa",
-            //             "Kansas",
-            //             "Kentucky",
-            //             "Louisiana",
-            //             "Maine",
-            //             "Maryland",
-            //             "Massachusetts",
-            //             "Michigan",
-            //             "Minnesota",
-            //             "Mississippi",
-            //             "Missouri",
-            //             "Montana",
-            //             "Nebraska",
-            //             "Nevada",
-            //             "New Hampshire",
-            //             "New Jersey",
-            //             "New Mexico",
-            //             "New York",
-            //             "North Carolina",
-            //             "North Dakota",
-            //             "Ohio",
-            //             "Oklahoma",
-            //             "Oregon",
-            //             "Pennsylvania",
-            //             "Rhode Island",
-            //             "South Carolina",
-            //             "South Dakota",
-            //             "Tennessee",
-            //             "Texas",
-            //             "Utah",
-            //             "Vermont",
-            //             "Virginia",
-            //             "Washington",
-            //             "West Virginia",
-            //             "Wisconsin",
-            //             "Wyoming"
-            //         ];
-            //         usStates.forEach(state => {
-            //             $('#search').append($('<option>', {
-            //                 value: state,
-            //                 text: state
-            //             }));
-
-            //         });
-            //     }
-
-
-            // } else {
-            //     $("#searchdiv" + num).html('<input type="text" class="form-control" name="value[]">');
-            // }
         }
 
         function filterSubmit() {
@@ -726,8 +694,7 @@
                         var operator = [];
                         var value = [];
                         var condition = [];
-                        // var filterActive = $('input[name="filterActive"]').val();
-                        var filterActive = 0;
+                        var filterActive = $('input[name="filterActive"]').val();
 
                         $('select[name="column[]"]').each(function() {
                             column.push($(this).val());
@@ -747,6 +714,7 @@
                         d.operator = operator;
                         d.value = value;
                         d.condition = condition;
+
                         d.filterActive = filterActive;
                         d.lead_status = lead_status;
                     }

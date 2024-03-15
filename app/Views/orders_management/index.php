@@ -5,12 +5,10 @@
     <?php $title_meta ?>
     <!-- DataTables -->
     <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
+    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
     <!-- Responsive datatable examples -->
-    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
+    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
     </style>
 
@@ -19,6 +17,21 @@
     <style>
         .offcanvas.offcanvas-end {
             width: 600px;
+        }
+
+        .active-btn {
+            background-color: #495cba;
+            border: 1px solid #4456ae;
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        }
+
+        #order-report{
+            padding: 20px;
+            display: none;
+        }
+        .order-report-card{
+            padding:10px;
+            border-right: 1px solid #4456ae;
         }
     </style>
 
@@ -42,8 +55,12 @@
             <div class="container-fluid">
 
                 <?php echo $page_title ?>
-             
-
+          
+                <button id="all-orders" class="btn btn-primary mb-3 active-btn">All Orders</button>
+                <button id="open-orders" class="btn btn-primary mb-3 ">Open Orders</button>
+                <button id="complete-orders" class="btn btn-primary mb-3">Complete Orders</button>
+                <button id="blocked-orders" class="btn btn-primary mb-3">Blocked Orders</button>
+                
                 <div class="row">
                     <?= $this->include('orders_management/order-table') ?>
                 </div>
@@ -56,38 +73,32 @@
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasRightLabel">User Detail</h5>
-                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body" id="userDetails">
 
             </div>
         </div>
 
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasLeadForm"
-            aria-labelledby="offcanvasLeadFormLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasLeadForm" aria-labelledby="offcanvasLeadFormLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasLeadFormLabel">Lead Form</h5>
-                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body " id="lead-form">
 
             </div>
         </div>
 
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasImportLead"
-            aria-labelledby="offcanvasImportLeadLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasImportLead" aria-labelledby="offcanvasImportLeadLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasImportLeadLabel">Import Lead</h5>
-                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body " id="import-lead">
                 <form action="upload-lead" enctype="multipart/form-data" method="POST">
                     <label for="formFileLg" class="form-label">Upload File</label>
-                    <input class="form-control form-control-lg mb-3" id="formFileLg" type="file" name="csvfile" required
-                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    <input class="form-control form-control-lg mb-3" id="formFileLg" type="file" name="csvfile" required accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
                     <input type="hidden" id="order_id_field" name="order_id">
                     <div class="row d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary"> Upload </button>
@@ -115,20 +126,20 @@
 
 </script>
 <script type="text/javascript">
-
-
     function blockOrder(id = "") {
         if (confirm("Do you want to block the Order ?") == true) {
             $.ajax({
                 url: '<?php echo site_url('block-order') ?>',
                 type: 'POST',
-                data: { orderId: id },
-                success: function (response) {
+                data: {
+                    orderId: id
+                },
+                success: function(response) {
                     console.log(response);
                     $('#table').DataTable().ajax.reload();
 
                 },
-                error: function (error) {
+                error: function(error) {
                     console.error('AJAX request failed:', error);
                 }
             });
@@ -142,13 +153,15 @@
             $.ajax({
                 url: '<?php echo site_url('unblock-order') ?>',
                 type: 'POST',
-                data: { orderId: id },
-                success: function (response) {
+                data: {
+                    orderId: id
+                },
+                success: function(response) {
                     console.log(response);
                     $('#table').DataTable().ajax.reload();
 
                 },
-                error: function (error) {
+                error: function(error) {
                     console.error('AJAX request failed:', error);
                 }
             });
@@ -161,15 +174,17 @@
         $.ajax({
             url: '<?php echo site_url('lead-form-ajax') ?>',
             type: 'GET',
-            data: { orderId: orderId },
-            success: function (response) {
+            data: {
+                orderId: orderId
+            },
+            success: function(response) {
                 $a = JSON.parse(response);
                 col = JSON.parse($a.campaign_columns);
 
                 formHTML = generateLeadForm(col, orderId);
                 $("#lead-form").html(formHTML);
             },
-            error: function (error) {
+            error: function(error) {
                 console.error('AJAX request failed:', error);
             }
         });
@@ -181,8 +196,10 @@
         $.ajax({
             url: 'get-campaign-col',
             method: 'POST',
-            data: { orderId: orderId },
-            success: function (response) {
+            data: {
+                orderId: orderId
+            },
+            success: function(response) {
                 console.log(response);
                 var headers = JSON.parse(response);
                 headers = headers.map(item => item.col_slug);
@@ -191,7 +208,7 @@
                 XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
                 XLSX.writeFile(wb, 'output.xlsx');
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 console.error(xhr.responseText);
             }
         });
@@ -208,12 +225,67 @@
 
     }
 
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-        <?php if(session()->getFlashdata('error')): ?>
+
+        $("#slideDown").click(function() {
+            $("#order-report").slideToggle("slow");
+        });
+
+
+        order_status = 4;
+        $('#all-orders').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            order_status = 4;
+            table.ajax.reload();
+
+        });
+
+        $('#open-orders').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            order_status = 1;
+            table.ajax.reload();
+
+        });
+
+        $('#complete-orders').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            order_status = 3;
+            table.ajax.reload();
+
+        });
+
+        $('#blocked-orders').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            order_status = 0;
+            table.ajax.reload();
+
+        });
+
+        $('#filter_campaign').on('change', function(event) {
+            $('.filter-clear').show();
+            table.ajax.reload();
+        });
+        $('#filter_vendor').on('change', function(event) {
+            $('.filter-clear').show();
+            table.ajax.reload();
+        });
+
+        $('.filter-clear').on('click', function(event) {
+            $('.filter-clear').hide();
+
+            $('#filter_campaign').val(0).trigger('change');
+            $('#filter_vendor').val(0).trigger('change');
+        });
+
+        <?php if (session()->getFlashdata('error')) : ?>
             toastr.error('Error!', '<?= session()->getFlashdata('error') ?>')
         <?php endif; ?>
-        <?php if(session()->getFlashdata('success')): ?>
+        <?php if (session()->getFlashdata('success')) : ?>
             toastr.success('Success!', '<?= session()->getFlashdata('success') ?>')
         <?php endif; ?>
 
@@ -221,14 +293,18 @@
         var table = $('#table').DataTable({
             processing: true,
             serverSide: true,
-            columnDefs: [
-            ],
+            columnDefs: [],
             order: [],
             ajax: {
                 url: "<?php echo site_url('orders-datatable') ?>/" + <?php echo "0" ?>,
-
+                data: function(d) {
+                    d.order_status = order_status;
+                    d.filter_campaign = $("#filter_campaign").val();
+                    d.filter_vendor = $("#filter_vendor").val();
+                },
             },
-            "fnCreatedRow": function (nRow, aData, iDataIndex) {
+
+            "fnCreatedRow": function(nRow, aData, iDataIndex) {
                 $(nRow).attr('id', aData[0]);
             }
 

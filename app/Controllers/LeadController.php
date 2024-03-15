@@ -44,8 +44,6 @@ class LeadController extends BaseController
         $this->remainder_model = new Remainder;
 
         $this->session = session();
-
-
     }
 
     public function index()
@@ -69,17 +67,156 @@ class LeadController extends BaseController
             'page_title' => view('partials/page-title', ['title' => 'Master Leads (Leads Center)', 'pagetitle' => 'TTMG']),
         ];
         $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
-        $client = get_client();
+        $camp_name = $this->campaign_model->select('id,campaign_name')->findAll();
         $data['order'] = $orders;
-        $data['client'] = $client;
-
+        $data['camp_name'] = $camp_name;
         return view('leads_management/master-lead-index', $data);
     }
+
+
+    public function ajax_Datatable_leads($id = "")
+    {
+        $db = db_connect();
+        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+        if ($id != 0) {
+            $builder->where('order_id', $id);
+        }
+        if (is_vendor()) {
+            $builder->where('vendor_id', get_user_id());
+        } else if (is_client()) {
+            $builder->where('client_id', get_user_id());
+        }
+
+        $data = DataTable::of($builder)
+            ->edit('lead_id', function ($row) {
+                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
+                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
+                    <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
+            })
+
+
+            ->edit('option_id', function ($row) {
+                if ($row->status == 3) {
+                    return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
+                        . '<button class="btn btn-danger px-3 mx-2" onclick="rejectLead(' . $row->id . ')">Reject</button>';
+                } else if ($row->status == 2) {
+                    return '<span class="badge bg-danger">Rejected</span>';
+                } else if ($row->status == 1) {
+                    return '<span class="badge bg-success">Approved</span>';
+                }
+            })->hide('status')->hide('order_id')
+            ->filter(function ($builder, $request) {
+
+                // if ($request->state) {
+                //     $builder->where('state', $request->state);
+                // }
+                // if ($request->lead_status == 'all') {
+                //     $builder->where('order_id !=', 0);
+                // }
+                // if ($request->lead_status == 'un') {
+                //     $builder->where('order_id', 0);
+                // }
+                // if ($request->client) {
+                //     $builder->where('client_id', $request->client);
+                // }
+
+
+            })
+
+            ->toJson();
+
+
+        return $data;
+    }
+
+    public function ajax_Datatable_master_leads($id = "")
+    {
+        $db = db_connect();
+        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
+        if ($id != 0) {
+            $builder->where('order_id', $id);
+        }
+        if (is_vendor()) {
+            $builder->where('vendor_id', get_user_id());
+        } else if (is_client()) {
+            $builder->where('client_id', get_user_id());
+        }
+
+        $data = DataTable::of($builder)
+            ->edit('lead_id', function ($row) {
+                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
+                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
+                    ';
+            })
+
+            ->add('CHe', function ($row) {
+                return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
+            }, 'last')->hide('status')->hide('order_id')
+           
+            ->filter(function ($builder, $request) {
+                if ($request->filterActive == 1) {
+                    $column = $request->column;
+                    $operator = $request->operator;
+                    $value = $request->value;
+                    $condition = $request->condition;
+                    
+                    $groupStarted = false;
+                    
+                    foreach ($column as $key => $col) {
+                        if ($key > 0) {
+                            // If it's not the first condition, apply the logical operator (AND/OR)
+                            $logicalOperator = strtoupper($condition[$key - 1]);
+                            if ($logicalOperator === 'OR') {
+                                if (!$groupStarted) {
+                                    $builder->groupStart();
+                                    $groupStarted = true;
+                                }
+                            } else {
+                                if ($groupStarted) {
+                                    $builder->groupEnd();
+                                    $groupStarted = false;
+                                }
+                            }
+                        }
+                    
+                        if ($operator[$key] == 'is') {
+                            $builder->where($col, $value[$key]);
+                        } else {
+                            if ($operator[$key] == 'contains' || $operator[$key] == 'does not contain') {
+                                $operator[$key] = ($operator[$key] == 'contains') ? 'LIKE' : 'NOT LIKE';
+                                $value[$key] = '%' . $value[$key] . '%';
+                            }
+                    
+                            if ($operator[$key] == 'is blank') {
+                                $builder->where($col, null);
+                            } elseif ($operator[$key] == 'is not blank') {
+                                $builder->where($col . ' IS NOT NULL');
+                            } else {
+                                $builder->where($col . ' ' . $operator[$key], $value[$key]);
+                            }
+                        }
+                    }
+                    
+                    if ($groupStarted) {
+                        $builder->groupEnd();
+                    }
+                    
+                }
+                if ($request->lead_status == '0') {
+                } else if ($request->lead_status == '1') {
+                    $builder->where('assigned', 1);
+                } else if ($request->lead_status == '2') {
+                    $builder->where('assigned', 0);
+                }
+            })->toJson();
+        return $data;
+    }
+
+
 
     public function add_lead($id = "")
     {
         if ($this->request->getMethod() === 'post') {
-
         } elseif ($id != "") {
 
             $lead = $this->lead_model->find($id);
@@ -114,113 +251,6 @@ class LeadController extends BaseController
         return view('leads_management/add_lead', $data);
     }
 
-    public function ajax_Datatable_leads($id = "")
-    {
-        $db = db_connect();
-        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
-        if ($id != 0) {
-            $builder->where('order_id', $id);
-        }
-        if (is_vendor()) {
-            $builder->where('vendor_id', get_user_id());
-        } else if (is_client()) {
-            $builder->where('client_id', get_user_id());
-        }
-
-        $data = DataTable::of($builder)
-            ->edit('lead_id', function ($row) {
-                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
-                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
-                    <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
-            })
-
-
-            ->edit('option_id', function ($row) {
-                if ($row->status == 3) {
-                    return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
-                        . '<button class="btn btn-danger px-3 mx-2" onclick="rejectLead(' . $row->id . ')">Reject</button>';
-                } else if ($row->status == 2) {
-                    return '<span class="badge bg-danger">Rejected</span>';
-                } else if ($row->status == 1) {
-                    return '<span class="badge bg-success">Approved</span>';
-                }
-
-            })->hide('status')->hide('order_id')
-            ->filter(function ($builder, $request) {
-
-                if ($request->state) {
-                    $builder->where('state', $request->state);
-                }
-                if ($request->lead_status == 'all') {
-                    $builder->where('order_id !=', 0);
-                }
-                if ($request->lead_status == 'un') {
-                    $builder->where('order_id', 0);
-                }
-                if ($request->client) {
-                    $builder->where('client_id', $request->client);
-                }
-
-
-            })
-
-            ->toJson();
-
-
-        return $data;
-
-    }
-
-    public function ajax_Datatable_master_leads($id = "")
-    {
-        $db = db_connect();
-        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
-        if ($id != 0) {
-            $builder->where('order_id', $id);
-        }
-        if (is_vendor()) {
-            $builder->where('vendor_id', get_user_id());
-        } else if (is_client()) {
-            $builder->where('client_id', get_user_id());
-        }
-
-        $data = DataTable::of($builder)
-            ->edit('lead_id', function ($row) {
-                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
-                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
-                    <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
-            })
-
-
-        ->add('CHe', function ($row) {
-                return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
-            }, 'last')->hide('status')->hide('order_id')
-            ->filter(function ($builder, $request) {
-
-                if ($request->state) {
-                    $builder->where('state', $request->state);
-                }
-                if ($request->lead_status == '0') {
-                }
-                if ($request->lead_status == '1') {
-                    $builder->where('assigned', 0);
-                }
-                if ($request->lead_status == '2') {
-                    $builder->where('assigned',1);
-                }
-                if ($request->client) {
-                    $builder->where('client_id', $request->client);
-                }
-
-
-            })
-
-            ->toJson();
-
-
-        return $data;
-
-    }
     public function get_lead_detail($id)
     {
         $this->lead_model->select('complete_lead,status,reject_reason');
@@ -264,7 +294,7 @@ class LeadController extends BaseController
         $response = $this->lead_model->update($id, ['status' => 1]);
 
         $notification_data = [
-            'description' => 'Lead Accept ID : ' . $id,
+            'description' => 'Lead Accept ID :  ' . $id,
             'to_user_id' => 1,
             'link' => base_url() . "lead-index/"
         ];
@@ -279,7 +309,6 @@ class LeadController extends BaseController
         $session = session();
         $post = $this->request->getPost('post');
         $id = $this->request->getPost('id');
-
         $post_data = [
             "lead_id" => $id,
             "client_id" => $session->get('login_id'),
@@ -366,7 +395,7 @@ class LeadController extends BaseController
 
         $token = $this->request->getServer('HTTP_AUTHORIZATION');
         // $token == 'Bearer ' . get_option("token")
-        if ($token == 'Bearer '."ABC") {
+        if ($token == 'Bearer ' . "ABC") {
             $apiResponseString = $this->request->getPost();
             $apiResponseJson = $apiResponseString;
             $leads = $apiResponseJson['leads'];
@@ -403,55 +432,52 @@ class LeadController extends BaseController
 
             $response = $this->lead_master_model->insertBatch($batch_leads);
             echo json_encode($response);
-
         } else {
             http_response_code(401);
             echo json_encode(['message' => 'Unauthorized']);
         }
-
     }
 
-    public function  assign_lead()
+    public function assign_lead()
     {
         $leadIds = $this->request->getPost('leadId');
         $orderId = $this->request->getPost('order_id');
-        $order=$this->order_model->find($orderId);
-        $leadIds=explode(",",$leadIds);
-        $leads_to_assign=[];
-        $duplicate=[];
+        $order = $this->order_model->find($orderId);
+        $leadIds = explode(",", $leadIds);
+        $leads_to_assign = [];
+        $duplicate = [];
 
         foreach ($leadIds as $id) {
-            $lead=$this->lead_master_model->find($id);
-            $lead_check=$this->lead_model->where('phone_number',$lead['phone_number'])->where('client_id',$order['fkclientid'])->where('camp_id',$order['categoryname'])->first();
-          
-            $lead['order_id']=$orderId;
-            $lead['client_id']=$order['fkclientid'];
-            $lead['vendor_id']=$order['fkvendorstaffid'];
+            $lead = $this->lead_master_model->find($id);
+            $lead_check = $this->lead_model->where('phone_number', $lead['phone_number'])->where('client_id', $order['fkclientid'])->where('camp_id', $order['categoryname'])->first();
 
-            if(!$lead_check){
-            array_push($leads_to_assign,$lead);
-            unset($lead['rejected_lead']);
+            $lead['order_id'] = $orderId;
+            $lead['client_id'] = $order['fkclientid'];
+            $lead['vendor_id'] = $order['fkvendorstaffid'];
 
-            $id=$this->lead_model->insert($lead);
-            $this->lead_master_model->update($id,['assigned'=>1]);
-            $this->order_model->update_order(1, $orderId);
+            if (!$lead_check) {
+                array_push($leads_to_assign, $lead);
+                unset($lead['rejected_lead']);
+
+                $id = $this->lead_model->insert($lead);
+                $this->lead_master_model->update($id, ['assigned' => 1]);
+                $this->order_model->update_order(1, $orderId);
+            } else {
+                array_push($duplicate, $lead);
             }
-            else{
-                array_push($duplicate,$lead);
-            }
-
-        }       
+        }
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Assigned Leads']),
             'page_title' => view('partials/page-title', ['title' => 'Assigned Leads', 'pagetitle' => 'TTMG']),
         ];
-        $data['post_data']=$leads_to_assign;
-        $data['duplicate']=$duplicate;
-        return view('leads_management/bulk_lead_added_view',$data);
+        $data['post_data'] = $leads_to_assign;
+        $data['duplicate'] = $duplicate;
+        return view('leads_management/bulk_lead_added_view', $data);
     }
-    public function test_mail(){
+    public function test_mail()
+    {
         // $response =send_email("tshoaib10@gmail.com","Add Lead");
-        $a= has_subvendors();
+        $a = has_subvendors();
         var_dump($a);
         return 0;
     }

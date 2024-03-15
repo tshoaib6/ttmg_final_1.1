@@ -38,8 +38,6 @@ class OrdersContoller extends BaseController
         $this->lead_model = new Lead;
         $this->lead_master_model = new LeadMaster;
         $this->auth_model = new Auth_Model;
-
-
     }
 
     public function index($vend_id = "")
@@ -48,8 +46,8 @@ class OrdersContoller extends BaseController
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
             'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
         ];
-        $data['clients'] = $this->auth_model->select('id,firstname,lastname')->where('userrole',3)->findAll();
-        $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole',2)->findAll();
+        $data['campaigns'] = $this->campaign_model->select('id,campaign_name')->findAll();
+        $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
         return view('orders_management/index', $data);
     }
     public function sub_vendor_index($sub_ven = "", $sv_id)
@@ -87,7 +85,6 @@ class OrdersContoller extends BaseController
                 }
                 return $btn;
             }
-
         })->edit('fkvendorstaffid', function ($row) {
             $vendor = get_vendors($row->fkvendorstaffid);
             return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
@@ -101,8 +98,6 @@ class OrdersContoller extends BaseController
                 $status = '<span class="badge bg-success">Completed</span>';
             }
             return $status;
-
-
         })
             ->edit('id', function ($row) {
                 if (is_admin() && $row->status != 0 && $row->status != 3) {
@@ -111,10 +106,10 @@ class OrdersContoller extends BaseController
                 } else {
                     return "N/A";
                 }
-            })->addNumbering()
+            })
+            ->addNumbering()
             ->toJson();
         return $data;
-
     }
     public function ajax_Datatable_orders($id = "")
     {
@@ -142,7 +137,6 @@ class OrdersContoller extends BaseController
                 }
                 return $btn;
             }
-
         })->edit('fkvendorstaffid', function ($row) {
             $vendor = get_vendors($row->fkvendorstaffid);
             return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
@@ -156,8 +150,6 @@ class OrdersContoller extends BaseController
                 $status = '<span class="badge bg-success">Completed</span>';
             }
             return $status;
-
-
         })
             ->edit('id', function ($row) {
                 if (is_admin() && $row->status != 0 && $row->status != 3) {
@@ -166,10 +158,30 @@ class OrdersContoller extends BaseController
                 } else {
                     return "N/A";
                 }
+            })
+            ->filter(function ($builder, $request) {
+
+                if ($request->order_status=="0") {// blocked orders
+                    $builder->where('status', 4);
+                }
+                if ($request->order_status=='1') {// active/open/orders
+                    $builder->where('status', 1);
+                }
+                if ($request->order_status=='3') {// complete_orders
+                    $builder->where('status', 3);
+                }
+                if ($request->order_status=='4') {// All Orders
+                }
+
+                if ($request->filter_campaign){
+                    $builder->where('categoryname', $request->filter_campaign);
+                }
+                 if ($request->filter_vendor){
+                    $builder->where('fkvendorstaffid', $request->filter_vendor);
+                }
             })->addNumbering()
             ->toJson();
         return $data;
-
     }
     public function create($id = "")
     {
@@ -213,7 +225,6 @@ class OrdersContoller extends BaseController
 
             session()->setFlashdata('success', 'Order Created Successful!');
             return redirect()->to('order-index');
-
         } elseif ($id != "") {
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Order']),
@@ -234,7 +245,6 @@ class OrdersContoller extends BaseController
                 $data['vendors'] = get_vendors();
                 $data['clients'] = get_client();
             }
-
         } else {
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'New Order']),
@@ -283,31 +293,30 @@ class OrdersContoller extends BaseController
 
     public function lead_add()
     {
-      
+
         $data = $this->request->getPost();
 
 
         if ($data['order_id'] != "") {
             $order_detail = $this->order_model->select('fkclientid,fkvendorstaffid,categoryname')->find($data['order_id']);
             $lead_check = $this->lead_model->where('phone_number', $data['phone_number'])->where('client_id', $order_detail['fkclientid'])->where('camp_id', $order_detail['categoryname'])->first();
-            
-                $post_data = [
-                    "phone_number" => $data['phone_number'],
-                    "agent_name" => $data['agent_name'],
-                    "firstname" => $data['first_name'],
-                    "lastname" => $data['last_name'],
-                    "state" => $data['state'],
-                    "complete_lead" => json_encode($data),
-                    "order_id" => $data['order_id'],
-                    "status" => 3,
-                    "camp_id" => $order_detail['categoryname'],
-                    "vendor_id" => $order_detail['fkvendorstaffid'],
-                    "client_id" => $order_detail['fkclientid'],
-                    "master_search" => json_encode($data),
-                    "lead_date" => $data['date'],
-                    "assigned" => 1
-                ];
-            
+
+            $post_data = [
+                "phone_number" => $data['phone_number'],
+                "agent_name" => $data['agent_name'],
+                "firstname" => $data['first_name'],
+                "lastname" => $data['last_name'],
+                "state" => $data['state'],
+                "complete_lead" => json_encode($data),
+                "order_id" => $data['order_id'],
+                "status" => 3,
+                "camp_id" => $order_detail['categoryname'],
+                "vendor_id" => $order_detail['fkvendorstaffid'],
+                "client_id" => $order_detail['fkclientid'],
+                "master_search" => json_encode($data),
+                "lead_date" => $data['date'],
+                "assigned" => 1
+            ];
         } else {
             $post_data = [
                 "phone_number" => $data['phone_number'],
@@ -328,7 +337,7 @@ class OrdersContoller extends BaseController
         }
         $insert_id = $this->lead_master_model->insert($post_data);
 
-        
+
 
         if ($data['order_id'] != "") {
             if ($lead_check) {
@@ -376,17 +385,15 @@ class OrdersContoller extends BaseController
             ];
             add_notification($notification_data);
             log_activity("Lead Added to Order  : " . $data['order_id'], get_user_fullname());
-
         } else {
             log_activity("Lead Added : ID :  " . $insert_id, get_user_fullname());
         }
 
         $session = session();
         $session->setFlashdata('success', 'Lead Added Sucessfully.');
-        if($data['order_id'] == ""){
+        if ($data['order_id'] == "") {
             return redirect()->to('master-lead-index')->withInput();
-        }else
-        {
+        } else {
             return redirect()->to('order-index')->withInput();
         }
     }
@@ -450,7 +457,6 @@ class OrdersContoller extends BaseController
         $data['header'] = $header;
         $data['header_fields'] = $mapping_headers;
         return view('orders_management/map_headers', $data);
-
     }
     public function importLeads()
     {
@@ -467,7 +473,6 @@ class OrdersContoller extends BaseController
         if ($o_id != "") {
             $order_detail = $this->order_model->select('fkclientid,fkvendorstaffid')->find($o_id);
             $mapping_headers = $this->order_model->get_camp_headers($o_id);
-
         } else {
             $mapping_headers = $this->order_model->get_camp_headers("", $camp_id);
         }
@@ -485,7 +490,7 @@ class OrdersContoller extends BaseController
         }
 
         $post_data = array();
-        $duplicate= array();
+        $duplicate = array();
         if ($o_id != "") {
             foreach ($leads as $l) {
                 $lead_check = $this->lead_model->where('phone_number', $l['phone_number'])->where('client_id', $order_detail['fkclientid'])->where('camp_id', $camp_id)->first();
@@ -502,15 +507,14 @@ class OrdersContoller extends BaseController
                     "client_id" => $order_detail['fkclientid'],
                     "status" => 3,
                     "master_search" => json_encode($l),
-                    "assigned"=>1,
+                    "assigned" => 1,
                     "lead_date" => $l['date'],
 
 
                 ];
-                if(!$lead_check){
+                if (!$lead_check) {
                     array_push($post_data, $temp_post_data);
-                }
-                else{
+                } else {
                     array_push($duplicate, $temp_post_data);
                 }
             }
@@ -536,11 +540,11 @@ class OrdersContoller extends BaseController
             }
         }
 
-        $data['post_data']=$post_data;
-        $data['duplicate']=$duplicate;
-            $this->lead_master_model->insertBatch(array_merge($post_data,$duplicate));
+        $data['post_data'] = $post_data;
+        $data['duplicate'] = $duplicate;
+        $this->lead_master_model->insertBatch(array_merge($post_data, $duplicate));
         if ($o_id != "") {
-            if($post_data){
+            if ($post_data) {
 
                 $this->lead_model->insertBatch($post_data);
             }
@@ -566,14 +570,14 @@ class OrdersContoller extends BaseController
             add_notification($notification_data);
             $session = session();
             $session->setFlashdata('success', 'Leads Added.');
-            return view('leads_management/bulk_lead_added_view',$data);
+            return view('leads_management/bulk_lead_added_view', $data);
         } else {
             log_activity("Leads Added " . count($post_data), get_user_fullname());
         }
 
         $session = session();
         $session->setFlashdata('success', 'Leads Added.');
-        return view('leads_management/bulk_lead_added_view',$data);
+        return view('leads_management/bulk_lead_added_view', $data);
     }
 
     public function order_detail($id)
@@ -609,7 +613,5 @@ class OrdersContoller extends BaseController
         $orderId = $this->request->getPost('orderId');
         $response = $this->order_model->update($orderId, ["status" => 1]);
         echo json_encode($response);
-
     }
 }
-

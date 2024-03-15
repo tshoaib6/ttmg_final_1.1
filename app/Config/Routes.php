@@ -1,13 +1,14 @@
-<?php namespace Config;
+<?php
+
+namespace Config;
 
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
 // Load the system's routing file first, so that the app and ENVIRONMENT
 // can override as needed.
-if (file_exists(SYSTEMPATH . 'Config/Routes.php'))
-{
-	require SYSTEMPATH . 'Config/Routes.php';
+if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
+    require SYSTEMPATH . 'Config/Routes.php';
 }
 
 /**
@@ -30,42 +31,41 @@ $routes->setAutoRoute(true);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/login', 'Auth::index',['filter' => 'authenticated']);
-$routes->get('/login/(:any)', 'Auth::index/$1',['filter' => 'authenticated']);
-$routes->get('/recover-password', 'Auth::recoverpassword',['filter' => 'authenticated']);
-$routes->post('/recover-password', 'Auth::recoverpassword',['filter' => 'authenticated']);
-$routes->match(['post'],'/recover-password', 'Auth::recoverpassword',['filter' => 'authenticated']);
-$routes->post('/login', 'Auth::login',['filter' => 'authenticated']);
+$routes->get('/login', 'Auth::index', ['filter' => 'authenticated']);
+$routes->get('/login/(:any)', 'Auth::index/$1', ['filter' => 'authenticated']);
+$routes->get('/recover-password', 'Auth::recoverpassword', ['filter' => 'authenticated']);
+$routes->post('/recover-password', 'Auth::recoverpassword', ['filter' => 'authenticated']);
+$routes->match(['post'], '/recover-password', 'Auth::recoverpassword', ['filter' => 'authenticated']);
+$routes->post('/login', 'Auth::login', ['filter' => 'authenticated']);
 
 
 //Referral for Client Signup
-$routes->get('/referral-signup/(:any)/(:any)', 'Referral::referralSignup/$1/$2',['filter' => 'authenticated']);
-$routes->post('/referral-register', 'Auth::referral_register',['filter' => 'authenticated']);
+$routes->get('/referral-signup/(:any)/(:any)', 'Referral::referralSignup/$1/$2', ['filter' => 'authenticated']);
+$routes->post('/referral-register', 'Auth::referral_register', ['filter' => 'authenticated']);
 
 //404 Page Redirection
 $routes->get('404', 'PageController::show_pages_404');
 
-$routes->group('', ['filter' => 'authenticate'], static function ($routes) 
-{
-	$routes->get('/register', 'Auth::register');
-	$routes->post('/create', 'Auth::register');
-	$routes->get('/allUsers', 'Auth::getAllUsers');
-	$routes->get('/ajax-user-datatable', 'Auth::ajaxAllUsers');
-	$routes->get('/deleteUser/(:any)', 'Auth::deleteUser/$1');
-	$routes->get('/editUser/(:any)', 'Auth::editUser/$1');
-	$routes->post('/editUser/(:any)', 'Auth::editUser/$1');
-	$routes->get('/getuserid/(:any)', 'Auth::getUserId/$1');
-	$routes->get('/blockUser/(:any)/(:any)', 'Auth::blockUser/$1/$2');
-	$routes->get('/logout', 'Auth::logout');
-	$routes->get('/profile', 'Auth::profile');
+$routes->group('', ['filter' => 'authenticate'], static function ($routes) {
+    $routes->get('/register', 'Auth::register');
+    $routes->post('/create', 'Auth::register');
+    $routes->get('/allUsers', 'Auth::getAllUsers');
+    $routes->get('/ajax-user-datatable', 'Auth::ajaxAllUsers');
+    $routes->get('/deleteUser/(:any)', 'Auth::deleteUser/$1');
+    $routes->get('/editUser/(:any)', 'Auth::editUser/$1');
+    $routes->post('/editUser/(:any)', 'Auth::editUser/$1');
+    $routes->get('/getuserid/(:any)', 'Auth::getUserId/$1');
+    $routes->get('/blockUser/(:any)/(:any)', 'Auth::blockUser/$1/$2');
+    $routes->get('/logout', 'Auth::logout');
+    $routes->get('/profile', 'Auth::profile');
 
-	//Email Templates
-	$routes->get('/allEmail', 'EmailTemplate::index');
-	$routes->get('/ajax-emailtemplates-datatable', 'EmailTemplate::ajaxAllEmailTemplates');
-	$routes->get('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
-	$routes->post('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
+    //Email Templates
+    $routes->get('/allEmail', 'EmailTemplate::index');
+    $routes->get('/ajax-emailtemplates-datatable', 'EmailTemplate::ajaxAllEmailTemplates');
+    $routes->get('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
+    $routes->post('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
 
-	//dashboard
+    //dashboard
     $routes->get('home', 'Home::index');
     $routes->get('ajax-dashboard-lead-chart/(:any)', 'Home::ajaxDashboardLeadChart/$1');
 
@@ -92,77 +92,76 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes)
     $routes->get('/ajax-chat-user-msg/(:any)', 'Support::ajaxUserChat/$1');
     $routes->post('/ajax-chat-client-send-msg', 'Support::ajaxClientMsgSend');
     $routes->post('/ajax-chat-admin-send-msg', 'Support::ajaxSupportMsgSend');
-    
+
     //Referral
     $routes->get('/all-referral', 'Referral::index');
     $routes->post('/add-referral', 'Referral::addReferral');
     $routes->get('/delete-referral/(:any)', 'Referral::deleteReferral/$1');
     $routes->get('/send-referral-email/(:any)', 'Referral::sendReferralEmail/$1');
     $routes->get('/ajax-referral-datatable', 'Referral::ajaxAllReferral');
-    
-
 });
 
 
 // Shoaib
+$routes->get('/get-agents', 'Auth::get_agents', ['filter' => 'authenticate']);
 
 
 // Campaign 
-$routes->get('/campaign-index', 'CampaignController::index',['filter' => 'authenticate']);
-$routes->match(["get", "post"], "/create-campaign", 'CampaignController::create',['filter' => 'authenticate']);
-$routes->get('/create-campaign/(:any)', 'CampaignController::create/$1',['filter' => 'authenticate']);
+$routes->get('/campaign-index', 'CampaignController::index', ['filter' => 'authenticate']);
+$routes->match(["get", "post"], "/create-campaign", 'CampaignController::create', ['filter' => 'authenticate']);
+$routes->get('/create-campaign/(:any)', 'CampaignController::create/$1', ['filter' => 'authenticate']);
 $routes->get('/campaign-datatable', 'CampaignController::ajaxDataTables');
-$routes->get('/campaign-delete/(:any)', 'CampaignController::delete/$1',['filter' => 'authenticate']);
-$routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1',['filter' => 'authenticate']);
+$routes->get('/campaign-delete/(:any)', 'CampaignController::delete/$1', ['filter' => 'authenticate']);
+$routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1', ['filter' => 'authenticate']);
 
 
 //Order
-$routes->match(["get", "post"], "/create-order", 'OrdersContoller::create',['filter' => 'authenticate']);
-$routes->get('/create-order/(:any)', 'OrdersContoller::create/$1',['filter' => 'authenticate']);
-$routes->get('/order-index', 'OrdersContoller::index',['filter' => 'authenticate']);
-$routes->get('(:any)?/order-index/(:any)', 'OrdersContoller::sub_vendor_index/$1/$2',['filter' => 'authenticate']);
+$routes->match(["get", "post"], "/create-order", 'OrdersContoller::create', ['filter' => 'authenticate']);
+$routes->get('/create-order/(:any)', 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
+$routes->get('/order-index', 'OrdersContoller::index', ['filter' => 'authenticate']);
+$routes->get('(:any)?/order-index/(:any)', 'OrdersContoller::sub_vendor_index/$1/$2', ['filter' => 'authenticate']);
 
 $routes->get('/orders-datatable/(:any)?', 'OrdersContoller::ajax_Datatable_orders/$1');
 $routes->get('/sv_orders-datatable/(:any)?', 'OrdersContoller::ajax_sv_datatables_orders/$1');
 $routes->get('/lead-form-ajax', 'OrdersContoller::getLeadFormData');
 $routes->post('/add-lead', 'OrdersContoller::lead_add');
-$routes->get('/import-csv/(:any)', 'OrdersContoller::importCsv/$1',['filter' => 'authenticate']);
-$routes->post('/get-campaign-col', 'OrdersContoller::get_campaign_col',['filter' => 'authenticate'],['filter' => 'authenticate']);
-$routes->post('/upload-lead', 'OrdersContoller::upload_lead',['filter' => 'authenticate']);
-$routes->get('/map-headers', 'OrdersContoller::map_headers',['filter' => 'authenticate']);
-$routes->post('/import-leads', 'OrdersContoller::importLeads',['filter' => 'authenticate']);
-$routes->get('/order-detail/(:any)', 'OrdersContoller::order_detail/$1',['filter' => 'authenticate']);
-$routes->get('/order-delete/(:any)', 'OrdersContoller::delete/$1',['filter' => 'authenticate']);
-$routes->post('/block-order', 'OrdersContoller::block_order',['filter' => 'authenticate']);
-$routes->post('/unblock-order', 'OrdersContoller::unblock_order',['filter' => 'authenticate']);
+$routes->get('/import-csv/(:any)', 'OrdersContoller::importCsv/$1', ['filter' => 'authenticate']);
+$routes->post('/get-campaign-col', 'OrdersContoller::get_campaign_col', ['filter' => 'authenticate'], ['filter' => 'authenticate']);
+$routes->post('/upload-lead', 'OrdersContoller::upload_lead', ['filter' => 'authenticate']);
+$routes->get('/map-headers', 'OrdersContoller::map_headers', ['filter' => 'authenticate']);
+$routes->post('/import-leads', 'OrdersContoller::importLeads', ['filter' => 'authenticate']);
+$routes->get('/order-detail/(:any)', 'OrdersContoller::order_detail/$1', ['filter' => 'authenticate']);
+$routes->get('/order-delete/(:any)', 'OrdersContoller::delete/$1', ['filter' => 'authenticate']);
+$routes->post('/block-order', 'OrdersContoller::block_order', ['filter' => 'authenticate']);
+$routes->post('/unblock-order', 'OrdersContoller::unblock_order', ['filter' => 'authenticate']);
 
 
 
 //Leads
-$routes->get('/lead-index', 'LeadController::index',['filter' => 'authenticate']);
-$routes->get('/master-lead-index', 'LeadController::master_index',['filter' => 'authenticate']);
+$routes->get('/lead-index', 'LeadController::index', ['filter' => 'authenticate']);
+$routes->get('/master-lead-index', 'LeadController::master_index', ['filter' => 'authenticate']);
 
 
-$routes->get('/add-lead', 'LeadController::add_lead',['filter' => 'authenticate']);
-$routes->get('/add-lead/(:any)', 'LeadController::add_lead/$1',['filter' => 'authenticate']);
-$routes->get('/get-sv', 'Auth::get_subvendors',['filter' => 'authenticate']);
+$routes->get('/add-lead', 'LeadController::add_lead', ['filter' => 'authenticate']);
+$routes->get('/add-lead/(:any)', 'LeadController::add_lead/$1', ['filter' => 'authenticate']);
+$routes->get('/get-sv', 'Auth::get_subvendors', ['filter' => 'authenticate']);
 
 
 
-$routes->get('/leads-datatable/(:any)?', 'LeadController::ajax_Datatable_leads/$1',['filter' => 'authenticate']);
-$routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_master_leads/$1',['filter' => 'authenticate']);
+$routes->get('/leads-datatable/(:any)?', 'LeadController::ajax_Datatable_leads/$1', ['filter' => 'authenticate']);
+$routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_master_leads/$1', ['filter' => 'authenticate']);
 
 
-$routes->get('/getleaddetail/(:any)', 'LeadController::get_lead_detail/$1',['filter' => 'authenticate']);
-$routes->post('/reject-lead', 'LeadController::reject_lead',['filter' => 'authenticate']);
-$routes->post('/accept-lead', 'LeadController::accept_lead',['filter' => 'authenticate']);
-$routes->post('/save-notes', 'LeadController::save_notes',['filter' => 'authenticate']);
-$routes->get('/getnotes/(:any)', 'LeadController::get_notes/$1',['filter' => 'authenticate']);
-$routes->post('/get-campaign-col_by_id', 'LeadController::getLeadFormDataByCampId',['filter' => 'authenticate']);
-$routes->post('/save-remainder', 'LeadController::save_remainder',['filter' => 'authenticate']);
-$routes->get('/getremainder/(:any)', 'LeadController::get_remainder/$1',['filter' => 'authenticate']);
-$routes->post('/assign-leads','LeadController::assign_lead',['filter' => 'authenticate']);
-$routes->get('/replace-lead/(:any)', 'LeadController::add_lead/$1',['filter' => 'authenticate']);
+$routes->get('/getleaddetail/(:any)', 'LeadController::get_lead_detail/$1', ['filter' => 'authenticate']);
+$routes->post('/reject-lead', 'LeadController::reject_lead', ['filter' => 'authenticate']);
+$routes->post('/accept-lead', 'LeadController::accept_lead', ['filter' => 'authenticate']);
+$routes->post('/save-notes', 'LeadController::save_notes', ['filter' => 'authenticate']);
+$routes->get('/getnotes/(:any)', 'LeadController::get_notes/$1', ['filter' => 'authenticate']);
+$routes->post('/get-campaign-col_by_id', 'LeadController::getLeadFormDataByCampId', ['filter' => 'authenticate']);
+$routes->post('/save-remainder', 'LeadController::save_remainder', ['filter' => 'authenticate']);
+$routes->get('/getremainder/(:any)', 'LeadController::get_remainder/$1', ['filter' => 'authenticate']);
+$routes->post('/assign-leads', 'LeadController::assign_lead', ['filter' => 'authenticate']);
+$routes->get('/replace-lead/(:any)', 'LeadController::add_lead/$1', ['filter' => 'authenticate']);
 
 
 
@@ -293,7 +292,7 @@ $routes->get('get-campaigns-types', 'CampaignController::get_campaign_api');
 $routes->get('get-orders', 'OrderController::get_orders_api');
 $routes->post('test-api', 'LeadController::sync_lead_api');
 $routes->get('test-email', 'LeadController::test_mail');
-$routes->post('login-api', 'Auth::sync_lead_api');
+$routes->post('login-api', 'Auth::login_api');
 
 
 
@@ -314,7 +313,6 @@ $routes->post('login-api', 'Auth::sync_lead_api');
  * You will have access to the $routes object within that file without
  * needing to reload it.
  */
-if (file_exists(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php'))
-{
-	require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
+if (file_exists(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
+    require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
 }

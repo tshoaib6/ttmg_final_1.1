@@ -577,8 +577,6 @@
 });
                 $('#table tbody').on('change', 'input[type="checkbox"]', function(){
 
-
-
                     $('#table tbody input[type="checkbox"]').each(function () {
                         var trId = $(this).closest('tr').attr('id');
                         var isChecked = $(this).is(':checked');

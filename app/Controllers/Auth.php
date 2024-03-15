@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\LeadMaster;
 use App\Models\Order;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\Auth as Auth_Model;
@@ -14,7 +15,7 @@ class Auth extends BaseController
     protected $request;
     protected $auth_model;
     protected $referral_model;
-
+    protected $lead_master_model;
     protected $order_model;
 
 
@@ -23,6 +24,7 @@ class Auth extends BaseController
         $this->request = \Config\Services::request();
         $this->auth_model = new Auth_Model;
         $this->referral_model = new Referral_model;
+        $this->lead_master_model= new LeadMaster;
     }
 
     public function index()
@@ -663,10 +665,10 @@ class Auth extends BaseController
             }
         }
 
-        $this->data['session'] = $session;
-        $this->data['page_title'] = "Users";
-        $this->data['user'] = $this->auth_model->where("id ='{$session->login_id}'")->first();
-        return view('pages/users/update_account', $this->data);
+        // $this->data['session'] = $session;
+        // $this->data['page_title'] = "Users";
+        // $this->data['user'] = $this->auth_model->where("id ='{$session->login_id}'")->first();
+        // return view('pages/users/update_account', $this->data);
     }
 
     public function recoverpassword()
@@ -893,6 +895,10 @@ class Auth extends BaseController
     }
 
 
+    public function get_agents(){
+       $agents= $this->lead_master_model->select('agent_name')->findAll();
+        echo json_encode($agents);
+    }
 
 
 }

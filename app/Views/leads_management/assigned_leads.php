@@ -30,9 +30,7 @@
 
         <div class="page-content">
             <div class="container-fluid">
-
                 <?php echo $page_title ?>
-
                 <div class="row">
                     <?= $this->include('partials/add-alert') ?>
 

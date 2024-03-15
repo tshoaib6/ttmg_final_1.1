@@ -1,5 +1,3 @@
-
-
 <?= $this->include('./partials/main') ?>
 
 <head>
@@ -8,29 +6,25 @@
 
     <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
     <!-- DataTables -->
-    <link href="<?= base_url('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet"
-        type="text/css" />
-    <link href="<?= base_url('assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css'); ?>"
-        rel="stylesheet" type="text/css" />
+    <link href="<?= base_url('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?= base_url('assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" />
 
     <!-- Responsive datatable examples -->
-    <link href="<?= base_url('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css'); ?>"
-        rel="stylesheet" type="text/css" />
+    <link href="<?= base_url('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" />
     <?= $this->include('./partials/head-css') ?>
 
     <style>
+        .table-striped-duplicate>tbody>tr:nth-child(odd)>td,
+        .table-striped-duplicate>tbody>tr:nth-child(odd)>th {
+            background-color: #FF4747;
+            color: white;
+        }
 
-.table-striped-duplicate>tbody>tr:nth-child(odd)>td,
-.table-striped-duplicate>tbody>tr:nth-child(odd)>th {
-  background-color: #FF4747;
-  color: white;
-}
-.table-striped-duplicate>tbody>tr:nth-child(even)>td,
-.table-striped-duplicate>tbody>tr:nth-child(even)>th {
-  background-color: #ff3333b8;
-  color: white;
-}
-
+        .table-striped-duplicate>tbody>tr:nth-child(even)>td,
+        .table-striped-duplicate>tbody>tr:nth-child(even)>th {
+            background-color: #ff3333b8;
+            color: white;
+        }
     </style>
 
 </head>
@@ -57,8 +51,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4> Uploaded Leads </h4>
-                                <table id="table" class="table table-striped table-bordered" cellspacing="0"
-                                    width="100%">
+                                <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
                                             <th>Agent Name</th>
@@ -69,20 +62,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                            <?php foreach($post_data as $leads){ ?> 
-                                <tr> 
-                                    <td> <?php echo $leads['agent_name'] ?> </td>
-                                    <td> <?php echo $leads['firstname'] ?> </td>
-                                    <td> <?php echo $leads['lastname'] ?> </td>
-                                    <td> <?php echo $leads['state'] ?> </td>
-                                    <td> <?php echo $leads['phone_number'] ?> </td>
-                                    <?php } ?> 
-                            
+                                        <?php foreach ($post_data as $leads) { ?>
+                                            <tr>
+                                                <td> <?php echo $leads['agent_name'] ?> </td>
+                                                <td> <?php echo $leads['firstname'] ?> </td>
+                                                <td> <?php echo $leads['lastname'] ?> </td>
+                                                <td> <?php echo $leads['state'] ?> </td>
+                                                <td> <?php echo $leads['phone_number'] ?> </td>
+                                            <?php } ?>
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                    </div> 
+                    </div>
 
 
                 </div>
@@ -92,8 +85,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4> Duplicate Leads </h4>
-                                <table id="table" class="table table-striped-duplicate table-bordered" cellspacing="0"
-                                    width="100%">
+                                <table id="table" class="table table-striped-duplicate table-bordered" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
                                             <th>Agent Name</th>
@@ -104,20 +96,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                            <?php foreach($duplicate as $leads){ ?> 
-                                <tr> 
-                                    <td> <?php echo $leads['agent_name'] ?> </td>
-                                    <td> <?php echo $leads['firstname'] ?> </td>
-                                    <td> <?php echo $leads['lastname'] ?> </td>
-                                    <td> <?php echo $leads['state'] ?> </td>
-                                    <td> <?php echo $leads['phone_number'] ?> </td>
-                                    <?php } ?> 
-                            
+                                        <?php foreach ($duplicate as $leads) { ?>
+                                            <tr>
+                                                <td> <?php echo $leads['agent_name'] ?> </td>
+                                                <td> <?php echo $leads['firstname'] ?> </td>
+                                                <td> <?php echo $leads['lastname'] ?> </td>
+                                                <td> <?php echo $leads['state'] ?> </td>
+                                                <td> <?php echo $leads['phone_number'] ?> </td>
+                                            </tr>
+                                        <?php } ?>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                    </div> 
+                    </div>
 
 
                 </div>
@@ -161,20 +153,19 @@
 
 
 <script type="text/javascript">
-
-    $(document).ready(function () {
-        <?php if(session()->getFlashdata('error')): ?>
+    $(document).ready(function() {
+        <?php if (session()->getFlashdata('error')) : ?>
             toastr.error('Error!', '<?= session()->getFlashdata('error') ?>')
         <?php endif; ?>
 
-        <?php if(session()->getFlashdata('success')): ?>
+        <?php if (session()->getFlashdata('success')) : ?>
             toastr.success('Success!', '<?= session()->getFlashdata('success') ?>')
         <?php endif; ?>
 
         history.pushState(null, null, window.location.href);
         window.onpopstate = function(event) {
-        window.location.href = '/order-index';
-};
+            window.location.href = '/order-index';
+        };
     });
 </script>
 
