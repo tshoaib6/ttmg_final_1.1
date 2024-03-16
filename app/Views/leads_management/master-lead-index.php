@@ -9,7 +9,6 @@
     <?= $this->include('partials/datatable-css') ?>
     <?= $this->include('partials/head-css') ?>
 
-
     <style>
         .select2-container {
             z-index: 100000;
@@ -159,6 +158,8 @@
                     </div>
                 </div>
             </div>
+
+
         </div>
         <?= $this->include('partials/footer') ?>
     </div>
@@ -166,7 +167,6 @@
 
 
 <!-- Filter Modal -->
-
 <div class="modal fade bs-example-modal-center filtermodal modal-lg" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -182,8 +182,10 @@
                     <div class="query-row row">
 
                         <select hidden="" name="condition[]">
-                            <option value="and">and</option>
+                            <option value="AND">and</option>
                         </select>
+
+                        <input type="hidden" name="filterActive" value="0">
 
                         <div class="row">
                             <div class="col-md-2 d-flex jusitify-content-end">
@@ -212,8 +214,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3 value-div">
-                                <select class="form-control" name="value[]" class="search" style="width: 170px;font-size: 14px;display: inline-block;">
-
+                                <select class="form-control search" name="value[]" style="width: 170px;font-size: 14px;display: inline-block;">
                                 </select>
                             </div>
                         </div>
@@ -221,7 +222,6 @@
                     </div>
 
                 </div>
-
 
                 <button type="button" class="btn btn-primary ml-5 mt-4" onclick="addRow()"><i class="fa fa-plus-circle"></i> Add filter</button>
                 <div class="form-group">
@@ -245,609 +245,496 @@
             </div>
         </div>
     </div>
+</div>
 
 
 
 
 
 
-    <?= $this->include('partials/right-sidebar') ?>
-    <?= $this->include('partials/vendor-scripts') ?>
-    <?= $this->include('partials/datatable-scripts') ?>
+<?= $this->include('partials/right-sidebar') ?>
+<?= $this->include('partials/vendor-scripts') ?>
+<?= $this->include('partials/datatable-scripts') ?>
 
 
-    <script src="assets/libs/flatpickr/flatpickr.min.js"></script>
-    <script src="assets/libs/select2/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
-
-
-
-    <script type="text/javascript">
-        function createListItem(currentDateTime, post) {
-            var listItem = $('<li>');
-            var dateTimeSpan = $('<span>').text(currentDateTime).addClass('datetime');
-            var postSpan = $('<span>').text(post).css('color', 'black').addClass('post');
-            listItem.append(dateTimeSpan).append(' - ').append(postSpan);
-            return listItem;
-        }
+<script src="assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="assets/libs/select2/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 
 
-        function showAddFilter() {
-            $('.filtermodal').modal('show');
-        }
+<script type="text/javascript">
+    function createListItem(currentDateTime, post) {
+        var listItem = $('<li>');
+        var dateTimeSpan = $('<span>').text(currentDateTime).addClass('datetime');
+        var postSpan = $('<span>').text(post).css('color', 'black').addClass('post');
+        listItem.append(dateTimeSpan).append(' - ').append(postSpan);
+        return listItem;
+    }
 
-        function getAgent(num) {
-            $('#search').select2({
+
+
+    function showAddFilter() {
+        $('.filtermodal').modal('show');
+    }
+
+    function resetFilter() {
+        $('input[name="filterActive"]').val("0");
+        $('#table').DataTable().ajax.reload();
+    }
+
+    function getAgent() {
+        $('select[name="value[]"]').select2({
+            placeholder: {
+                id: '-1',
+                text: 'Type to search'
+            }
+        });
+
+        $.ajax({
+            url: '<?= base_url() ?>get-agents/',
+            dataType: 'json',
+            success: function(data) {
+                $.each(data, function(i, item) {
+                    $('select[name="value[]"]').append($('<option>', {
+                        value: item.agent_name,
+                        text: item.agent_name
+                    }));
+                });
+            }
+        });
+    }
+    var num = 0;
+
+    function addRow() {
+        var orignalRow = $('.query-row').first();
+        orignalRow.find(".search").each(function(index) {
+            $(this).select2('destroy');
+        });
+        var newRow = orignalRow.clone();
+        newRow.find('select[name="condition[]"]').addClass('form-control col-md-12 mt-2 mb-2').css("width", "100px");
+        newRow.find('select[name="condition[]"]').removeAttr('hidden').html('');
+        newRow.find('select[name="condition[]"]').append(
+            '<option value="AND"> AND </option> <option value="OR" >OR </option>')
+
+        var removeLink = $(
+            '<div class="col-sm-1 mt-3" style="padding-left:unset;"><a href="javascript:;" class="text-center" onclick="removeRow(this)" style="vertical-align:sub;color: #00396D;"><i class="fa fa-minus-circle"></i></a></div>'
+        );
+        newRow.find('.row').append(removeLink);
+
+        newRow.appendTo('#query-container');
+        $("select.search").select2();
+    }
+
+    function removeRow(e) {
+        $(e).closest('.query-row').remove();
+    }
+
+    function searchKeyChange(e, num = "") {
+        value = $(e).val();
+        console.log("Value is", value);
+        searchSelector = $(e).parent().parent().children('.value-div').children();
+
+        if (value == "agent_name") {
+            searchSelector.select2({
                 placeholder: {
-                    dropdownParent: $("#searchdiv"),
-                    id: '-1', // the value of the option
+                    id: '-1',
                     text: 'Type to search'
                 }
-            });
+            })
+
             $.ajax({
                 url: '<?= base_url() ?>get-agents/',
                 dataType: 'json',
                 success: function(data) {
+                    searchSelector.empty();
                     $.each(data, function(i, item) {
-                        $('#search' + num).append($('<option>', {
+                        searchSelector.append($('<option>', {
                             value: item.agent_name,
                             text: item.agent_name
                         }));
                     });
+                    searchSelector.trigger('change');
                 }
             });
+        } else if (value == "state") {
+            searchSelector.empty();
+
+            searchSelector.select2({
+                placeholder: {
+                    id: '-1', // the value of the option
+                    text: 'Type to search'
+                }
+            })
+            const usStates = [
+                "Alabama",
+                "Alaska",
+                "Arizona",
+                "Arkansas",
+                "California",
+                "Colorado",
+                "Connecticut",
+                "Delaware",
+                "Florida",
+                "Georgia",
+                "Hawaii",
+                "Idaho",
+                "Illinois",
+                "Indiana",
+                "Iowa",
+                "Kansas",
+                "Kentucky",
+                "Louisiana",
+                "Maine",
+                "Maryland",
+                "Massachusetts",
+                "Michigan",
+                "Minnesota",
+                "Mississippi",
+                "Missouri",
+                "Montana",
+                "Nebraska",
+                "Nevada",
+                "New Hampshire",
+                "New Jersey",
+                "New Mexico",
+                "New York",
+                "North Carolina",
+                "North Dakota",
+                "Ohio",
+                "Oklahoma",
+                "Oregon",
+                "Pennsylvania",
+                "Rhode Island",
+                "South Carolina",
+                "South Dakota",
+                "Tennessee",
+                "Texas",
+                "Utah",
+                "Vermont",
+                "Virginia",
+                "Washington",
+                "West Virginia",
+                "Wisconsin",
+                "Wyoming"
+            ];
+            usStates.forEach(state => {
+                searchSelector.append($('<option>', {
+                    value: state,
+                    text: state
+                }));
+                searchSelector.trigger('change');
+
+                console.log(searchSelector.val());
+
+            });
+        } else {
+            searchSelector.parent().html('<input class="form-control" name="value[]" >')
         }
-        var num = 0;
 
-        function addRow() {
-            var orignalRow = $('.query-row').first;
-            var newRow = originalRow.clone();
-            newRow.find('select[name="condition[]"]').addClass('form-control col-md-12').css("width", "30px");
-            // newRow.find('select[name="condition[]"]').removeAttr('hidden').html('');
-            // newRow.find('select[name="condition[]"]').append('<option value="AND"> AND </option> <option value="OR" >OR </option>')
-            // newRow.appendTo('#query-container');
-        }
+    }
 
-        function removeRow(e) {
-            var d = $(e);
-            var s = d.prop("id");
-            $("#cloneform" + s).remove();
+    function filterSubmit() {
+        $(".filtermodal").modal('toggle');
 
-        }
-
-        function searchKeyChange(e, num = "") {
-            value = $(e).val();
-            console.log("Value is", value);
+        $('input[name="filterActive"]').val("1");
+        console.log($('input[name="filterActive"]').val());
+        $('#table').DataTable().ajax.reload();
+    }
 
 
-            console.log("Test", $(e).parent().parent().children('.value-div').children())
+    $(document).ready(function() {
 
-            if (value == "agent_name") {
-                searchSelector = $(e).parent().parent().children('.value-div').children();
-                searchSelector.select2({
-                    placeholder: {
-                        id: '-1',
-                        text: 'Type to search'
-                    }
-                })
+        getAgent();
+        var lead_status = 0;
+        var checkedIds = [];
+
+
+        <?php if (session()->getFlashdata('error')) : ?>
+            toastr.error('Error!', '<?= session()->getFlashdata('error') ?>')
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('success')) : ?>
+            toastr.success('Success!', '<?= session()->getFlashdata('success') ?>')
+        <?php endif; ?>
+
+        $('#all-leads').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            lead_status = 0;
+            console.log("Lead Status", lead_status)
+            $("#table").DataTable().ajax.reload();
+
+        });
+
+        $('#unassigned-leads').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            lead_status = 1;
+            console.log("Lead Status", lead_status)
+            $("#table").DataTable().ajax.reload();
+
+        });
+
+        $('#assigned-leads').click(function() {
+            $(this).addClass('active-btn');
+            $('button').not(this).removeClass('active-btn');
+            lead_status = 2;
+            console.log("Lead Status", lead_status)
+            $("#table").DataTable().ajax.reload();
+        });
+        // 
+
+
+
+
+
+
+        // Note & Remainders 
+        $('#post-btn').click(function() {
+            var post = $('.status-box').val();
+            var id = $('input[name="l_id"]').val();
+            var currentDateTime = new Date().toLocaleString();
+            listItem = createListItem(currentDateTime, post);
+            if (post.trim() !== '') {
                 $.ajax({
-                    url: '<?= base_url() ?>get-agents/',
-                    dataType: 'json',
-                    success: function(data) {
-                        searchSelector.empty();
-                        $.each(data, function(i, item) {
-                            searchSelector.append($('<option>', {
-                                value: item.agent_name,
-                                text: item.agent_name
-                            }));
-                        });
-                        searchSelector.trigger('change');
+                    url: '<?= base_url() ?>save-notes/',
+                    type: 'POST',
+                    data: {
+                        post: post,
+                        id: id
+                    },
+                    success: function(response) {
+                        toastr.success('Note Added', 'Note Added Successfully')
+                    },
+                    error: function(error) {
+                        console.error(error);
                     }
                 });
-
-
-
             }
 
-
-            // if (str == "agent_name") {
-
-            //     if (num != "") {
-
-            //         $("#searchdiv" + num).html('<select class="form-control " id="search' + num + '" name="value[]"></select>');
-            //         $("#search" + num).select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv" + num),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         $.ajax({
-            //             url: '<?= base_url() ?>get-agents/',
-            //             dataType: 'json',
-            //             success: function(data) {
-            //                 $("#search" + num).empty();
-
-            //                 $.each(data, function(i, item) {
-            //                     $('#search' + num).append($('<option>', {
-            //                         value: item.agent_name,
-            //                         text: item.agent_name
-            //                     }));
-            //                 });
-            //                 $('#search' + num).trigger('change');
-            //             }
-            //         });
-
-            //     } else {
-
-            //         $("#searchdiv").html('<select class="form-control " id="search" name="value[]"></select>');
-            //         $("#search").select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv"),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         $.ajax({
-            //             url: '<?= base_url() ?>get-agents/',
-            //             dataType: 'json',
-            //             success: function(data) {
-            //                 $("#search").empty();
-
-            //                 $.each(data, function(i, item) {
-            //                     $('#search').append($('<option>', {
-            //                         value: item.agent_name,
-            //                         text: item.agent_name
-            //                     }));
-            //                 });
-            //                 $('#search').trigger('change');
-            //             }
-            //         });
-            //     }
-
-
-
-            // } else if (str == "state") {
-
-            //     if (num != "") {
-            //         $("#searchdiv" + num).html('<select class="form-control " id="search' + num + '" name="value[]"></select>');
-
-            //         $("#search" + num).select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv" + num),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         const usStates = [
-            //             "Alabama",
-            //             "Alaska",
-            //             "Arizona",
-            //             "Arkansas",
-            //             "California",
-            //             "Colorado",
-            //             "Connecticut",
-            //             "Delaware",
-            //             "Florida",
-            //             "Georgia",
-            //             "Hawaii",
-            //             "Idaho",
-            //             "Illinois",
-            //             "Indiana",
-            //             "Iowa",
-            //             "Kansas",
-            //             "Kentucky",
-            //             "Louisiana",
-            //             "Maine",
-            //             "Maryland",
-            //             "Massachusetts",
-            //             "Michigan",
-            //             "Minnesota",
-            //             "Mississippi",
-            //             "Missouri",
-            //             "Montana",
-            //             "Nebraska",
-            //             "Nevada",
-            //             "New Hampshire",
-            //             "New Jersey",
-            //             "New Mexico",
-            //             "New York",
-            //             "North Carolina",
-            //             "North Dakota",
-            //             "Ohio",
-            //             "Oklahoma",
-            //             "Oregon",
-            //             "Pennsylvania",
-            //             "Rhode Island",
-            //             "South Carolina",
-            //             "South Dakota",
-            //             "Tennessee",
-            //             "Texas",
-            //             "Utah",
-            //             "Vermont",
-            //             "Virginia",
-            //             "Washington",
-            //             "West Virginia",
-            //             "Wisconsin",
-            //             "Wyoming"
-            //         ];
-            //         usStates.forEach(state => {
-            //             $('#search' + num).append($('<option>', {
-            //                 value: state,
-            //                 text: state
-            //             }));
-
-            //         });
-
-            //     } else {
-            //         $("#searchdiv").html('<select class="form-control " id="search" name="value[]"></select>');
-
-            //         $("#search").select2({
-            //             placeholder: {
-            //                 dropdownParent: $("#searchdiv"),
-            //                 id: '-1', // the value of the option
-            //                 text: 'Type to search'
-            //             }
-            //         })
-            //         const usStates = [
-            //             "Alabama",
-            //             "Alaska",
-            //             "Arizona",
-            //             "Arkansas",
-            //             "California",
-            //             "Colorado",
-            //             "Connecticut",
-            //             "Delaware",
-            //             "Florida",
-            //             "Georgia",
-            //             "Hawaii",
-            //             "Idaho",
-            //             "Illinois",
-            //             "Indiana",
-            //             "Iowa",
-            //             "Kansas",
-            //             "Kentucky",
-            //             "Louisiana",
-            //             "Maine",
-            //             "Maryland",
-            //             "Massachusetts",
-            //             "Michigan",
-            //             "Minnesota",
-            //             "Mississippi",
-            //             "Missouri",
-            //             "Montana",
-            //             "Nebraska",
-            //             "Nevada",
-            //             "New Hampshire",
-            //             "New Jersey",
-            //             "New Mexico",
-            //             "New York",
-            //             "North Carolina",
-            //             "North Dakota",
-            //             "Ohio",
-            //             "Oklahoma",
-            //             "Oregon",
-            //             "Pennsylvania",
-            //             "Rhode Island",
-            //             "South Carolina",
-            //             "South Dakota",
-            //             "Tennessee",
-            //             "Texas",
-            //             "Utah",
-            //             "Vermont",
-            //             "Virginia",
-            //             "Washington",
-            //             "West Virginia",
-            //             "Wisconsin",
-            //             "Wyoming"
-            //         ];
-            //         usStates.forEach(state => {
-            //             $('#search').append($('<option>', {
-            //                 value: state,
-            //                 text: state
-            //             }));
-
-            //         });
-            //     }
-
-
-            // } else {
-            //     $("#searchdiv" + num).html('<input type="text" class="form-control" name="value[]">');
-            // }
-        }
-
-        function filterSubmit() {
-            $(".filtermodal").modal('toggle');
-
-            $('input[name="filterActive"]').val("1");
-            console.log($('input[name="filterActive"]').val());
-            $('#table').DataTable().ajax.reload();
-        }
-
-
-        $(document).ready(function() {
-
-            getAgent("");
-            var lead_status = 0;
-            var checkedIds = [];
-
-
-            <?php if (session()->getFlashdata('error')) : ?>
-                toastr.error('Error!', '<?= session()->getFlashdata('error') ?>')
-            <?php endif; ?>
-            <?php if (session()->getFlashdata('success')) : ?>
-                toastr.success('Success!', '<?= session()->getFlashdata('success') ?>')
-            <?php endif; ?>
-
-
-
-
-
-
-            //  Top Filter Buttons
-            $('#all-leads').click(function() {
-                $(this).addClass('active-btn');
-                $('button').not(this).removeClass('active-btn');
-                lead_status = 0;
-                console.log("Lead Status", lead_status)
-                $("#table").DataTable().ajax.reload();
-
-            });
-            $('#unassigned-leads').click(function() {
-                $(this).addClass('active-btn');
-                $('button').not(this).removeClass('active-btn');
-                lead_status = 1;
-                console.log("Lead Status", lead_status)
-                $("#table").DataTable().ajax.reload();
-
-            });
-
-            $('#assigned-leads').click(function() {
-                $(this).addClass('active-btn');
-                $('button').not(this).removeClass('active-btn');
-                lead_status = 2;
-                console.log("Lead Status", lead_status)
-                $("#table").DataTable().ajax.reload();
-            });
-            // 
-
-
-
-
-
-
-            // Note & Remainders 
-            $('#post-btn').click(function() {
-                var post = $('.status-box').val();
-                var id = $('input[name="l_id"]').val();
-                var currentDateTime = new Date().toLocaleString();
-                listItem = createListItem(currentDateTime, post);
-                if (post.trim() !== '') {
-                    $.ajax({
-                        url: '<?= base_url() ?>save-notes/',
-                        type: 'POST',
-                        data: {
-                            post: post,
-                            id: id
-                        },
-                        success: function(response) {
-                            toastr.success('Note Added', 'Note Added Successfully')
-                        },
-                        error: function(error) {
-                            console.error(error);
-                        }
-                    });
-                }
-
-                listItem.prependTo('.posts');
-                $('.status-box').val('');
-                $('.counter').text('250');
-                $('#post-btn').addClass('disabled');
-            });
-            $('.status-box').keyup(function() {
-                var postLength = $(this).val().length;
-                var charactersLeft = 250 - postLength;
-                $('.counter').text(charactersLeft);
-                if (charactersLeft < 0) {
-                    $('#post-btn').addClass('disabled');
-                } else if (charactersLeft === 250) {
-                    $('#post-btn').addClass('disabled');
-                } else {
-                    $('#post-btn').removeClass('disabled');
-                }
-            });
-
+            listItem.prependTo('.posts');
+            $('.status-box').val('');
+            $('.counter').text('250');
             $('#post-btn').addClass('disabled');
-            $('#remainder-btn').click(function() {
-                var post = $('.discription-box').val();
-                var id = $('input[name="l_id"]').val();
-                var title = $('input[name="remainder_title"]').val();
-                var datetime = $('input[name="orderdate"]').val();
+        });
+        $('.status-box').keyup(function() {
+            var postLength = $(this).val().length;
+            var charactersLeft = 250 - postLength;
+            $('.counter').text(charactersLeft);
+            if (charactersLeft < 0) {
+                $('#post-btn').addClass('disabled');
+            } else if (charactersLeft === 250) {
+                $('#post-btn').addClass('disabled');
+            } else {
+                $('#post-btn').removeClass('disabled');
+            }
+        });
 
-                var currentDateTime = new Date().toLocaleString();
-                listItem = createListItem(currentDateTime, post);
+        $('#post-btn').addClass('disabled');
+        $('#remainder-btn').click(function() {
+            var post = $('.discription-box').val();
+            var id = $('input[name="l_id"]').val();
+            var title = $('input[name="remainder_title"]').val();
+            var datetime = $('input[name="orderdate"]').val();
 
-                if (post.trim() !== '') {
-                    $.ajax({
-                        url: '<?= base_url() ?>save-remainder/',
-                        type: 'POST',
-                        data: {
-                            title: title,
-                            post: post,
-                            id: id,
-                            datetime: datetime
-                        },
-                        success: function(response) {
-                            toastr.success('Remainder Added', 'Remainder Added Successfully')
-                        },
-                        error: function(error) {
-                            console.error(error);
-                        }
-                    });
-                }
+            var currentDateTime = new Date().toLocaleString();
+            listItem = createListItem(currentDateTime, post);
 
-                listItem.prependTo('.reaminders');
-                $('.discription-box').val('');
-                $('.counter').text('250');
-                $('#remainder-btn').addClass('disabled');
-            });
+            if (post.trim() !== '') {
+                $.ajax({
+                    url: '<?= base_url() ?>save-remainder/',
+                    type: 'POST',
+                    data: {
+                        title: title,
+                        post: post,
+                        id: id,
+                        datetime: datetime
+                    },
+                    success: function(response) {
+                        toastr.success('Remainder Added', 'Remainder Added Successfully')
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            }
 
-
-            $('.discription-box').keyup(function() {
-                var postLength = $(this).val().length;
-                var charactersLeft = 250 - postLength;
-                $('.counter').text(charactersLeft);
-                if (charactersLeft < 0) {
-                    $('#remainder-btn').addClass('disabled');
-                } else if (charactersLeft === 250) {
-                    $('#remainder-btn').addClass('disabled');
-                } else {
-                    $('#remainder-btn').removeClass('disabled');
-                }
-            });
+            listItem.prependTo('.reaminders');
+            $('.discription-box').val('');
+            $('.counter').text('250');
             $('#remainder-btn').addClass('disabled');
-            // 
+        });
 
-            // DataTable   
-            var table = $('#table').DataTable({
-                processing: true,
-                serverSide: true,
-                columnDefs: [{
-                    target: 0,
-                    visible: false,
-                    searchable: false
-                }, ],
-                order: [],
-                ajax: {
-                    url: "<?php echo site_url('master-leads-datatable') ?>/" + 0,
-                    data: function(d) {
-                        var column = [];
-                        var operator = [];
-                        var value = [];
-                        var condition = [];
-                        // var filterActive = $('input[name="filterActive"]').val();
-                        var filterActive = 0;
 
-                        $('select[name="column[]"]').each(function() {
-                            column.push($(this).val());
-                        });
-                        $('select[name="operator[]"]').each(function() {
-                            operator.push($(this).val());
-                        });
+        $('.discription-box').keyup(function() {
+            var postLength = $(this).val().length;
+            var charactersLeft = 250 - postLength;
+            $('.counter').text(charactersLeft);
+            if (charactersLeft < 0) {
+                $('#remainder-btn').addClass('disabled');
+            } else if (charactersLeft === 250) {
+                $('#remainder-btn').addClass('disabled');
+            } else {
+                $('#remainder-btn').removeClass('disabled');
+            }
+        });
+        $('#remainder-btn').addClass('disabled');
+        // 
+
+        // DataTable   
+        var table = $('#table').DataTable({
+            processing: true,
+            serverSide: true,
+            columnDefs: [{
+                target: 0,
+                visible: false,
+                searchable: false
+            }, ],
+            order: [],
+            ajax: {
+                url: "<?php echo site_url('master-leads-datatable') ?>/" + 0,
+                data: function(d) {
+                    var column = [];
+                    var operator = [];
+                    var value = [];
+                    var condition = [];
+                    var category = $('select[name="catid"]').val();
+                    var filterActive = $('input[name="filterActive"]').val();
+                    // var filterActive = 0;
+
+                    $('select[name="column[]"]').each(function() {
+                        column.push($(this).val());
+                    });
+                    $('select[name="operator[]"]').each(function() {
+                        operator.push($(this).val());
+                    });
+                    if ($('select[name="value[]"]').length > 0) {
                         $('select[name="value[]"]').each(function() {
                             value.push($(this).val());
                         });
-                        $('select[name="condition[]"]').each(function() {
-                            condition.push($(this).val());
+                    } else {
+                        $('input[name="value[]"]').each(function() {
+                            value.push($(this).val());
                         });
-
-                        console.log("CO", condition);
-                        d.column = column;
-                        d.operator = operator;
-                        d.value = value;
-                        d.condition = condition;
-                        d.filterActive = filterActive;
-                        d.lead_status = lead_status;
                     }
-                },
-                "fnCreatedRow": function(nRow, aData, iDataIndex) {
-                    $(nRow).attr('id', aData[0]);
-                },
 
-            });
-            // 
+                    $('select[name="condition[]"]').each(function() {
+                        condition.push($(this).val());
+                    });
 
-            // Canvas Right 
-            var offcanvasright = document.getElementById('offcanvasRight')
-            table.on('click', 'tr:not(:first)', function(e) {
-                if ($(e.target).is($(this).find('td:last')) || $(e.target).is($(this).find('i')) || $(e.target)
-                    .is($(this).find('button')) || $(e.target).is($(this).find('input'))) {
-                    return;
+                    console.log("Column", column);
+                    console.log("Operator", operator);
+                    console.log("Value", value);
+                    console.log("Condition", condition);
+                    console.log("Filter Active", category);
+
+
+                    d.column = column;
+                    d.operator = operator;
+                    d.value = value;
+                    d.condition = condition;
+                    d.filterActive = filterActive;
+                    d.lead_status = lead_status;
+                    d.category = category;
                 }
-                var uid = $(this).attr('id');
-                $('.posts').html("");
-                $('.remainder').html("");
+            },
+            "fnCreatedRow": function(nRow, aData, iDataIndex) {
+                $(nRow).attr('id', aData[0]);
+            },
 
-                $('input[name="l_id"]').val(uid);
-
-                $.ajax({
-                    url: '<?= base_url() ?>/getnotes/' + uid,
-                    type: 'get',
-                    success: function(data) {
-                        notes = JSON.parse(data);
-                        notes.forEach(element => {
-                            listItem = createListItem(element.created_at, element
-                                .note_text);
-                            listItem.prependTo('.posts');
-                        });
-
-
-                    }
-                });
-
-                $.ajax({
-                    url: '<?= base_url() ?>/getremainder/' + uid,
-                    type: 'get',
-                    success: function(data) {
-                        notes = JSON.parse(data);
-                        console.log("noe", notes);
-                        notes.forEach(element => {
-                            listItem = createListItem(element.remainder_time_date, element
-                                .remainder_text);
-                            listItem.prependTo('.remainder');
-                        });
-                    }
-                });
-
-                $.ajax({
-                    url: '<?= base_url() ?>/getleaddetail/' + uid,
-                    type: 'get',
-                    success: function(data) {
-                        console.log(data);
-                        $("#lead-detail").html(data);
-                    }
-                });
-                var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasright);
-                bsOffcanvas2.show();
-            });
-
-            // 
-
-
-            $('#table tbody').on('change', 'input[type="checkbox"]', function() {
-                $('#table tbody input[type="checkbox"]').each(function() {
-                    var trId = $(this).closest('tr').attr('id');
-                    var isChecked = $(this).is(':checked');
-                    if (isChecked && checkedIds.indexOf(trId) === -1) {
-                        checkedIds.push(trId);
-                    } else if (!isChecked) {
-                        var index = checkedIds.indexOf(trId);
-                        if (index !== -1) {
-                            checkedIds.splice(index, 1);
-                        }
-                    }
-                });
-
-                if (checkedIds.length > 0) {
-                    $("#assign-container").show();
-                } else {
-                    $("#assign-container").hide();
-                }
-
-            });
-
-
-
-            $("#assign-btn").click(function() {
-                $("#lead_id").val(checkedIds.toString())
-                $("#lead_assign_form").submit();
-            });
         });
-    </script>
+        // 
 
-    <!-- App js -->
-    <script src="assets/js/app.js"></script>
-    </body>
+        // Canvas Right 
+        var offcanvasright = document.getElementById('offcanvasRight')
+        table.on('click', 'tr:not(:first)', function(e) {
+            if ($(e.target).is($(this).find('td:last')) || $(e.target).is($(this).find('i')) || $(e.target)
+                .is($(this).find('button')) || $(e.target).is($(this).find('input'))) {
+                return;
+            }
+            var uid = $(this).attr('id');
+            $('.posts').html("");
+            $('.remainder').html("");
 
-    </html>
+            $('input[name="l_id"]').val(uid);
+
+            $.ajax({
+                url: '<?= base_url() ?>/getnotes/' + uid,
+                type: 'get',
+                success: function(data) {
+                    notes = JSON.parse(data);
+                    notes.forEach(element => {
+                        listItem = createListItem(element.created_at, element
+                            .note_text);
+                        listItem.prependTo('.posts');
+                    });
+
+
+                }
+            });
+
+            $.ajax({
+                url: '<?= base_url() ?>/getremainder/' + uid,
+                type: 'get',
+                success: function(data) {
+                    notes = JSON.parse(data);
+                    console.log("noe", notes);
+                    notes.forEach(element => {
+                        listItem = createListItem(element.remainder_time_date, element
+                            .remainder_text);
+                        listItem.prependTo('.remainder');
+                    });
+                }
+            });
+
+            $.ajax({
+                url: '<?= base_url() ?>/getleaddetail/' + uid,
+                type: 'get',
+                success: function(data) {
+                    console.log(data);
+                    $("#lead-detail").html(data);
+                }
+            });
+            var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasright);
+            bsOffcanvas2.show();
+        });
+
+        // 
+
+
+        $('#table tbody').on('change', 'input[type="checkbox"]', function() {
+            $('#table tbody input[type="checkbox"]').each(function() {
+                var trId = $(this).closest('tr').attr('id');
+                var isChecked = $(this).is(':checked');
+                if (isChecked && checkedIds.indexOf(trId) === -1) {
+                    checkedIds.push(trId);
+                } else if (!isChecked) {
+                    var index = checkedIds.indexOf(trId);
+                    if (index !== -1) {
+                        checkedIds.splice(index, 1);
+                    }
+                }
+            });
+
+            if (checkedIds.length > 0) {
+                $("#assign-container").show();
+            } else {
+                $("#assign-container").hide();
+            }
+
+        });
+
+
+
+        $("#assign-btn").click(function() {
+            $("#lead_id").val(checkedIds.toString())
+            $("#lead_assign_form").submit();
+        });
+    });
+</script>
+
+<!-- App js -->
+<script src="assets/js/app.js"></script>
+</body>
+
+</html>

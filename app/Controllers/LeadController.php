@@ -152,55 +152,65 @@ class LeadController extends BaseController
             ->add('CHe', function ($row) {
                 return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
             }, 'last')->hide('status')->hide('order_id')
-           
+
             ->filter(function ($builder, $request) {
+
                 if ($request->filterActive == 1) {
+
                     $column = $request->column;
                     $operator = $request->operator;
                     $value = $request->value;
                     $condition = $request->condition;
-                    
-                    $groupStarted = false;
-                    
-                    foreach ($column as $key => $col) {
-                        if ($key > 0) {
-                            // If it's not the first condition, apply the logical operator (AND/OR)
-                            $logicalOperator = strtoupper($condition[$key - 1]);
-                            if ($logicalOperator === 'OR') {
-                                if (!$groupStarted) {
-                                    $builder->groupStart();
-                                    $groupStarted = true;
+                    $categoryId = $request->category;
+
+                    if (count($value) > 0) {
+                        foreach ($column as $key => $col) {
+                            if ($key == 0) {
+                                if ($operator[$key] == "is") {
+                                    $builder->where($col, $value[$key]);
+                                } else if ($operator[$key] == 'contains') {
+                                    $builder->like($col, $value[$key]);
+                                } elseif ($operator[$key] == 'does not contain') {
+                                    $builder->notLike($col, $value[$key]);
+                                } else if ($operator[$key] == 'is blank') {
+                                    $builder->where($col, "");
+                                } else if ($operator[$key] == 'is not blank') {
+                                    $builder->where($col . "!=", "");
                                 }
                             } else {
-                                if ($groupStarted) {
-                                    $builder->groupEnd();
-                                    $groupStarted = false;
+                                if ($condition[$key] == "AND") {
+                                    if ($operator[$key] == "is") {
+                                        $builder->where($col, $value[$key]);
+                                    } else if ($operator[$key] == 'contains') {
+                                        $builder->like($col, $value[$key]);
+                                    } elseif ($operator[$key] == 'does not contain') {
+                                        $builder->notLike($col, $value[$key]);
+                                    } else if ($operator[$key] == 'is blank') {
+                                        $builder->where($col, "");
+                                    } else if ($operator[$key] == 'is not blank') {
+                                        $builder->where($col . "!=", "");
+                                    }
+                                } else {  // OR condition
+
+                                    if ($operator[$key] == "is") {
+                                        $builder->orWhere($col, $value[$key]);
+                                    } else if ($operator[$key] == 'contains') {
+                                        $builder->orWhere($col, $value);
+                                    } elseif ($operator[$key] == 'does not contain') {
+                                        $builder->orWhere($col . " NOT LIKE", "%$value%");
+                                    } else if ($operator[$key] == 'is blank') {
+                                        $builder->orWhere($col, "");
+                                    } else if ($operator[$key] == 'is not blank') {
+                                        $builder->orWhere($col . "!=", "");
+                                    }
                                 }
                             }
                         }
-                    
-                        if ($operator[$key] == 'is') {
-                            $builder->where($col, $value[$key]);
-                        } else {
-                            if ($operator[$key] == 'contains' || $operator[$key] == 'does not contain') {
-                                $operator[$key] = ($operator[$key] == 'contains') ? 'LIKE' : 'NOT LIKE';
-                                $value[$key] = '%' . $value[$key] . '%';
-                            }
-                    
-                            if ($operator[$key] == 'is blank') {
-                                $builder->where($col, null);
-                            } elseif ($operator[$key] == 'is not blank') {
-                                $builder->where($col . ' IS NOT NULL');
-                            } else {
-                                $builder->where($col . ' ' . $operator[$key], $value[$key]);
-                            }
-                        }
                     }
-                    
-                    if ($groupStarted) {
-                        $builder->groupEnd();
+
+                    if ($categoryId != "0") {
+                        $builder->where('camp_id', $categoryId);
                     }
-                    
                 }
                 if ($request->lead_status == '0') {
                 } else if ($request->lead_status == '1') {
