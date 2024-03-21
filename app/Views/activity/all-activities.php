@@ -57,28 +57,21 @@
 
                                     <div class="col-sm-3">
                                         <label class="form-label">Select Date Range</label>
-                                        <div class="input-daterange input-group" id="datepicker6"
-                                            data-date-format="mm-dd-yyyy" data-date-autoclose="true"
-                                            data-provide="datepicker" data-date-container='#datepicker6'>
-                                            <input type="text" class="form-control date_filter" name="start_date"
-                                                id="start_date" placeholder="Start Date" />
-                                            <input type="text" class="form-control date_filter" name="end_date"
-                                                placeholder="End Date" id="end_date" />
+                                        <div class="input-daterange input-group" id="datepicker6" data-date-format="mm-dd-yyyy" data-date-autoclose="true" data-provide="datepicker" data-date-container='#datepicker6'>
+                                            <input type="text" class="form-control date_filter" name="start_date" id="start_date" placeholder="Start Date" />
+                                            <input type="text" class="form-control date_filter" name="end_date" placeholder="End Date" id="end_date" />
                                         </div>
                                     </div>
 
                                     <div class="col-sm-2 d-flex align-items-end">
-                                        <button type="button"
-                                            class="btn btn-primary btn-rounded waves-effect waves-light filter-clear"
-                                            style="display:none;">Clear Filter</button>
+                                        <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light filter-clear" style="display:none;">Clear Filter</button>
                                     </div>
 
                                 </div>
 
                                 <br>
 
-                                <table id="table" class="table table-striped table-bordered" cellspacing="0"
-                                    width="100%">
+                                <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -122,52 +115,52 @@
 
 
 <script type="text/javascript">
+    $(document).ready(function() {
 
-    $(document).ready(function () {
         $(".select2").select2();
         $(".select3").select2();
         var table = $('#table').DataTable({
             processing: true,
             serverSide: true,
-            columnDefs: [
-                {
-                    target: 0,
-                    visible: false,
-                    searchable: false
-                },
-            ],
+            columnDefs: [{
+                target: 0,
+                visible: false,
+                searchable: false
+            }, ],
 
-            order: [[0, 'desc']], //init datatable not ordering
+            order: [
+                [0, 'desc']
+            ], //init datatable not ordering
             ajax: {
                 url: "<?php echo site_url('ajax-activities-datatable') ?>",
-                data: function (d) {
+                data: function(d) {
                     d.filter_client = $("#filter_client").val();
                     d.filter_vendor = $("#filter_vendor").val();
                     d.start_date = $("#start_date").val();
                     d.end_date = $("#end_date").val();
                 }
             },
-            "fnCreatedRow": function (nRow, aData, iDataIndex) {
+            "fnCreatedRow": function(nRow, aData, iDataIndex) {
                 $(nRow).attr('id', aData[0]);
             }
 
 
         });
 
-        $('#filter_client').on('change', function (event) {
+        $('#filter_client').on('change', function(event) {
             $('.filter-clear').show();
             table.ajax.reload();
         });
-        $('#filter_vendor').on('change', function (event) {
+        $('#filter_vendor').on('change', function(event) {
             $('.filter-clear').show();
             table.ajax.reload();
         });
-        $('.date_filter').on('change', function (event) {
+        $('.date_filter').on('change', function(event) {
             $('.filter-clear').show();
             //alert('start: '+$("#start_date").val()+" end: "+$("#end_date").val());
             table.ajax.reload();
         });
-        $('.filter-clear').on('click', function (event) {
+        $('.filter-clear').on('click', function(event) {
             $('.filter-clear').hide();
 
             $('#filter_client').val(0).trigger('change');

@@ -212,11 +212,17 @@ class LeadController extends BaseController
                         $builder->where('camp_id', $categoryId);
                     }
                 }
+
                 if ($request->lead_status == '0') {
                 } else if ($request->lead_status == '1') {
                     $builder->where('assigned', 1);
                 } else if ($request->lead_status == '2') {
                     $builder->where('assigned', 0);
+                }
+
+                if ($request->start_date != '' && $request->end_date != '') {
+                    $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') >=", $request->start_date);
+                    $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') <=", $request->end_date);
                 }
             })->toJson();
         return $data;
@@ -413,6 +419,10 @@ class LeadController extends BaseController
             $crm_camp_col = json_decode($camp['campaign_columns'], true);
 
             $batch_leads = [];
+
+            var_dump($leads);
+            return 0;
+
             foreach ($leads as $lead) {
                 $post_data = [];
                 $complete_lead = array_merge(...json_decode($lead['complete_lead'], 1));
@@ -430,6 +440,7 @@ class LeadController extends BaseController
                     "lastname" => isset($post_data['last_name']) ? $post_data['last_name'] : "",
                     "state" => isset($post_data['state']) ? $post_data['state'] : "",
                     "complete_lead" => json_encode($post_data),
+                    "lead_date"=>$post_data['date'],
                     "order_id" => "",
                     "status" => 3,
                     "camp_id" => $apiResponseJson['category_id'],

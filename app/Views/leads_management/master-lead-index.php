@@ -65,6 +65,8 @@
     <!-- ============================================================== -->
     <!-- Start right Content here -->
     <!-- ============================================================== -->
+
+
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
@@ -260,6 +262,7 @@
 <script src="assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="assets/libs/select2/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<script src="assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
 
 
@@ -448,7 +451,10 @@
         getAgent();
         var lead_status = 0;
         var checkedIds = [];
-
+        $('.date_filter').on('change', function(event) {
+            console.log("Date Changed");
+            table.ajax.reload();
+        });
 
         <?php if (session()->getFlashdata('error')) : ?>
             toastr.error('Error!', '<?= session()->getFlashdata('error') ?>')
@@ -469,7 +475,7 @@
         $('#unassigned-leads').click(function() {
             $(this).addClass('active-btn');
             $('button').not(this).removeClass('active-btn');
-            lead_status = 1;
+            lead_status = 2;
             console.log("Lead Status", lead_status)
             $("#table").DataTable().ajax.reload();
 
@@ -478,17 +484,11 @@
         $('#assigned-leads').click(function() {
             $(this).addClass('active-btn');
             $('button').not(this).removeClass('active-btn');
-            lead_status = 2;
+            lead_status = 1;
             console.log("Lead Status", lead_status)
             $("#table").DataTable().ajax.reload();
         });
         // 
-
-
-
-
-
-
         // Note & Remainders 
         $('#post-btn').click(function() {
             var post = $('.status-box').val();
@@ -627,6 +627,11 @@
                     console.log("Value", value);
                     console.log("Condition", condition);
                     console.log("Filter Active", category);
+                    
+                    console.log("Date Start",$("#start_date").val())
+                    console.log("Date Start",$("#end_date").val())
+
+
 
 
                     d.column = column;
@@ -636,6 +641,8 @@
                     d.filterActive = filterActive;
                     d.lead_status = lead_status;
                     d.category = category;
+                    d.start_date = $("#start_date").val();
+                    d.end_date = $("#end_date").val();
                 }
             },
             "fnCreatedRow": function(nRow, aData, iDataIndex) {
@@ -703,6 +710,7 @@
 
 
         $('#table tbody').on('change', 'input[type="checkbox"]', function() {
+            console.log("Clicked")
             $('#table tbody input[type="checkbox"]').each(function() {
                 var trId = $(this).closest('tr').attr('id');
                 var isChecked = $(this).is(':checked');

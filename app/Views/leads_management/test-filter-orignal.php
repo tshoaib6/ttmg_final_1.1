@@ -84,18 +84,21 @@
                 <h5 id="offcanvasRightLabel">Lead Detail</h5>
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+
                     <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#lead_detail" role="tab">
                             <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
                             <span class="d-none d-sm-block">Lead Details</span>
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#notes" role="tab">
                             <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
                             <span class="d-none d-sm-block">Notes</span>
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#remainder" role="tab">
                             <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
@@ -257,6 +260,7 @@
 
 
     <script type="text/javascript">
+        
         function createListItem(currentDateTime, post) {
             var listItem = $('<li>');
             var dateTimeSpan = $('<span>').text(currentDateTime).addClass('datetime');

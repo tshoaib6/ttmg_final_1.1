@@ -488,7 +488,6 @@ class OrdersContoller extends BaseController
             }
             array_push($leads, $temp);
         }
-
         $post_data = array();
         $duplicate = array();
         if ($o_id != "") {
@@ -508,7 +507,7 @@ class OrdersContoller extends BaseController
                     "status" => 3,
                     "master_search" => json_encode($l),
                     "assigned" => 1,
-                    "lead_date" => $l['date'],
+                    "lead_date" => date('Y-m-d', strtotime($l['date'])),
 
 
                 ];
@@ -533,7 +532,7 @@ class OrdersContoller extends BaseController
                     "client_id" => "",
                     "status" => 3,
                     "master_search" => json_encode($l),
-                    "lead_date" => $l['date'],
+                    "lead_date" => date('Y-m-d', strtotime($l['date'])),
 
                 ];
                 array_push($post_data, $temp_post_data);
