@@ -6,7 +6,6 @@
     <!-- DataTables -->
     <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-
     <!-- Responsive datatable examples -->
     <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
@@ -25,12 +24,13 @@
             box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
         }
 
-        #order-report{
+        #order-report {
             padding: 20px;
             display: none;
         }
-        .order-report-card{
-            padding:10px;
+
+        .order-report-card {
+            padding: 10px;
             border-right: 1px solid #4456ae;
         }
     </style>
@@ -50,19 +50,69 @@
 
 
     <div class="main-content">
-
         <div class="page-content">
             <div class="container-fluid">
-
                 <?php echo $page_title ?>
-          
                 <button id="all-orders" class="btn btn-primary mb-3 active-btn">All Orders</button>
-                <button id="open-orders" class="btn btn-primary mb-3 ">Open Orders</button>
+                <button id="open-orders" class="btn btn-primary mb-3">Open Orders</button>
                 <button id="complete-orders" class="btn btn-primary mb-3">Complete Orders</button>
                 <button id="blocked-orders" class="btn btn-primary mb-3">Blocked Orders</button>
                 
                 <div class="row">
-                    <?= $this->include('orders_management/order-table') ?>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label class="form-label" for="formclientinput">Select Category</label>
+                                        <select class="select2 form-select" id="filter_campaign">
+                                            <option value="0">Choose Category...</option>
+                                            <?php foreach ($campaigns as $row) { ?>
+                                                <option value="<?= $row['id'] ?>">
+                                                    <?= $row['campaign_name'] ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label" for="formvendorinput">Select Vendor</label>
+                                        <select class="select3 form-select" id="filter_vendor">
+                                            <option value="0">Choose Vendor...</option>
+                                            <?php foreach ($vendors as $row) { ?>
+                                                <option value="<?= $row['id'] ?>">
+                                                    <?= $row['firstname'] . ' ' . $row['lastname'] ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-sm-2 d-flex align-items-end">
+                                        <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light filter-clear" style="display:none;">Clear Filter</button>
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="lead-summary">
+                                    <button class="btn btn-default btn-with-tooltip" id="slideDown">
+                                        <i class="fa fa-align-left"></i>
+                                    </button>
+
+                                    <div class="lead-content" id="order-report">
+                                        <div class="row ">
+                                            <div class="col-md-3 order-report-card"><b> Total Orders : </b></div>
+                                            <div class="col-md-3 order-report-card"><b> Active Orders : </b></div>
+                                            <div class="col-md-3 order-report-card"><b> Complete Orders : </b></div>
+                                            <div class="col-md-3 order-report-card"><b> Blocked Orders : </b></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <?= $this->include('orders_management/order-table') ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div> <!-- container-fluid -->
@@ -307,8 +357,6 @@
             "fnCreatedRow": function(nRow, aData, iDataIndex) {
                 $(nRow).attr('id', aData[0]);
             }
-
-
         });
 
 

@@ -42,9 +42,6 @@
                                         <?php echo $campaign['campaign_name'] ?>
                                     </p>
                                 </div>
-
-                    
-
                             </div>
                             <hr>
                             <h5> Orders </h5>
@@ -95,6 +92,12 @@
                 order: [],
                 ajax:  {
                     url: "<?php echo site_url('orders-datatable') ?>/" + <?php echo $campaign['id'] ?>,
+                    data: function(d) {
+                        order_status=4;
+                    d.order_status = order_status;
+                    d.filter_campaign ="";
+                    d.filter_vendor = "";
+                },
                     
     },
                 "fnCreatedRow": function (nRow, aData, iDataIndex) {

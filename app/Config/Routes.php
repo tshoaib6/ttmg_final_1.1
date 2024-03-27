@@ -163,6 +163,16 @@ $routes->get('/getremainder/(:any)', 'LeadController::get_remainder/$1', ['filte
 $routes->post('/assign-leads', 'LeadController::assign_lead', ['filter' => 'authenticate']);
 $routes->get('/replace-lead/(:any)', 'LeadController::add_lead/$1', ['filter' => 'authenticate']);
 
+//Clientale
+
+
+$routes->get('/all-clients', 'ClientaleController::index',['filter' => 'authenticate']);
+$routes->post('/upload-client-data', 'ClientaleController::upload_clients_data', ['filter' => 'authenticate']);
+$routes->get('/map-headers-clients', 'ClientaleController::map_headers_clients', ['filter' => 'authenticate']);
+$routes->post('/import-clients', 'ClientaleController::import_clients', ['filter' => 'authenticate']);
+$routes->get('/ajax-clients-datatable', 'ClientaleController::ajaxClientDatatable');
+
+
 
 
 

@@ -166,9 +166,6 @@ class CampaignController extends BaseController
 
     public function delete($id)
     {
-
-
-
         $result = $this->campaign_model->deleteCampaign($id);
         log_activity("Campaign Deleted" . json_encode($result), get_user_id());
         return  redirect()->to('campaign-index');
@@ -189,7 +186,7 @@ class CampaignController extends BaseController
             $data["campagin"]="N/A";
 
         }
-       
+
         return view('campaigns/campaign-detail', $data);
     }
 

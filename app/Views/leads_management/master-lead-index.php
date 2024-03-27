@@ -10,6 +10,8 @@
     <?= $this->include('partials/head-css') ?>
 
     <style>
+    
+
         .select2-container {
             z-index: 100000;
         }
@@ -586,10 +588,15 @@
             processing: true,
             serverSide: true,
             columnDefs: [{
-                target: 0,
-                visible: false,
-                searchable: false
-            }, ],
+                    target: 0,
+                    visible: false,
+                    searchable: false
+                },
+                {
+                    target: 7,
+                    orderable: false,
+                }
+            ],
             order: [],
             ajax: {
                 url: "<?php echo site_url('master-leads-datatable') ?>/" + 0,
@@ -627,9 +634,9 @@
                     console.log("Value", value);
                     console.log("Condition", condition);
                     console.log("Filter Active", category);
-                    
-                    console.log("Date Start",$("#start_date").val())
-                    console.log("Date Start",$("#end_date").val())
+
+                    console.log("Date Start", $("#start_date").val())
+                    console.log("Date Start", $("#end_date").val())
 
 
 
@@ -707,6 +714,32 @@
         });
 
         // 
+
+
+        $('#allCheckBox').change(function() {
+            console.log("Shooaib", $(this).prop('checked'))
+
+            checkedIds = [];
+            if ($(this).prop('checked')) {
+                $('.lead-check').each(function() {
+                    $(this).attr("checked", "checked");
+                    var trId = $(this).closest('tr').attr('id');
+                    checkedIds.push(trId);
+
+                });
+            } else {
+                $('input.lead-check').prop('checked', false);
+            }
+            console.log("Ids Here",checkedIds)
+
+            if (checkedIds.length > 0) {
+                $("#assign-container").show();
+            } else {
+                $("#assign-container").hide();
+            }
+        });
+
+
 
 
         $('#table tbody').on('change', 'input[type="checkbox"]', function() {

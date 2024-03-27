@@ -39,7 +39,7 @@
                     <div class="col-lg-8 offset-4">
                         <div class="card">
                             <div class="card-body">
-                                <form id="mapping_form" action="<?php echo base_url('import-leads'); ?>"
+                                <form id="mapping_form" action="<?php echo base_url('import-clients'); ?>"
                                     method="post">
 
                                     <table class="table table-striped table-hover table-bordered">
@@ -79,9 +79,6 @@
 
                                         </tbody>
                                     </table>
-                                    <input type="hidden" name="cid" value="<?php echo $order_id; ?>">
-                                    <input type="hidden" name="camp_id" value="<?php echo $camp_id; ?>">
-
                                     <input type="submit" class="btn btn-danger btn-block" value="IMPORT">
                                 </form>
                             </div>

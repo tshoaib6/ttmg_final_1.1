@@ -2,13 +2,14 @@
     <div class="card">
 
         <div class="card-body">
-            <div class="row">
-                <div class="col">
-                    <button class="btn btn-sm btn-primary mr-2" onclick="showAddFilter(); return 0;" data-toggle="modal" data-target=".filtermodal"><span class="icon"><i class="mdi mdi-filter"></i></span></button>
+            <div class="d-flex flex-row align-item-center">
+
+                <div class="d-flex flex-row justify-content-between">
+                    <button class="btn btn-sm btn-primary" onclick="showAddFilter(); return 0;" style="margin-right:10px;" data-toggle="modal" data-target=".filtermodal"><span class="icon"><i class="mdi mdi-filter"></i></span></button>
                     <button class="btn btn-sm btn-danger" onclick="resetFilter(); return 0;" data-toggle="modal" data-target=".filtermodal"><span class="icon"><i class="mdi mdi-filter-off"></i></span></button>
                 </div>
-                <div class="col-sm-3">
-                    <label class="form-label">Select Date Range</label>
+
+                <div class="ml-2" style="margin-left:20px;">
                     <div class="input-daterange input-group" id="datepicker6" data-date-format="mm-dd-yyyy" data-date-autoclose="true" data-provide="datepicker" data-date-container='#datepicker6'>
                         <input type="text" class="form-control date_filter" name="start_date" id="start_date" placeholder="Start Date" />
                         <input type="text" class="form-control date_filter" name="end_date" placeholder="End Date" id="end_date" />
@@ -16,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="row  " id="assign-container" style="display:none !important;">
+            <div class="row  " id="assign-container" style="display:none !important; margin-top:10px;">
                 <form id="lead_assign_form" action="<?= base_url() ?>assign-leads/" method="POST">
                     <div class="col-sm-6 mb-3">
                         <label class="form-label" for="formrow-campaign-input">Order<span class="required"> * </span></label>
@@ -47,7 +48,7 @@
                         <th>State</th>
                         <th>Phone Number</th>
                         <th>Action </th>
-                        <th>Check </th>
+                        <th> <input class="form-check-input" name="allcheckbox" type="checkbox" id="allCheckBox">   <span> Check </span></th>
                     </tr>
                 </thead>
                 <tbody>

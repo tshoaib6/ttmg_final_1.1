@@ -455,6 +455,8 @@
 
                                     <a href="<?= base_url('allUsers') ?>" class="dropdown-item">All Users</a>
                                     <a href="<?= base_url('register') ?>" class="dropdown-item">User Registration</a>
+                                    <a href="<?= base_url('all-clients') ?>" class="dropdown-item">Clientele</a>
+
 
                                 </div>
                             </li>

@@ -449,6 +449,7 @@ class OrdersContoller extends BaseController
         } else {
             $mapping_headers = $this->order_model->get_camp_headers("", $uploadedFile['camp_id']);
         }
+    
         foreach ($import_data[0] as $key => $value) {
             $header[] = $value;
         }

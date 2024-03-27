@@ -70,35 +70,8 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class="row d-flex justify-content-between">
-                                    <div class="col-md-3 mb-3">
-
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="radio" name="formRadios"
-                                                id="formRadios1" value="all" checked>
-                                            <label class="form-check-label" for="formRadios1">
-                                                All Leads
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" value="un" type="radio" name="formRadios"
-                                                id="formRadios2">
-                                            <label class="form-check-label" for="formRadios2">
-                                                Unassigned
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-3 mb-3">
-                                        <label class="form-label" for="formrow-campaign-input">Agent Name<span
-                                                class="required"> </span></label>
-                                        <select class="form-control select2" name="fkclientid" style="width: 100%;">
-                                            <option value="0"> All Leads </option>
-                                            <option value="3"> Blocked </option>
-                                            <option value="2"> Reject </option>
-
-                                        </select>
-                                    </div>
-
+                                <div class="row d-flex">
+                                
                                     <div class="col-sm-3 mb-3">
                                         <label class="form-label" for="formrow-campaign-input">Client<span
                                                 class="required"> </span></label>
@@ -113,48 +86,18 @@
                                     </div>
 
                                     <div class="col-sm-3 mb-3">
-                                        <label class="form-label" for="formrow-campaign-input">State<span
-                                                class="required"> * </span></label>
-                                        <select id="state" class="form-control select2" name="state"
-                                            style="width: 100%;">
-                                            <option value=""> </option>
-                                            <option value="AK">AK</option>
-                                            <option value="AL">AL</option>
-                                            <option value="AR">AR</option>
-                                            <option value="AZ">AZ</option>
-                                            <option value="CA">CA</option>
-                                            <option value="CO">CO</option>
-                                            <option value="CT">CT</option>
-                                            <option value="DC">DC</option>
-                                            <option value="DE">DE</option>
-                                            <option value="FL">FL</option>
-                                            <option value="GA">GA</option>
-                                            <option value="HI">HI</option>
-                                            <option value="IA">IA</option>
-                                            <option value="ID">ID</option>
-                                            <option value="IL">IL</option>
-                                            <option value="IN">IN</option>
-                                            <option value="KS">KS</option>
-                                            <option value="KY">KY</option>
-                                            <option value="TN">TN</option>
-                                            <option value="LA">LA</option>
-                                            <option value="MA">MA</option>
-                                            <option value="MD">MD</option>
-                                            <option value="ME">ME</option>
-                                            <option value="MI">MI</option>
-                                            <option value="MN">MN</option>
-                                            <option value="MO">MO</option>
-                                            <option value="MS">MS</option>
-                                            <option value="MT">MT</option>
-                                            <option value="NC">NC</option>
-                                            <option value="ND">ND</option>
-                                            <option value="NE">NE</option>
-                                            <option value="NH">NH</option>
-                                            <option value="NJ">NJ</option>
-                                            <option value="NM">NM</option>
+                                        <label class="form-label" for="formrow-campaign-input">Vendors<span
+                                                class="required"> </span></label>
+                                        <select class="form-control select2" name="fkclientid" style="width: 100%;">
+                                            <?php foreach ($client as $c) { ?>
+                                                <option value="<?php echo $c['id'] ?>">
+                                                    <?php echo $c['firstname'] . " " . $c['lastname'] ?>
+                                                </option>
+                                            <?php } ?>
 
                                         </select>
                                     </div>
+
                                 </div>
                                 <button id="filter-btn" class="btn btn-primary mb-3">Filter</button>
 
