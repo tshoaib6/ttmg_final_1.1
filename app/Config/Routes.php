@@ -303,6 +303,7 @@ $routes->get('get-orders', 'OrderController::get_orders_api');
 $routes->post('test-api', 'LeadController::sync_lead_api');
 $routes->get('test-email', 'LeadController::test_mail');
 $routes->post('login-api', 'Auth::login_api');
+$routes->get('get-lead-api', 'LeadController::lead_api');
 
 
 
