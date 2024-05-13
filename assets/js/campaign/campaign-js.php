@@ -14,6 +14,8 @@
 
         $('.fields-row').each(function (index) {
             var $row = $(this);
+            console.log($row);
+
             var columnData = columns[index];
             $row.find('.col_name').val(columnData.col_name);
             $row.find('.col_slug').val(columnData.col_slug);
@@ -38,6 +40,7 @@
                                             </div>
 
                                             <div class="mb-3 col-lg-2">
+                                            <
                                                 <label class="form-label" for="subject">Column Type</label>
 
                                                 <select name="col_type[]" class="form-select col_type" required

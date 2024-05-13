@@ -60,13 +60,8 @@
                                             <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="subject">Column Type</label>
 
-                                                <select name="col_type[]" class="form-select col_type" required
-                                                    aria-label="Floating label select example">
-                                                    <option value="text">Text</option>
-                                                    <option value="number">Number</option>
-                                                    <option value="date">Date</option>
-                                                    <option value="dropdown">Dropdown</option>
-                                                </select>
+                                                <input readonly type="text" name="col_type[]" id="default_value"
+                                                    class="form-control col_type"  value="text" readonly />
                                             </div>
 
                                             <div class="mb-3 col-lg-2 defaultField">
@@ -100,13 +95,8 @@
                                             <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="subject">Column Type</label>
 
-                                                <select name="col_type[]" class="form-select col_type" required
-                                                    aria-label="Floating label select example">
-                                                    <option value="text">Text</option>
-                                                    <option value="number">Number</option>
-                                                    <option value="date">Date</option>
-                                                    <option value="dropdown">Dropdown</option>
-                                                </select>
+                                                <input readonly type="text" name="col_type[]" id="default_value"
+                                                    class="form-control col_type"  value="text" readonly />
                                             </div>
 
                                             <div class="mb-3 col-lg-2 defaultField">
@@ -140,13 +130,8 @@
                                             <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="subject">Column Type</label>
 
-                                                <select name="col_type[]" class="form-select col_type" required
-                                                    aria-label="Floating label select example">
-                                                    <option value="text">Text</option>
-                                                    <option value="number">Number</option>
-                                                    <option value="date">Date</option>
-                                                    <option value="dropdown">Dropdown</option>
-                                                </select>
+                                                <input readonly type="text" name="col_type[]" id="subject"
+                                                    class="form-control col_type"  value="text" readonly />
                                             </div>
 
                                             <div class="mb-3 col-lg-2 defaultField">
@@ -180,13 +165,8 @@
                                             <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="subject">Column Type</label>
 
-                                                <select name="col_type[]" class="form-select col_type" required
-                                                    aria-label="Floating label select example">
-                                                    <option value="text">Text</option>
-                                                    <option value="number">Number</option>
-                                                    <option value="date">Date</option>
-                                                    <option value="dropdown">Dropdown</option>
-                                                </select>
+                                                <input readonly type="text" name="col_type[]" id=""
+                                                    class="form-control col_type"  value="text" readonly />
                                             </div>
 
                                             <div class="mb-3 col-lg-2 defaultField">
@@ -220,13 +200,8 @@
                                             <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="subject">Column Type</label>
 
-                                                <select name="col_type[]" class="form-select col_type" required
-                                                    aria-label="Floating label select example">
-                                                    <option value="text">Text</option>
-                                                    <option value="number">Number</option>
-                                                    <option value="date">Date</option>
-                                                    <option value="dropdown">Dropdown</option>
-                                                </select>
+                                                <input readonly type="text" name="col_type[]" id="default_value"
+                                                    class="form-control col_type"  value="text" readonly />
                                             </div>
 
                                             <div class="mb-3 col-lg-2 defaultField">
@@ -260,13 +235,8 @@
                                             <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="subject">Column Type</label>
 
-                                                <select name="col_type[]" class="form-select col_type" required
-                                                    aria-label="Floating label select example">
-                                                    <option value="text">Text</option>
-                                                    <option value="number">Number</option>
-                                                    <option value="date">Date</option>
-                                                    <option value="dropdown">Dropdown</option>
-                                                </select>
+                                                <input readonly type="text" name="col_type[]" id="default_value"
+                                                    class="form-control col_type"  value="text" readonly />
                                             </div>
 
                                             <div class="mb-3 col-lg-2 defaultField">

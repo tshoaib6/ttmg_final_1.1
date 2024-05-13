@@ -41,7 +41,6 @@
                             <div class="card-body">
                                 <form id="mapping_form" action="<?php echo base_url('import-clients'); ?>"
                                     method="post">
-
                                     <table class="table table-striped table-hover table-bordered">
                                         <thead>
                                             <tr>

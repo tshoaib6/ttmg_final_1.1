@@ -296,6 +296,7 @@ class Auth extends BaseController
 
     public function register()
     {
+        
 
         $data = [];
         $data['page_title'] = "Registraion";
@@ -320,6 +321,8 @@ class Auth extends BaseController
                 $agentpic = '';
                 if ($agentpic = $this->request->getFile('agentpicture')) {
 
+                    
+
                     $input = $this->validate([
                         'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],'
                     ]);
@@ -330,6 +333,7 @@ class Auth extends BaseController
                     } else {
 
                         $newName = $agentpic->getRandomName();
+                       
                         $agentpic->move('uploads/users', $newName);
                         $agentpic = $newName;
                     }
@@ -356,26 +360,21 @@ class Auth extends BaseController
                 } else if ($role == 2) //vendor
                 {
                     $branchlogo = '';
-                    if ($branchlogo = $this->request->getFile('branchlogo')) {
-
-                        /*$input2 = $this->validate([
-                         'branchlogo' => 'uploaded[branchlogo]|max_size[branchlogo,1024]|ext_in[branchlogo,jpg,jpeg,png],'
-                         ]);
-
-                        if (!$input2) 
-                        { 
-                           $branchlogo = '';
-
-                        }else{ */
-
+                    $branchlogo = $this->request->getFile('branchlogo');
+                    if ($branchlogo->isValid()) {
+                          
+    
                         $newName = $branchlogo->getRandomName();
                         $branchlogo->move('uploads/users', $newName);
                         $branchlogo = $newName;
-                        //}
+                        
 
                     }
 
-                    $idata =
+                    $refered_to=[];
+                    if($this->request->getPost('subvendor')){
+                        $refered_to=$this->request->getPost('subvendor');
+                        $idata =
                         [
                             'firstname' => $this->request->getPost('firstname'),
                             'lastname' => $this->request->getPost('lastname'),
@@ -408,6 +407,44 @@ class Auth extends BaseController
                             'block' => 0,
                             'referred_to' => implode(', ', $this->request->getPost('subvendor')),
                         ];
+                    }
+                    else{
+
+                    $idata =
+                        [
+                            'firstname' => $this->request->getPost('firstname'),
+                            'lastname' => $this->request->getPost('lastname'),
+                            'email' => $email,
+                            'password' => $password,
+                            'phone' => $this->request->getPost('phone'),
+                            'address' => $this->request->getPost('address'),
+                            'website' => $this->request->getPost('website'),
+                            'coverage' => $this->request->getPost('coverage'),
+                            'linkedin' => $this->request->getPost('linkedin'),
+                            'useruimage' => $agentpic,
+                            'vendor' => 0,
+                            'smtpemail' => $this->request->getPost('smtpemail'),
+                            'smtppassword' => $this->request->getPost('smtppassword'),
+                            'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
+                            'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
+                            'smtpport' => $this->request->getPost('smtpport'),
+                            'branchname' => $this->request->getPost('branchname'),
+                            'branchslug' => $this->request->getPost('branchslug'),
+                            'branchcountry' => $this->request->getPost('branchcountry'),
+                            'branchaddress' => $this->request->getPost('branchaddress'),
+                            'brancheader' => $this->request->getPost('brancheader'),
+                            'branchnavbar' => $this->request->getPost('branchnavbar'),
+                            'branchnavtext' => $this->request->getPost('branchnavtext'),
+                            'branchnavhover' => $this->request->getPost('branchnavhover'),
+                            'branchlogo' => $branchlogo,
+                            'branchlogoheight' => $this->request->getPost('branchlogoheight'),
+                            'branchlogowidth' => $this->request->getPost('branchlogowidth'),
+                            'userrole' => 2,
+                            'block' => 0,
+                            // 'referred_to' => implode(', ', $this->request->getPost('subvendor')),
+                            'referred_to' => ""
+                        ];
+                    }
                 } else if ($role == 3) //client
                 {
                     $idata =
@@ -498,7 +535,7 @@ class Auth extends BaseController
             $role = $this->request->getPost('role');
 
             $agentpic = '';
-            if ($agentpic = $this->request->getFile('agentpicture')) {
+            if ($agentpic = $this->request->getFile('agentpicture')->isValid()) {
 
                 $input = $this->validate([
                     'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],',
