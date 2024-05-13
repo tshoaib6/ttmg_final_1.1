@@ -900,7 +900,7 @@ class Auth extends BaseController
         if ($this->request->getMethod() == 'post') {
             $user = $this->auth_model->where('email', $this->request->getPost('email'))->first();
             if ($user) {
-                $verify_password = $this->auth_model->where('password', $this->request->getPost('password'))->first();
+                $verify_password = $this->auth_model->select('firstname,lastname,email,brancheader,branchnavbar')->where('password', $this->request->getPost('password'))->first();
                 if ($verify_password) {
                     if ($user['block'] == 1) {
                         $status = "1";
@@ -917,14 +917,19 @@ class Auth extends BaseController
                         $response['user_id']=$user['id'];
                         $response["data"]=$verify_password;
                         $response["token"]=$token;
+                        $response["status"] =1;
                            
                         
                     }
                 } else {
                     $message = "Incorrect Password.";
+                    $response["status"] =0;
+
                 }
             } else {
                 $message = "Incorrect Email or Password";
+                $response["status"] =0;
+
             }
             $response["message"]=$message;
            echo json_encode( $response);
