@@ -53,6 +53,36 @@
             </div>
         </div>
 
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasImportLead" aria-labelledby="offcanvasImportLeadLabel">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasImportLeadLabel">Import Lead</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body " id="import-lead">
+                <form action="<?php echo base_url('upload-lead') ?>" enctype="multipart/form-data" method="POST">
+                    <label for="formFileLg" class="form-label">Upload File</label>
+                    <input class="form-control form-control-lg mb-3" id="formFileLg" type="file" name="csvfile" required accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    <input type="hidden" id="order_id_field" name="order_id">
+                    <div class="row d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary"> Upload </button>
+                    </div>
+                </form>
+                <hr>
+                <div id="download-button" class="row d-flex justify-content-center">
+                </div>
+            </div>
+        </div>
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasLeadForm" aria-labelledby="offcanvasLeadFormLabel">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasLeadFormLabel">Lead Form</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body " id="lead-form">
+
+            </div>
+        </div>
+
         <?= $this->include('partials/footer') ?>
     </div>
     <!-- end main content-->
@@ -106,6 +136,61 @@
             },
                
         });
+
+        
+    function importLeads(orderId) {
+        var formHTML = `<button onclick="downloadSample(${orderId});" class="btn btn-primary">Download Sample</button>`;
+
+        $("#download-button").html(formHTML);
+        $("#order_id_field").val(orderId);
+        var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasImportLead);
+        bsOffcanvas2.show();
+
+    }
+    function addLeadToOrder(orderId) {
+        $.ajax({
+            url: '<?php echo site_url('lead-form-ajax') ?>',
+            type: 'GET',
+            data: {
+                orderId: orderId
+            },
+            success: function(response) {
+                $a = JSON.parse(response);
+                col = JSON.parse($a.campaign_columns);
+
+                formHTML = generateLeadForm(col, orderId);
+                $("#lead-form").html(formHTML);
+            },
+            error: function(error) {
+                console.error('AJAX request failed:', error);
+            }
+        });
+        var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasLeadForm);
+        bsOffcanvas2.show();
+    }
+
+    function downloadSample(orderId) {
+        $.ajax({
+            url: 'get-campaign-col',
+            method: 'POST',
+            data: {
+                orderId: orderId
+            },
+            success: function(response) {
+                console.log(response);
+                var headers = JSON.parse(response);
+                headers = headers.map(item => item.col_slug);
+                const ws = XLSX.utils.aoa_to_sheet([headers]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
+                XLSX.writeFile(wb, 'output.xlsx');
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+
+    }
 </script>
 
 <!-- App js -->

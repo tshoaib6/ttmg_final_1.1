@@ -443,7 +443,11 @@ function generateLeadForm(col, orderId = "", camp_id = "") {
     formElements.push('<input type="hidden" name="order_id" value="' + orderId + '">');
     formElements.push('<input type="hidden" name="camp_id" value="' + camp_id + '">');
 
-    var formHTML = `<form action='add-lead' id="lead-add-form" method="POST" class="row">${formElements.join('')}</form>`;
+    var base_url = $('#base-url').attr('data-target');
+    var action_url = base_url + 'add-lead';
+    console.log("Base ",base_url)
+    var formHTML = `<form action='${action_url}' id="lead-add-form" method="POST" class="row">${formElements.join('')}</form>`;
+
 
     return formHTML;
 }
@@ -463,7 +467,7 @@ $(".link-subvendor").on('click', function (e) {
                 card2 = '<div class="card">' +
                     '<div class="card-body">' +
                     '<p><b> Sub Vendor Name  : </b> <span>' + subVendor.firstname + ' ' + subVendor.lastname + '</span> </p>' +
-                    '<p><b> Orders   : </b> <a href="'  +subVendor.firstname+  '/order-index/'+subVendor.id+ '">' + subVendor.id + '</a> </p>' +
+                    '<p><b> Orders   : </b> <a href="' + subVendor.firstname + '/order-index/' + subVendor.id + '">' + subVendor.id + '</a> </p>' +
                     '</div>' +
                     '</div>';
                 return card2;
