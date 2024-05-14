@@ -9,6 +9,8 @@ use App\Models\Auth as Auth_Model;
 use App\Models\Clientele;
 use App\Libraries\Csvimport;
 use DateTime;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 
 class ClientaleController extends BaseController
@@ -55,25 +57,56 @@ class ClientaleController extends BaseController
     }
 
     public function upload_clients_data()
-    {
+{
+    $session = session();
+    $validation =  \Config\Services::validation();
 
-        $session = session();
-        $load_file = '';
-        $date = new DateTime();
-        $c_date_time=$date->format('Y-m-d-H-i-s');
-
-        if ($load_file = $this->request->getFile('csvfile')) {
-            $newName = $load_file->getRandomName();
-            $load_file->move('uploads/clients', "client_data_" . $c_date_time . "_" . $newName);
-            $session->set('uploaded_file_client', [
-                'file_name' => './uploads/clients/' . "client_data_" . $c_date_time. "_" . $newName,
-            ]);
-            return redirect()->to('map-headers-clients');
-        }
+    if (!$this->request->getFile('csvfile')->isValid()) {
+        $session->setFlashdata('error', 'File upload failed.');
+        return redirect()->back();
     }
+
+    // File upload is valid, proceed with uploading
+    $file = $this->request->getFile('csvfile');
+    $fileExtension = pathinfo($file->getName(), PATHINFO_EXTENSION);
+
+    $date = new DateTime();
+    $c_date_time = $date->format('Y-m-d-H-i-s');
+    $newName = $file->getRandomName();
+    $file->move('uploads/clients', "client_data_" . $c_date_time . "_" . $newName);
+
+    if ($fileExtension === 'csv') {
+        $session->set('uploaded_file_client', [
+            'file_name' => './uploads/clients/' . "client_data_" . $c_date_time . "_" . $newName,
+        ]);
+    } else if ($fileExtension === 'xlsx') {
+        // Convert XLSX to CSV
+        $xlsxFile = 'uploads/clients/' . "client_data_" . $c_date_time . "_" . $newName;
+        $csvFile = 'uploads/clients/' . "client_data_" . $c_date_time . "_" . pathinfo($newName, PATHINFO_FILENAME) . '.csv';
+
+        $excelReader = IOFactory::createReader('Xlsx');
+        $excel = $excelReader->load($xlsxFile);
+       
+        $writer = IOFactory::createWriter($excel, 'Csv');
+        $writer->setDelimiter(',');
+        $writer->setEnclosure('"');
+        $writer->setLineEnding("\r\n");
+        $writer->save($csvFile);
+
+        $session->set('uploaded_file_client', [
+            'file_name' => $csvFile,
+        ]);
+
+        // Delete the original XLSX file
+        unlink($xlsxFile);
+    }
+
+    return redirect()->to('map-headers-clients');
+}
 
     public function map_headers_clients()
     {
+
         $session = session();
         $csvimport = new Csvimport();
 

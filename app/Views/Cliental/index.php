@@ -77,8 +77,6 @@
                     <form action="upload-client-data" enctype="multipart/form-data" method="POST">
                         <label for="formFileLg" class="form-label">Upload File</label>
                         <input class="form-control form-control-lg mb-3" id="formFileLg" type="file" name="csvfile" required accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-
-
                         <div class="row d-flex justify-content-center">
                             <button type="submit" class="btn btn-primary"> Upload </button>
                         </div>

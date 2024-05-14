@@ -54,6 +54,8 @@
         });
 
         $("#add-btn").click(function() {
+
+
             $(".repeater-fields").append(`<div  class="row fields-row">
                                             <div class="mb-3 col-lg-3">
                                                 <label class="form-label" for="name"> Column Name:</label>
@@ -82,9 +84,9 @@
                                                 </select>
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 ">
+                                            <div class="mb-3 col-lg-2 defaultFiledDiv">
                                                 <label class="form-label" for="default_value">Default Value</label>
-                                                <input  type="text" name="col_default[]" id="default_value"
+                                                <input  type="text" name="col_default[]" 
                                                     class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
@@ -129,20 +131,28 @@
 
 
         $(document).on('change', '.form-select.col_type', function() {
+            console.log("I m changed")
             var selectedType = $(this).val();
-            var defaultField = $(this).closest('.row').find('.defaultField');
+            console.log(selectedType)
+            var defaultField = $(this).closest('.row').find('.defaultFiledDiv');
+            console.log("Yes",defaultField.val())
+
             if (selectedType === 'dropdown') {
                 defaultField.html(
                     '<label class="form-label" for="options">Options</label>' +
-                    '<input type="text" name="col_options" class="form-control" placeholder="Option 1 | Option 2 | Option 3" required/>' +
+                    '<input type="text" name="col_default[]" class="form-control" placeholder="Option 1 | Option 2 | Option 3" required/>' +
                     '<small class="form-text text-muted">Add option with |</small>'
                 );
-            } else {
+            } else if(selectedType==='date'){
+                $(this).closest('.row').find('.defaultField').val(formattedDate);
+            }
+            else {
                 defaultField.html(
                     '<label class="form-label" for="default_value">Default Value</label>' +
                     '<input type="text" name="col_default" class="form-control" placeholder="Enter default value" />'
                 );
             }
+
         });
 
         $(document).on('change', '.form-control.col_name', function() {

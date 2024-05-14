@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Lead;
 use App\Models\Auth as Auth_Model;
 use CodeIgniter\API\ResponseTrait;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 
 
@@ -414,24 +415,62 @@ class OrdersContoller extends BaseController
         echo json_encode($camp_col);
     }
     public function upload_lead()
-    {
-        $session = session();
-        $id = $this->request->getPost('order_id');
-        $camp_id = $this->request->getPost('camp_id');
-        $order_detail = $this->order_model->find($id);
+{
+    $session = session();
+    $id = $this->request->getPost('order_id');
+    $camp_id = $this->request->getPost('camp_id');
+    $order_detail = $this->order_model->find($id);
 
-        $load_file = '';
-        if ($load_file = $this->request->getFile('csvfile')) {
-            $newName = $load_file->getRandomName();
-            $load_file->move('uploads/orders', "Order_ID_" . $id . "_" . $newName);
-            $session->set('uploaded_file', [
-                'file_name' => './uploads/orders/' . "Order_ID_" . $id . "_" . $newName,
-                'order_id' => $id,
-                'camp_id' => $camp_id
-            ]);
-            return redirect()->to('map-headers');
-        }
+    // Check if a file was uploaded
+    $load_file = $this->request->getFile('csvfile');
+    $fileExtension = pathinfo($load_file->getName(), PATHINFO_EXTENSION);
+
+    if (!$load_file->isValid()) {
+        // Set an error message
+        $session->setFlashdata('error', 'File upload failed.');
+
+        // Redirect back to the previous page
+        return redirect()->back();
     }
+
+    $newName = $load_file->getRandomName();
+    $load_file->move('uploads/orders', "Order_ID_" . $id . "_" . $newName);
+
+    if ($fileExtension === 'csv') {
+        $session->set('uploaded_file', [
+            'file_name' => './uploads/orders/' . "Order_ID_" . $id . "_" . $newName,
+            'order_id' => $id,
+            'camp_id' => $camp_id
+        ]);
+
+    }else if ($fileExtension === 'xlsx') {
+        // Convert XLSX to CSV
+        $xlsxFile = 'uploads/orders/' . "Order_ID_" . $id . "_" . $newName;
+        $csvFile = 'uploads/orders/' . "Order_ID_" . $id . "_" . pathinfo($newName, PATHINFO_FILENAME) . '.csv';
+
+        $excelReader = IOFactory::createReader('Xlsx');
+        $excel = $excelReader->load($xlsxFile);
+       
+        $writer = IOFactory::createWriter($excel, 'Csv');
+        $writer->setDelimiter(',');
+        $writer->setEnclosure('"');
+        $writer->setLineEnding("\r\n");
+        $writer->save($csvFile);
+
+        $session->set('uploaded_file', [
+            'file_name' => $csvFile,
+            'order_id' => $id,
+            'camp_id' => $camp_id
+        ]);
+
+        unlink($xlsxFile);
+    }
+
+    
+
+    return redirect()->to('map-headers');
+}
+
     public function map_headers()
     {
         $session = session();
