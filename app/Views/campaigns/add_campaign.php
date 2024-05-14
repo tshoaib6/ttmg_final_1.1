@@ -64,10 +64,10 @@
                                                     class="form-control col_type"  value="text" readonly />
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 defaultField">
+                                            <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="default_value">Default Value</label>
                                                 <input readonly type="text" name="col_default[]" id="default_value"
-                                                    class="form-control" placeholder="Enter default value" />
+                                                    class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
                                             <div class="col-lg-2 align-self-center">
@@ -99,10 +99,10 @@
                                                     class="form-control col_type"  value="text" readonly />
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 defaultField">
+                                            <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="default_value">Default Value</label>
                                                 <input readonly type="text" name="col_default[]" id="default_value"
-                                                    class="form-control" placeholder="Enter default value" />
+                                                    class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
                                             <div class="col-lg-2 align-self-center">
@@ -134,10 +134,10 @@
                                                     class="form-control col_type"  value="text" readonly />
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 defaultField">
+                                            <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="default_value">Default Value</label>
                                                 <input readonly type="text" name="col_default[]" id="default_value"
-                                                    class="form-control" placeholder="Enter default value" />
+                                                    class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
                                             <div class="col-lg-2 align-self-center">
@@ -169,10 +169,10 @@
                                                     class="form-control col_type"  value="text" readonly />
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 defaultField">
+                                            <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="default_value">Default Value</label>
                                                 <input readonly type="text" name="col_default[]" id="default_value"
-                                                    class="form-control" placeholder="Enter default value" />
+                                                    class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
                                             <div class="col-lg-2 align-self-center">
@@ -204,10 +204,10 @@
                                                     class="form-control col_type"  value="text" readonly />
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 defaultField">
+                                            <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="default_value">Default Value</label>
                                                 <input readonly type="text" name="col_default[]" id="default_value"
-                                                    class="form-control" placeholder="Enter default value" />
+                                                    class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
                                             <div class="col-lg-2 align-self-center">
@@ -239,10 +239,10 @@
                                                     class="form-control col_type"  value="text" readonly />
                                             </div>
 
-                                            <div class="mb-3 col-lg-2 defaultField">
+                                            <div class="mb-3 col-lg-2">
                                                 <label class="form-label" for="default_value">Default Value</label>
                                                 <input readonly type="text" name="col_default[]" id="default_value"
-                                                    class="form-control" placeholder="Enter default value" />
+                                                    class="form-control defaultField" placeholder="Enter default value" />
                                             </div>
 
                                             <div class="col-lg-2 align-self-center">

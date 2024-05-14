@@ -13,43 +13,30 @@ use App\Models\Order;
 use App\Models\Lead;
 use \Hermawan\DataTables\DataTable;
 use CodeIgniter\API\ResponseTrait;
-
-
-
+use PDO;
 
 class LeadController extends BaseController
 {
 
     use ResponseTrait;
-
+    protected $lead_master_model;
+    protected $remainder_model;
     protected $campaign_model;
     protected $order_model;
     protected $lead_model;
-    protected $lead_master_model;
     protected $auth_model;
-
-
     protected $note_model;
-
-    protected $remainder_model;
-
-
     protected $session;
-
-
-
-
 
     public function __construct()
     {
-
         $this->campaign_model = new Campaign;
         $this->order_model = new Order;
         $this->lead_model = new Lead;
         $this->lead_master_model = new LeadMaster;
         $this->note_model = new Note;
         $this->remainder_model = new Remainder;
-        $this->auth_model= new Auth();
+        $this->auth_model = new Auth();
         $this->session = session();
     }
 
@@ -113,7 +100,7 @@ class LeadController extends BaseController
                 }
             })->hide('status')->hide('order_id')
             ->filter(function ($builder, $request) {
-
+            
                 // if ($request->state) {
                 //     $builder->where('state', $request->state);
                 // }
@@ -127,7 +114,9 @@ class LeadController extends BaseController
                 //     $builder->where('client_id', $request->client);
                 // }
 
-
+                if($request->lead_status){
+                    $builder->where('client_id',$request->client);
+                }
             })
 
             ->toJson();
@@ -447,7 +436,7 @@ class LeadController extends BaseController
                     "lastname" => isset($post_data['last_name']) ? $post_data['last_name'] : "",
                     "state" => isset($post_data['state']) ? $post_data['state'] : "",
                     "complete_lead" => json_encode($post_data),
-                    "lead_date"=>$post_data['date'],
+                    "lead_date" => $post_data['date'],
                     "order_id" => "",
                     "status" => 3,
                     "camp_id" => $apiResponseJson['category_id'],
@@ -510,40 +499,39 @@ class LeadController extends BaseController
         return 0;
     }
 
-    public function lead_api(){
+    public function lead_api()
+    {
 
         $id = $this->request->getGet('id');
-        $token= $this->request->getGet('token');
-        $page=$this->request->getGet('page');
-        $offset=$this->request->getGet('offset');
-        $user=$this->auth_model->find($id);
-        if($user['token']==$token){
-           if($user['userrole']==3){
-            $leads=$this->lead_model->where('client_id',$id)->countAllResults();            
-            $pagination = array(
-                "total_records" => $leads,
-                "current_page" => $page,
-                "total_pages" =>ceil($leads/10),
-                "off_set" => $offset,
-                "next_page" => intval($page)+1,
-                "prev_page" => intval($page)-1,
-            );
-            $leads=$this->lead_model->where('client_id',$id)->findAll(10,$offset);  
-            $response['leads']=$leads;
-            $pagination['current_records']=count($leads);
-            $response['pagination']=$pagination;
-           }
-           elseif($user['userrole']==2){
-            $leads=$this->lead_model->where('vendor_id',$id)->findAll();
+        $token = $this->request->getGet('token');
+        $page = $this->request->getGet('page');
+        $offset = $this->request->getGet('offset');
+        $user = $this->auth_model->find($id);
+        if ($user['token'] == $token) {
+            if ($user['userrole'] == 3) {
+                $leads = $this->lead_model->where('client_id', $id)->countAllResults();
+                $pagination = array(
+                    "total_records" => $leads,
+                    "current_page" => $page,
+                    "total_pages" => ceil($leads / 10),
+                    "off_set" => $offset,
+                    "next_page" => intval($page) + 1,
+                    "prev_page" => intval($page) - 1,
+                );
+                $leads = $this->lead_model->where('client_id', $id)->findAll(10, $offset);
+                $response['leads'] = $leads;
+                $pagination['current_records'] = count($leads);
+                $response['pagination'] = $pagination;
+            } elseif ($user['userrole'] == 2) {
+                $leads = $this->lead_model->where('vendor_id', $id)->findAll();
 
-            $response['leads']=$leads;
-           }
-           $response['message']="Sucessfull";
-
-        }else{
-            $response['message']=$this->fail('', 403,'Forbidden');
+                $response['leads'] = $leads;
+            }
+            $response['message'] = "Sucessfull";
+        } else {
+            $response['message'] = $this->fail('', 403, 'Forbidden');
         }
-        
+
 
         echo json_encode($response);
     }

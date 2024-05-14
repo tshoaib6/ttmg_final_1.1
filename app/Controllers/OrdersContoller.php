@@ -10,6 +10,8 @@ use App\Models\Campaign;
 use App\Models\Order;
 use App\Models\Lead;
 use App\Models\Auth as Auth_Model;
+use CodeIgniter\API\ResponseTrait;
+
 
 
 
@@ -21,6 +23,8 @@ use App\Libraries\Csvimport;
 
 class OrdersContoller extends BaseController
 {
+    use ResponseTrait;
+
     protected $campaign_model;
     protected $order_model;
     protected $lead_model;
@@ -284,8 +288,10 @@ class OrdersContoller extends BaseController
         $token = random_string('alnum', '40');
         update_option("token", $token);
         $data = array(
+
             "camp" => $order,
             'token' => $token
+
         );
         echo json_encode($data);
     }
@@ -335,6 +341,7 @@ class OrdersContoller extends BaseController
 
             ];
         }
+
         $insert_id = $this->lead_master_model->insert($post_data);
 
 
@@ -391,6 +398,7 @@ class OrdersContoller extends BaseController
 
         $session = session();
         $session->setFlashdata('success', 'Lead Added Sucessfully.');
+       
         if ($data['order_id'] == "") {
             return redirect()->to('master-lead-index')->withInput();
         } else {
@@ -453,9 +461,9 @@ class OrdersContoller extends BaseController
         foreach ($import_data[0] as $key => $value) {
             $header[] = $value;
         }
-        $data['order_id'] = $uploadedFile['order_id'];
-        $data['camp_id'] = $uploadedFile['camp_id'];
-        $data['header'] = $header;
+        $data['order_id']      = $uploadedFile['order_id'];
+        $data['camp_id']       = $uploadedFile['camp_id'];
+        $data['header']        = $header;
         $data['header_fields'] = $mapping_headers;
         return view('orders_management/map_headers', $data);
     }
@@ -613,5 +621,50 @@ class OrdersContoller extends BaseController
         $orderId = $this->request->getPost('orderId');
         $response = $this->order_model->update($orderId, ["status" => 1]);
         echo json_encode($response);
+    }
+
+    public function order_api(){
+
+        $id = $this->request->getGet('id');
+        $token= $this->request->getGet('token');
+        $page=$this->request->getGet('page');
+        $offset=$this->request->getGet('offset');
+        $user=$this->auth_model->find($id);
+        if($user['token']==$token){
+           if($user['userrole']==3){
+            $orders=$this->order_model->where('fkclientid',$id)->countAllResults();            
+            $pagination = array(
+                "total_records" => $orders,
+                "current_page" => $page,
+                "total_pages" =>ceil($orders/10),
+                "off_set" => $offset,
+                "next_page" => intval($page)+1,
+                "prev_page" => intval($page)-1,
+            );
+            $orders=$this->order_model->where('fkclientid',$id)->findAll(10,$offset);  
+            $response['orders']=$orders;
+            $pagination['current_records']=count($orders);
+            $response['pagination']=$pagination;
+           }
+           elseif($user['userrole']==2){
+            $orders=$this->order_model->where('fkvendorstaffid',$id)->findAll();
+
+            $response['leads']=$orders;
+           }
+           $response['message']="Sucessfull";
+        }else{
+            $response['message']=$this->fail('', 403,'Forbidden');
+        }
+        
+        echo json_encode($response);
+    }
+
+    public function dashboard_api(){
+
+        $id = $this->request->getGet('id');
+        $token= $this->request->getGet('token');
+
+        echo json_encode($id);
+
     }
 }

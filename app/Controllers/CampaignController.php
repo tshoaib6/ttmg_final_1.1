@@ -95,7 +95,11 @@ class CampaignController extends BaseController
             $colTypes = $this->request->getPost('col_type');
             $colDefaults = $this->request->getPost('col_default');
 
+            var_dump($colTypes);
+            return 0;
 
+
+         
             $rules = [
                 'campaign_name' => 'required|is_unique[campaign.campaign_name]',
             ];

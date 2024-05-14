@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
+//Test
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\Referral as Referral_model;
@@ -26,7 +26,6 @@ class Referral extends BaseController
             'title_meta' => view('partials/title-meta', ['title' => 'Referral']),
             'page_title' => view('partials/page-title', ['title' => 'Referral', 'pagetitle' => 'Home'])
         ];
-        
         return view('referral/manage-referral', $data);
     }
 

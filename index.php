@@ -62,6 +62,7 @@ if (! defined('ENVIRONMENT')) {
  * the application run, and does all the dirty work to get
  * the pieces all working together.
  */
+header('Access-Control-Allow-Origin: *');
 
 $app = Config\Services::codeigniter();
 $app->initialize();
