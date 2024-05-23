@@ -100,7 +100,7 @@ class LeadController extends BaseController
                 }
             })->hide('status')->hide('order_id')
             ->filter(function ($builder, $request) {
-            
+
                 // if ($request->state) {
                 //     $builder->where('state', $request->state);
                 // }
@@ -114,8 +114,8 @@ class LeadController extends BaseController
                 //     $builder->where('client_id', $request->client);
                 // }
 
-                if($request->lead_status){
-                    $builder->where('client_id',$request->client);
+                if ($request->lead_status) {
+                    $builder->where('client_id', $request->client);
                 }
             })
 
@@ -229,12 +229,13 @@ class LeadController extends BaseController
     public function add_lead($id = "")
     {
         if ($this->request->getMethod() === 'post') {
+            // Handle form submission logic here
+            // This block is currently empty as per your provided code
         } elseif ($id != "") {
-
-            $lead = $this->lead_model->find($id);
+            // Editing an existing lead
+            $lead = $this->lead_master_model->find($id);
             $order = $this->order_model->find($lead['order_id']);
             $camp_name = $this->campaign_model->select('id,campaign_name')->find($order['categoryname']);
-
 
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Lead']),
@@ -245,23 +246,22 @@ class LeadController extends BaseController
             $data['camp_id'] = $order['categoryname'];
             $data['camp_name'] = $camp_name;
         } else {
-
+            // Adding a new lead
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Add New Lead']),
                 'page_title' => view('partials/page-title', ['title' => 'Add New Lead', 'pagetitle' => 'TTMG']),
             ];
-            $data['campaigns'] = $this->campaign_model
-                ->select('id,campaign_name') // Specify the columns you want
-                ->orderBy('id', 'DESC')
-                ->findAll();
-            return view('leads_management/add_lead', $data);
         }
+
+        // Fetch campaigns for both adding and editing
         $data['campaigns'] = $this->campaign_model
-            ->select('id,campaign_name') // Specify the columns you want
+            ->select('id,campaign_name')
             ->orderBy('id', 'DESC')
             ->findAll();
+
         return view('leads_management/add_lead', $data);
     }
+
 
     public function get_lead_detail($id)
     {
