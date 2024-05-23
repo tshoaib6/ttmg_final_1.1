@@ -520,8 +520,6 @@ class OrdersContoller extends BaseController
         $o_id = $this->request->getPost('cid');
         $camp_id = $this->request->getPost('camp_id');
 
-        var_dump($camp_id);
-        return 0;
 
         $head_arr = $this->request->getPost('map_head');
         if ($o_id != "") {
