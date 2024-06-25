@@ -35,7 +35,17 @@ class Home extends BaseController
 			'title_meta' => view('partials/title-meta', ['title' => 'Dashboard']),
 			'page_title' => view('partials/page-title', ['title' => 'Dashboard', 'pagetitle' => 'Home'])
 		];
-		$orders = $this->order_model->findAll();
+		if(is_admin()){
+			$orders = $this->order_model->findAll();
+
+		}else if(is_vendor()){
+			$orders = $this->order_model->where('fkvendorstaffid',get_user_id())->findAll();
+
+		}
+		else{
+			$orders = $this->order_model->where('fkclientid',get_user_id())->findAll();
+
+		}
 		$vendors = $this->auth_model->where('userrole', 2)->findAll();
 		if (is_vendor()) {
 			$clients = get_client("", get_user_id());
