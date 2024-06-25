@@ -67,7 +67,7 @@ class OrdersContoller extends BaseController
     public function ajax_sv_datatables_orders($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('Look For Leads_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+        $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
 
         if ($id != 0) {
             $builder->where('fkvendorstaffid', $id);
@@ -120,7 +120,7 @@ class OrdersContoller extends BaseController
     {
         $db = db_connect();
         $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
-    
+
         if ($id != 0) {
             $builder->where('categoryname', $id);
         }

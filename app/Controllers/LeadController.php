@@ -71,7 +71,7 @@ class LeadController extends BaseController
     public function ajax_Datatable_leads($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('Look For Leads_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
         if ($id != 0) {
             $builder->where('order_id', $id);
         }
@@ -128,7 +128,7 @@ class LeadController extends BaseController
     public function ajax_Datatable_master_leads($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('Look For Leads_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
+        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
         if ($id != 0) {
             $builder->where('order_id', $id);
         }
