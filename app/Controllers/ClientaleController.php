@@ -153,7 +153,17 @@ class ClientaleController extends BaseController
         foreach ($csv_array[1] as $row) {
             $temp = array();
             foreach ($head_arr as $key => $h) {
-                $temp[$mapping_headers[$key]] = $row[$h];
+
+                if($h=="-"){
+                    $temp[$mapping_headers[$key]] ="";
+                }
+                else{
+                    if (isset($row[$h])) {
+                        $temp[$mapping_headers[$key]] = $row[$h];
+                    } else {
+                        // Handle missing key
+                        $temp[$mapping_headers[$key]] = null; // or some default value
+                    }                }
             }
             array_push($leads, $temp);
         }

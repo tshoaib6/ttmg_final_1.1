@@ -28,7 +28,7 @@ class Database extends Config
         'DSN'          => '',
         'hostname'     => 'localhost',
         'username'     => 'root',
-        'password'     => '',
+        'password'     => 'root',
         'database'     => 'ttmg_new',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => 'ttmg_',

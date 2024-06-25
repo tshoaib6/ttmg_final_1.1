@@ -149,7 +149,7 @@
             else {
                 defaultField.html(
                     '<label class="form-label" for="default_value">Default Value</label>' +
-                    '<input type="text" name="col_default" class="form-control" placeholder="Enter default value" />'
+                    '<input type="text" name="col_default[]" class="form-control" placeholder="Enter default value" />'
                 );
             }
 

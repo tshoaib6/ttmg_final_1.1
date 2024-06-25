@@ -119,12 +119,12 @@ class OrdersContoller extends BaseController
     public function ajax_Datatable_orders($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('Look For Leads_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
-
+        $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+    
         if ($id != 0) {
             $builder->where('categoryname', $id);
         }
-
+    
         if (is_vendor()) {
             $builder->where('fkvendorstaffid', get_user_id());
         } elseif (is_client()) {
@@ -151,43 +151,46 @@ class OrdersContoller extends BaseController
                 $status = '<span class="badge bg-danger">Blocked</span>';
             } else if ($row->status == 1) {
                 $status = '<span class="badge bg-primary">Active</span>';
-            } else if ($row->status = 3) {
+            } else if ($row->status == 3) {
                 $status = '<span class="badge bg-success">Completed</span>';
             }
             return $status;
         })
-            ->edit('id', function ($row) {
-                if (is_admin() && $row->status != 0 && $row->status != 3) {
-                    return '<button class="btn btn-primary px-3" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>'
-                        . '<button class="btn btn-secondary px-3 mx-2" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>';
-                } else {
-                    return "N/A";
-                }
-            })
+        ->edit('id', function ($row) {
+            if (is_admin() && $row->status != 0 && $row->status != 3) {
+                return '<div class="d-flex flex-row">
+                            <button class="btn btn-primary m-1" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>
+                            <button class="btn btn-secondary m-1" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>
+                        </div>';
+            } else {
+                return "N/A";
+            }
+        })
             ->filter(function ($builder, $request) {
-
-                if ($request->order_status=="0") {// blocked orders
-                    $builder->where('status', 4);
+    
+                if ($request->order_status == "0") {// blocked orders
+                    $builder->where('status', 0);
                 }
-                if ($request->order_status=='1') {// active/open/orders
+                if ($request->order_status == '1') {// active/open/orders
                     $builder->where('status', 1);
                 }
-                if ($request->order_status=='3') {// complete_orders
+                if ($request->order_status == '3') {// complete_orders
                     $builder->where('status', 3);
                 }
-                if ($request->order_status=='4') {// All Orders
+                if ($request->order_status == '4') {// All Orders
                 }
-
-                if ($request->filter_campaign){
+    
+                if ($request->filter_campaign) {
                     $builder->where('categoryname', $request->filter_campaign);
                 }
-                 if ($request->filter_vendor){
+                if ($request->filter_vendor) {
                     $builder->where('fkvendorstaffid', $request->filter_vendor);
                 }
             })->addNumbering()
             ->toJson();
         return $data;
     }
+    
     public function create($id = "")
     {
 
@@ -517,6 +520,7 @@ class OrdersContoller extends BaseController
         $o_id = $this->request->getPost('cid');
         $camp_id = $this->request->getPost('camp_id');
 
+
         $head_arr = $this->request->getPost('map_head');
 
         if ($o_id != "") {
@@ -530,15 +534,22 @@ class OrdersContoller extends BaseController
         $data['headers_avail'] = $mapping_headers;
 
         $leads = array();
-      
-      
+
         foreach ($csv_array[1] as $row) {
-           
+         
             $temp = array();
             foreach ($head_arr as $key => $h) {
-            
-                $temp[$mapping_headers[$key]] = $row[$h];
-                
+                if($h=="-"){
+                    $temp[$mapping_headers[$key]] ="";
+                }
+                else{
+                    if (isset($row[$h])) {
+                        $temp[$mapping_headers[$key]] = $row[$h];
+                    } else {
+                        // Handle missing key
+                        $temp[$mapping_headers[$key]] = null; // or some default value
+                    }                }
+
             }
             array_push($leads, $temp);
         }
