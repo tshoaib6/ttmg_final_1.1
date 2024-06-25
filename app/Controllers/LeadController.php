@@ -44,7 +44,7 @@ class LeadController extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Leads']),
-            'page_title' => view('partials/page-title', ['title' => 'All Leads', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'All Leads', 'pagetitle' => 'Look For Leads']),
         ];
         $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
         $client = get_client();
@@ -58,7 +58,7 @@ class LeadController extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Master Leads (Leads Center)']),
-            'page_title' => view('partials/page-title', ['title' => 'Master Leads (Leads Center)', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'Master Leads (Leads Center)', 'pagetitle' => 'Look For Leads']),
         ];
         $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
         $camp_name = $this->campaign_model->select('id,campaign_name')->findAll();
@@ -71,7 +71,7 @@ class LeadController extends BaseController
     public function ajax_Datatable_leads($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+        $builder = $db->table('Look For Leads_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
         if ($id != 0) {
             $builder->where('order_id', $id);
         }
@@ -128,7 +128,7 @@ class LeadController extends BaseController
     public function ajax_Datatable_master_leads($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
+        $builder = $db->table('Look For Leads_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
         if ($id != 0) {
             $builder->where('order_id', $id);
         }
@@ -238,7 +238,7 @@ class LeadController extends BaseController
 
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Lead']),
-                'page_title' => view('partials/page-title', ['title' => 'Edit Lead', 'pagetitle' => 'TTMG']),
+                'page_title' => view('partials/page-title', ['title' => 'Edit Lead', 'pagetitle' => 'Look For Leads']),
             ];
 
             $data['lead'] = $lead;
@@ -248,7 +248,7 @@ class LeadController extends BaseController
 
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Add New Lead']),
-                'page_title' => view('partials/page-title', ['title' => 'Add New Lead', 'pagetitle' => 'TTMG']),
+                'page_title' => view('partials/page-title', ['title' => 'Add New Lead', 'pagetitle' => 'Look For Leads']),
             ];
             $data['campaigns'] = $this->campaign_model
                 ->select('id,campaign_name') // Specify the columns you want
@@ -485,7 +485,7 @@ class LeadController extends BaseController
         }
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Assigned Leads']),
-            'page_title' => view('partials/page-title', ['title' => 'Assigned Leads', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'Assigned Leads', 'pagetitle' => 'Look For Leads']),
         ];
         $data['post_data'] = $leads_to_assign;
         $data['duplicate'] = $duplicate;

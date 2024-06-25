@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                             </div> <!-- end col-->
-                        <?php if(!is_vendor()){?>
+                        <?php if(is_admin()  ){?>
                              <div class="<?php if(is_vendor()) {?> col-xl-4 <?php } else { ?> col-xl-3 <?php } ?> col-md-6 ">
                                 <div class="card">
                                     <div class="card-body">
@@ -54,7 +54,10 @@
                                 </div>
                             </div> <!-- end col-->
 <?php  } ?>
-                            <div class="<?php if(is_vendor()) {?> col-xl-4 <?php } else { ?> col-xl-3 <?php  } ?> col-md-6 ">
+
+<?php if(!is_client()  ){?>
+
+                            <div class="<?php if(is_vendor()  ) {?> col-xl-4 <?php } else { ?> col-xl-3 <?php  } ?> col-md-6 ">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="float-end mt-2">
@@ -67,6 +70,7 @@
                                     </div>
                                 </div>
                             </div> <!-- end col-->
+                            <?php  } ?>
 
 
                             <div class="<?php if(is_vendor()) {?> col-xl-4 <?php } else { ?> col-xl-3 <?php } ?> col-md-6 ">

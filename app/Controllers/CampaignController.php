@@ -32,7 +32,7 @@ class CampaignController extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Campaigns']),
-            'page_title' => view('partials/page-title', ['title' => 'All Campaigns', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'All Campaigns', 'pagetitle' => 'Look For Leads']),
         ];
         $data['campaigns'] = $this->campaign_model->orderBy('id', 'DESC')->findAll();
         return view('campaigns/index', $data);
@@ -86,85 +86,85 @@ class CampaignController extends BaseController
 
 
     public function create($id = "")
-    {
+{
+    if ($this->request->getMethod() === 'post') {
 
-        if ($this->request->getMethod() === 'post') {
+        $colNames = $this->request->getPost('col_name');
+        $colSlugs = $this->request->getPost('col_slug');
+        $colTypes = $this->request->getPost('col_type');
+        $colDefaults = $this->request->getPost('col_default');
 
-            $colNames = $this->request->getPost('col_name');
-            $colSlugs = $this->request->getPost('col_slug');
-            $colTypes = $this->request->getPost('col_type');
-            $colDefaults = $this->request->getPost('col_default');
+        // Set validation rules
+        $rules = [
+            'campaign_name' => 'required'
+        ];
 
-        
-
-         
-            $rules = [
-                'campaign_name' => 'required|is_unique[campaign.campaign_name]',
-            ];
-
-
-            $messages = [
-                'campaign_name' => [
-                    'is_unique' => 'The {field} must be unique.',
-                ],
-            ];
-
-            if (!$this->validate($rules, $messages)) {
-                return redirect()->to('create-campaign')->withInput()->with('errors', $this->validator->getErrors());
-            }
-            $resultArray = [];
-
-            for ($i = 0; $i < count($colNames); $i++) {
-                $resultArray[] = [
-                    'col_name' => $colNames[$i],
-                    'col_slug' => $colSlugs[$i],
-                    'col_type' => $colTypes[$i],
-                    'col_default' => $colDefaults[$i]
-                ];
-            }
-
-
-
-            $data = [
-                'campaign_name' => $this->request->getPost('campaign_name'),
-                'campaign_columns' => json_encode($resultArray),
-            ];
-
-            if ($this->request->getPost('id')) {
-                $id = $this->request->getPost('id');
-                $result = $this->campaign_model->deleteCampaign($id);
-            }
-
-            if ($this->campaign_model->isUniqueCampaignName($data['campaign_name'])) {
-
-
-                $this->campaign_model->insert($data);
-                if(is_admin() && email_allowed("admincampaign") ){
-                    send_email(get_email_by_user_id(get_user_id()),"Add Campaign");
-                }
-                session()->setFlashdata('success', 'Campaign Added Successful!');
-                log_activity("Campaign : " . $data["campaign_name"] . " Added", get_user_id());
-                return redirect()->to('campaign-index');
-            } else {
-                session()->setFlashdata('error', 'Campaign name must be unique.');
-                return redirect()->to('create-campaign')->withInput();
-            }
-        } elseif ($id != "") {
-            $data = [
-                'title_meta' => view('partials/title-meta', ['title' => 'Edit Campaign']),
-                'page_title' => view('partials/page-title', ['title' => 'Edit Campaign', 'pagetitle' => 'TTMG']),
-            ];
-            $data['camp'] = $this->campaign_model->find($id);
-
-        } else {
-            $data = [
-                'title_meta' => view('partials/title-meta', ['title' => 'New Campaign']),
-                'page_title' => view('partials/page-title', ['title' => 'New Campaign', 'pagetitle' => 'TTMG']),
-            ];
-            return view('campaigns/add_campaign', $data);
+        // Additional validation for unique campaign name if not editing or if name is changed
+        if (!$id || $this->request->getPost('campaign_name') !== $this->campaign_model->find($id)['campaign_name']) {
+            $rules['campaign_name'] .= '|is_unique[campaign.campaign_name]';
         }
+
+        // Custom messages
+        $messages = [
+            'campaign_name' => [
+                'is_unique' => 'The {field} must be unique.',
+            ],
+        ];
+
+        // Validate input
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->to('create-campaign')->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // Prepare the result array
+        $resultArray = [];
+        for ($i = 0; $i < count($colNames); $i++) {
+            $resultArray[] = [
+                'col_name' => $colNames[$i],
+                'col_slug' => $colSlugs[$i],
+                'col_type' => $colTypes[$i],
+                'col_default' => $colDefaults[$i]
+            ];
+        }
+
+        // Prepare data for insertion/updation
+        $data = [
+            'campaign_name' => $this->request->getPost('campaign_name'),
+            'campaign_columns' => json_encode($resultArray),
+        ];
+
+        // Check if we are editing an existing campaign
+        if ($id) {
+            $this->campaign_model->update($id, $data);
+            session()->setFlashdata('success', 'Campaign Updated Successfully!');
+            log_activity("Campaign : " . $data["campaign_name"] . " Updated", get_user_id());
+        } else {
+            // Insert a new campaign
+            $this->campaign_model->insert($data);
+            if (is_admin() && email_allowed("admincampaign")) {
+                send_email(get_email_by_user_id(get_user_id()), "Add Campaign");
+            }
+            session()->setFlashdata('success', 'Campaign Added Successfully!');
+            log_activity("Campaign : " . $data["campaign_name"] . " Added", get_user_id());
+        }
+
+        return redirect()->to('campaign-index');
+    } elseif ($id != "") {
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'Edit Campaign']),
+            'page_title' => view('partials/page-title', ['title' => 'Edit Campaign', 'pagetitle' => 'Look For Leads']),
+        ];
+        $data['camp'] = $this->campaign_model->find($id);
+    } else {
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'New Campaign']),
+            'page_title' => view('partials/page-title', ['title' => 'New Campaign', 'pagetitle' => 'Look For Leads']),
+        ];
         return view('campaigns/add_campaign', $data);
     }
+    return view('campaigns/add_campaign', $data);
+}
+
 
     public function delete($id)
     {
@@ -177,7 +177,7 @@ class CampaignController extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Campaign Detail']),
-            'page_title' => view('partials/page-title', ['title' => 'Campaign Detail', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'Campaign Detail', 'pagetitle' => 'Look For Leads']),
         ];
 
         $camp=$this->campaign_model->select('id,campaign_name')->find($id);

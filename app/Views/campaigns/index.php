@@ -1,7 +1,7 @@
 <?= $this->include('partials/main') ?>
 
 <head>
-    <?php $title_meta ?>
+    <?= $title_meta ?>
     <?= $this->include('partials/datatable-css') ?>
     <?= $this->include('partials/head-css') ?>
 </head>

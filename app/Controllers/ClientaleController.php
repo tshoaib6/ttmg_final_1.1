@@ -112,7 +112,7 @@ class ClientaleController extends BaseController
 
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Column Mapping']),
-            'page_title' => view('partials/page-title', ['title' => 'Column Mapping', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'Column Mapping', 'pagetitle' => 'Look For Leads']),
         ];
 
         $uploadedFile = $session->get('uploaded_file_client');
@@ -137,7 +137,7 @@ class ClientaleController extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
-            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'Look For Leads']),
         ];
 
         $session = session();

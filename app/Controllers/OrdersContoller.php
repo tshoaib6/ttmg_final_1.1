@@ -49,7 +49,7 @@ class OrdersContoller extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
-            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'Look For Leads']),
         ];
         $data['campaigns'] = $this->campaign_model->select('id,campaign_name')->findAll();
         $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
@@ -59,7 +59,7 @@ class OrdersContoller extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
-            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'Look For Leads']),
         ];
         $data['sv_id'] = $sv_id;
         return view('orders_management/sub_vendor_index', $data);
@@ -67,7 +67,7 @@ class OrdersContoller extends BaseController
     public function ajax_sv_datatables_orders($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+        $builder = $db->table('Look For Leads_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
 
         if ($id != 0) {
             $builder->where('fkvendorstaffid', $id);
@@ -119,7 +119,7 @@ class OrdersContoller extends BaseController
     public function ajax_Datatable_orders($id = "")
     {
         $db = db_connect();
-        $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+        $builder = $db->table('Look For Leads_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
 
         if ($id != 0) {
             $builder->where('categoryname', $id);
@@ -233,7 +233,7 @@ class OrdersContoller extends BaseController
         } elseif ($id != "") {
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Order']),
-                'page_title' => view('partials/page-title', ['title' => 'Edit Order', 'pagetitle' => 'TTMG']),
+                'page_title' => view('partials/page-title', ['title' => 'Edit Order', 'pagetitle' => 'Look For Leads']),
             ];
 
             $data['order'] = $this->order_model->find($id);
@@ -253,7 +253,7 @@ class OrdersContoller extends BaseController
         } else {
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'New Order']),
-                'page_title' => view('partials/page-title', ['title' => 'New Order', 'pagetitle' => 'TTMG']),
+                'page_title' => view('partials/page-title', ['title' => 'New Order', 'pagetitle' => 'Look For Leads']),
             ];
 
             $data['campaigns'] = $this->campaign_model
@@ -478,7 +478,7 @@ class OrdersContoller extends BaseController
 
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Column Mapping']),
-            'page_title' => view('partials/page-title', ['title' => 'Column Mapping', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'Column Mapping', 'pagetitle' => 'Look For Leads']),
         ];
 
         $uploadedFile = $session->get('uploaded_file');
@@ -510,7 +510,7 @@ class OrdersContoller extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
-            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'Look For Leads']),
         ];
 
         $session = session();
@@ -518,6 +518,7 @@ class OrdersContoller extends BaseController
         $camp_id = $this->request->getPost('camp_id');
 
         $head_arr = $this->request->getPost('map_head');
+
         if ($o_id != "") {
             $order_detail = $this->order_model->select('fkclientid,fkvendorstaffid')->find($o_id);
             $mapping_headers = $this->order_model->get_camp_headers($o_id);
@@ -529,10 +530,15 @@ class OrdersContoller extends BaseController
         $data['headers_avail'] = $mapping_headers;
 
         $leads = array();
+      
+      
         foreach ($csv_array[1] as $row) {
+           
             $temp = array();
             foreach ($head_arr as $key => $h) {
+            
                 $temp[$mapping_headers[$key]] = $row[$h];
+                
             }
             array_push($leads, $temp);
         }
@@ -631,7 +637,7 @@ class OrdersContoller extends BaseController
     {
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Order Detail']),
-            'page_title' => view('partials/page-title', ['title' => 'Order Detail', 'pagetitle' => 'TTMG']),
+            'page_title' => view('partials/page-title', ['title' => 'Order Detail', 'pagetitle' => 'Look For Leads']),
         ];
 
         $order = $this->order_model->find($id);

@@ -15,6 +15,7 @@ class Home extends BaseController
 	protected $order_model;
 	protected $lead_model;
 
+	protected $session;
 
 	public function __construct()
 	{
@@ -22,7 +23,7 @@ class Home extends BaseController
 		$this->session = session();
 		$this->auth_model = new Auth;
 		$this->lead_model = new Lead;
-
+		$this->session = session();
 		$this->activity_model = new Activity;
 		$this->order_model = new Order;
 		$this->data = ['session' => $this->session];
@@ -42,7 +43,6 @@ class Home extends BaseController
 			$clients = $this->auth_model->where('userrole', 3)->findAll();
 		}
 		$lead_count = $this->lead_model->countAll();
-
 		$label_dates = '';
 		$current_year = date('Y');
 		$leads_count = 0;
@@ -94,7 +94,7 @@ class Home extends BaseController
 		$data['clients'] = $clients;
 		$data['lead_count'] = $lead_count;
 
-		$data['activities'] = $this->activity_model->orderBy('id', 'desc')->limit(10)->get()->getResultArray();
+		$data['activities'] = $this->activity_model->orderBy('id', 'desc')->where('user_id',get_user_id())->limit(10)->get()->getResultArray();
 		return view('index', $data);
 	}
 

@@ -513,7 +513,11 @@
                             <a href="<?= base_url('master-lead-index') ?>" class="dropdown-item">Master Leads (Leads Center)</a>
                             <?php }?>
                             <a href="<?= base_url('lead-index') ?>" class="dropdown-item">Client Leads</a>
+                            <?php if (is_admin()) { ?>
+
                                 <a href="<?= base_url('add-lead') ?>" class="dropdown-item">Add Lead</a>
+<?php  } ?>
+
                             </div>
                         </li>
 

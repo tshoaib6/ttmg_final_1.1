@@ -104,7 +104,7 @@ class Notifications extends BaseController
     {
         $html = '';
         $session = session();
-        $notifications = $this->notifications_model->where('to_user_id',$session->login_id)->limit(5)->orderBy('id','desc')->find();
+        $notifications = $this->notifications_model->where('to_user_id',get_user_id())->limit(5)->orderBy('id','desc')->find();
         $unread = $data['total_pages'] = $this->notifications_model->where('isread',0)->where('to_user_id',$session->login_id)->countAllResults();
 
         $read = '';
