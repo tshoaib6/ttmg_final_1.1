@@ -469,7 +469,11 @@ class Auth extends BaseController
                 $insert_id = $this->auth_model->insertID();
                 if ($save) {
                     $session->setFlashdata('success', 'Your Account has been register sucessfully. ');
-
+                    
+             
+                 send_email($idata['email'], "Add Signup");
+            
+            
                     $notification_data = [
                         'description' => 'New Account has been created',
                         'to_user_id' => $insert_id,
@@ -720,8 +724,13 @@ class Auth extends BaseController
             ];
 
             if ($this->validate($rules)) {
+                
                 $validate = $this->auth_model->where('email', $this->request->getPost('email'))->first();
-                if ($validate) {
+                
+                //var_dump($validate);
+               // echo "Email: ".$validate['email']." Password: ".$validate['password']."<br>";
+                
+               if ($validate) {
                     $result = send_password_reset_email($validate['email'], $validate['password']);
                     if ($result) {
                         $session->setFlashdata('success', 'Password is sent to the given Email.');
@@ -758,7 +767,7 @@ class Auth extends BaseController
                     //return redirect()->to('/otp');
                 } else {
                     $session->setFlashdata('error', 'There is no user with this Email.');
-                    //return redirect()->to('/recover-password');
+                   //return redirect()->to('/recover-password');
                 }
             } else {
                 $session->setFlashdata('error', 'Please provide an email.');
