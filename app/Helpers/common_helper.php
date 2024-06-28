@@ -4,7 +4,9 @@
  *   Email functions -> Start 
  */
 
-if (!function_exists('send_password_reset_email')) {
+
+
+ if (!function_exists('send_password_reset_email')) {
     /**
      * Builds a password reset HTML email from views and sends it.
      */
@@ -143,7 +145,6 @@ function send_email($to, $event,$vendor_id="")
     }
 
 }
-
 function email_allowed($event){
     $action=get_option('emailaction');
     $action=json_decode($action,1);

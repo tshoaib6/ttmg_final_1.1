@@ -494,6 +494,7 @@ class Auth extends BaseController
         return view('user-register', $data);
     }
 
+
     public function deleteUser($id)
     {
         $model = new Auth_Model();
@@ -520,160 +521,113 @@ class Auth extends BaseController
     }
 
     public function editUser($id)
-    {
-        $data = [];
-        $data['page_title'] = "Edit User";
+{
+    $data = [];
+    $data['page_title'] = "Edit User";
 
-        $data['data'] = $this->request;
-        $data = [
-            'title_meta' => view('partials/title-meta', ['title' => 'Edit User']),
-            'page_title' => view('partials/page-title', ['title' => 'Edit User', 'pagetitle' => 'Home'])
-        ];
-        $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
+    $data['data'] = $this->request;
+    $data = [
+        'title_meta' => view('partials/title-meta', ['title' => 'Edit User']),
+        'page_title' => view('partials/page-title', ['title' => 'Edit User', 'pagetitle' => 'Home'])
+    ];
+    $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
 
-        $session = session();
-        if ($this->request->getMethod() == 'post') {
-            $duser = $this->auth_model->where('id', $id)->findAll();
-            $email = $this->request->getPost('email');
-            $password = $this->request->getPost('password');
-            $role = $this->request->getPost('role');
+    $session = session();
+    $duser = $this->auth_model->where('id', $id)->findAll();
+    if ($this->request->getMethod() == 'post') {
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+        $role = $this->request->getPost('role');
 
-            $agentpic = '';
-            if ($agentpic = $this->request->getFile('agentpicture')->isValid()) {
+        $agentpic = $this->request->getFile('agentpicture');
+        if ($agentpic && $agentpic->isValid() && !$agentpic->hasMoved()) {
+            $input = $this->validate([
+                'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png]',
+            ]);
 
-                $input = $this->validate([
-                    'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],',
+            if ($input) {
+                $newName = $agentpic->getRandomName();
+                $agentpic->move('uploads/users', $newName);
+                $agentpic = $newName;
 
-
-                ]);
-
-
-                if (!$input) {
-                    $agentpic = $duser[0]['useruimage'];
-                    //$session->setFlashdata('error','Agent Picture not found.');
-                } else {
-
-                    $newName = $agentpic->getRandomName();
-                    $agentpic->move('uploads/users', $newName);
-                    $agentpic = $newName;
-
-                    if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
-                        unlink('uploads/users/' . $duser[0]['useruimage']);
-                    }
+                if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
+                    unlink('uploads/users/' . $duser[0]['useruimage']);
                 }
-
-            }
-            if ($role == 1) //admin
-            {
-                $idata =
-                    [
-                        'firstname' => $this->request->getPost('firstname'),
-                        'lastname' => $this->request->getPost('lastname'),
-                        'email' => $email,
-                        'password' => $password,
-                        'phone' => $this->request->getPost('phone'),
-                        'address' => $this->request->getPost('address'),
-                        'website' => $this->request->getPost('website'),
-                        'coverage' => $this->request->getPost('coverage'),
-                        'linkedin' => $this->request->getPost('linkedin'),
-                        'useruimage' => $agentpic,
-                        'userrole' => 1,
-                        'vendor' => 0,
-                        'block' => 0
-                    ];
-            } else if ($role == 2) //vendor
-            {
-                $branchlogopic = '';
-                if ($branchlogopic = $this->request->getFile('branchlogo')) {
-
-                    /* $input2 = $this->validate([
-                      'branchlogo' => 'uploaded[branchlogo]|max_size[branchlogo,1024]|ext_in[branchlogo,jpg,jpeg,png],'
-                      ]);
-                     
-                     if (!$input2) 
-                     { 
-                        $branchlogopic = $duser[0]['branchlogo'];
-
-                     }else{ */
-
-                    $newNamebranch = $branchlogopic->getRandomName();
-                    $branchlogopic->move('uploads/users', $newNamebranch);
-                    $branchlogopic = $newNamebranch;
-
-                    if (is_file('uploads/users/' . $duser[0]['branchlogo'])) {
-                        unlink('uploads/users/' . $duser[0]['branchlogo']);
-                    }
-                    // }
-
-                }
-                $idata =
-                    [
-                        'firstname' => $this->request->getPost('firstname'),
-                        'lastname' => $this->request->getPost('lastname'),
-                        'email' => $email,
-                        'password' => $password,
-                        'phone' => $this->request->getPost('phone'),
-                        'address' => $this->request->getPost('address'),
-                        'website' => $this->request->getPost('website'),
-                        'coverage' => $this->request->getPost('coverage'),
-                        'linkedin' => $this->request->getPost('linkedin'),
-                        'useruimage' => $agentpic,
-                        'vendor' => 0,
-                        'smtpemail' => $this->request->getPost('smtpemail'),
-                        'smtppassword' => $this->request->getPost('smtppassword'),
-                        'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
-                        'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
-                        'smtpport' => $this->request->getPost('smtpport'),
-                        'branchname' => $this->request->getPost('branchname'),
-                        'branchslug' => $this->request->getPost('branchslug'),
-                        'branchcountry' => $this->request->getPost('branchcountry'),
-                        'branchaddress' => $this->request->getPost('branchaddress'),
-                        'brancheader' => $this->request->getPost('brancheader'),
-                        'branchnavbar' => $this->request->getPost('branchnavbar'),
-                        'branchnavtext' => $this->request->getPost('branchnavtext'),
-                        'branchnavhover' => $this->request->getPost('branchnavhover'),
-                        'branchlogo' => $branchlogopic,
-                        'branchlogoheight' => $this->request->getPost('branchlogoheight'),
-                        'branchlogowidth' => $this->request->getPost('branchlogowidth'),
-                        'userrole' => 2,
-                        'block' => 0,
-                        'referred_to' => implode(', ', $this->request->getPost('subvendor')),
-                    ];
-            } else if ($role == 3) //client
-            {
-                $idata =
-                    [
-                        'firstname' => $this->request->getPost('firstname'),
-                        'lastname' => $this->request->getPost('lastname'),
-                        'email' => $email,
-                        'password' => $password,
-                        'phone' => $this->request->getPost('phone'),
-                        'address' => $this->request->getPost('address'),
-                        'website' => $this->request->getPost('website'),
-                        'coverage' => $this->request->getPost('coverage'),
-                        'linkedin' => $this->request->getPost('linkedin'),
-                        'useruimage' => $agentpic,
-                        'userrole' => 3,
-                        'vendor' => implode(', ', $this->request->getPost('vendor')),
-                        'block' => 0
-                    ];
-            }
-
-            $update = $this->auth_model->update($id, $idata);
-
-            if ($update) {
-                $session->setFlashdata('success', 'Your Account has been updated sucessfully.');
-                log_activity('Update user account [email: ' . $idata['email'] . ', Role:' . get_user_role($idata['userrole']) . ']');
-                return redirect()->to('allUsers');
             } else {
-                $session->setFlashdata('error', 'Failed to update data.');
+                $agentpic = $duser[0]['useruimage'];
             }
+        } else {
+            $agentpic = $duser[0]['useruimage'];
         }
-        $data['duser'] = $this->auth_model->where('id', $id)->findAll();
 
-        $data['session'] = $session;
-        return view('user-edit', $data);
+        $idata = [
+            'firstname' => $this->request->getPost('firstname'),
+            'lastname' => $this->request->getPost('lastname'),
+            'email' => $email,
+            'password' => $password,
+            'phone' => $this->request->getPost('phone'),
+            'address' => $this->request->getPost('address'),
+            'website' => $this->request->getPost('website'),
+            'coverage' => $this->request->getPost('coverage'),
+            'linkedin' => $this->request->getPost('linkedin'),
+            'useruimage' => $agentpic,
+            'userrole' => $role,
+            'vendor' => ($role == 2) ? 0 : $this->request->getPost('vendor'),
+            'block' => 0
+        ];
+
+        if ($role == 2) {
+            $branchlogopic = $this->request->getFile('branchlogo');
+            if ($branchlogopic && $branchlogopic->isValid() && !$branchlogopic->hasMoved()) {
+                $newNamebranch = $branchlogopic->getRandomName();
+                $branchlogopic->move('uploads/users', $newNamebranch);
+                $branchlogopic = $newNamebranch;
+
+                if (is_file('uploads/users/' . $duser[0]['branchlogo'])) {
+                    unlink('uploads/users/' . $duser[0]['branchlogo']);
+                }
+            } else {
+                $branchlogopic = $duser[0]['branchlogo'];
+            }
+
+            $idata = array_merge($idata, [
+                'smtpemail' => $this->request->getPost('smtpemail'),
+                'smtppassword' => $this->request->getPost('smtppassword'),
+                'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
+                'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
+                'smtpport' => $this->request->getPost('smtpport'),
+                'branchname' => $this->request->getPost('branchname'),
+                'branchslug' => $this->request->getPost('branchslug'),
+                'branchcountry' => $this->request->getPost('branchcountry'),
+                'branchaddress' => $this->request->getPost('branchaddress'),
+                'brancheader' => $this->request->getPost('brancheader'),
+                'branchnavbar' => $this->request->getPost('branchnavbar'),
+                'branchnavtext' => $this->request->getPost('branchnavtext'),
+                'branchnavhover' => $this->request->getPost('branchnavhover'),
+                'branchlogo' => $branchlogopic,
+                'branchlogoheight' => $this->request->getPost('branchlogoheight'),
+                'branchlogowidth' => $this->request->getPost('branchlogowidth'),
+                'referred_to' => $this->request->getPost('subvendor') ? implode(', ', $this->request->getPost('subvendor')) : ''
+            ]);
+        }
+
+        $update = $this->auth_model->update($id, $idata);
+
+        if ($update) {
+            $session->setFlashdata('success', 'Your Account has been updated successfully.');
+            log_activity('Update user account [email: ' . $idata['email'] . ', Role:' . get_user_role($idata['userrole']) . ']');
+            return redirect()->to('allUsers');
+        } else {
+            $session->setFlashdata('error', 'Failed to update data.');
+        }
     }
+
+    $data['duser'] = $duser;
+    $data['session'] = $session;
+    return view('user-edit', $data);
+}
+
+    
 
 
     public function update_user()

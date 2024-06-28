@@ -461,15 +461,17 @@
                                 </div>
                             </li>
                         <?php } ?>
+                        <?php if(!is_admin()){ ?>
 
-                        <?php if (count(has_subvendors()) > 0 && !is_admin()) { ?>
+                        
+                        <?php if (count(has_subvendors()) > 0 &&!is_admin()) { ?>
                             <li class="nav-item dropdown">
                                 <button class="nav-link  arrow-none link-subvendor" href="#" id="topnav-pages link-subvendor" role="button">
                                     <i class="uil-user me-2"></i>Sub Vendors <div class=""></div>
                                 </button>
                             </li>
                         <?php } ?>
-
+                        <?php } ?>
 
 
 
