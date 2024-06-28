@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => 'ttmg_new',
+        'username'     => 'lookmyim_lfl_crm',
+        'password'     => 'T$F*?G-+?YF)',
+        'database'     => 'lookmyim_lfl_crm',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => 'ttmg_',
         'pConnect'     => false,
