@@ -4,34 +4,48 @@
  *   Email functions -> Start 
  */
 
-if (!function_exists('send_password_reset_email')) {
+
+
+ if (!function_exists('send_password_reset_email')) {
     /**
      * Builds a password reset HTML email from views and sends it.
      */
     function send_password_reset_email($to, $password)
     {
-        $htmlMessage = view('emails\header');
+        $htmlMessage = '';
+       // $htmlMessage = view('emails\header');
         $htmlMessage .= '<p>Here is your password</p>
                   <p><b>' . $password . '</b></p>'; //view('emails\reset', ['hash' => $resetHash]);
-        $htmlMessage .= view('emails\footer');
-
+       // $htmlMessage .= view('emails\footer');
+        try {
         $email = \Config\Services::email();
         $email->initialize([
             'mailType' => 'html',
             'protocol' => 'smtp',
-            'smtp_host' => 'ssl://mail.ttmg.biz',
-            'smtp_port' => 465,
-            'smtp_user' => 'admin@ttmg.biz',
-            'smtp_pass' => '2n4)},f{VH{b',
+            'SMTPHost' => 'smtppro.zoho.com', // Correct parameter name for SMTP hostname
+            'SMTPPort' => 465, // Correct parameter name for SMTP port
+            'SMTPUser' => 'contact@lookforleads.com',
+            'SMTPPass' => 'Rl]0l(GFil*8',
+            'SMTPCrypto' => 'ssl',
             'charset' => 'utf-8',
-            'validation' => TRUE,
+            'wordwrap' => TRUE,
+          
         ]);
-
+        
+        $email->setFrom('contact@lookforleads.com', 'Support Team');
         $email->setTo($to);
         $email->setSubject('Password reset request');
         $email->setMessage($htmlMessage);
-
-        return $email->send();
+        
+        if (!$email->send()) {
+            throw new \Exception('Email sending failed: ' . $email->printDebugger(['headers']));
+        }
+         return true;
+        } catch (\Exception $e) {
+        // Log or handle the error
+        log_message('error', 'Email sending failed: ' . $e->getMessage());
+        //var_dump($e->getMessage()); // Email sending failed
+    }
     }
 }
 
@@ -52,14 +66,16 @@ if (!function_exists('send_referral_email')) {
         $email->initialize([
             'mailType' => 'html',
             'protocol' => 'smtp',
-            'smtp_host' => 'ssl://mail.ttmg.biz',
+            'smtp_host' => 'smtppro.zoho.com',
             'smtp_port' => 465,
-            'smtp_user' => 'admin@ttmg.biz',
-            'smtp_pass' => '2n4)},f{VH{b',
+            'smtp_user' => 'contact@lookforleads.com',
+            'smtp_pass' => 'Rl]0l(GFil*8',
+            'SMTPCrypto' => 'ssl',
             'charset' => 'utf-8',
             'validation' => TRUE,
+            'wordwrap' => TRUE,
         ]);
-
+        $email->setFrom('contact@lookforleads.com', 'Support Team');
         $email->setTo($to);
         $email->setSubject('Referral Registeration form ' . $vendor_name);
         $email->setMessage($htmlMessage);
@@ -75,10 +91,11 @@ function send_email($to, $event,$vendor_id="")
         $db = \Config\Database::connect();
         $builder = $db->table('emailtemplate')->select('subject,message');
         $email_template = $builder->where('event', $event)->get()->getResultArray();
-
-        $htmlMessage = view('emails\header');
-        $htmlMessage .= view('emails\body', ['message' => $email_template[0]['message']]);
-        $htmlMessage .= view('emails\footer');
+    
+        $htmlMessage = '';
+        //$htmlMessage = view('emails\header');
+        $htmlMessage .= $email_template[0]['message'];//.= view('emails\body', ['message' => $email_template[0]['message']]);
+       // $htmlMessage .= view('emails\footer');
 
         $email = \Config\Services::email();
         if($vendor_id!=""){
@@ -88,10 +105,15 @@ function send_email($to, $event,$vendor_id="")
            $smtp_user=$vendor['smtpemail'];
            $smtp_pass=$vendor['smtppassword'];
         }else{
-            $smtp_host='smtp.gmail.com';
+            /*$smtp_host='smtp.gmail.com';
            $smtp_port=587;
            $smtp_user='tshoaib10@gmail.com';
-           $smtp_pass='saac vsof mruj cmkh';
+           $smtp_pass='saac vsof mruj cmkh';*/
+           
+           $smtp_host='smtppro.zoho.com';
+           $smtp_port=465;
+           $smtp_user='contact@lookforleads.com';
+           $smtp_pass='Rl]0l(GFil*8';
         }
         $email->initialize([
             'mailType' => 'html',
@@ -100,11 +122,11 @@ function send_email($to, $event,$vendor_id="")
             'SMTPPort' => $smtp_port, // Correct parameter name for SMTP port
             'SMTPUser' => $smtp_user,
             'SMTPPass' => $smtp_pass,
+            'SMTPCrypto' => 'ssl',
             'charset' => 'utf-8',
-            'fromEmail' => 'XYZ@gmail.com',
-            'fromName' => 'Lead CRM',
+            'wordwrap' => TRUE,
         ]);
-        
+        $email->setFrom('contact@lookforleads.com', 'Support Team');
         $email->setNewline("\r\n");
         $email->setCRLF("\r\n");
         $email->setTo($to);
@@ -123,7 +145,6 @@ function send_email($to, $event,$vendor_id="")
     }
 
 }
-
 function email_allowed($event){
     $action=get_option('emailaction');
     $action=json_decode($action,1);

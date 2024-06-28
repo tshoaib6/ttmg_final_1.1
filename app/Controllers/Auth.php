@@ -333,9 +333,11 @@ class Auth extends BaseController
                     } else {
 
                         $newName = $agentpic->getRandomName();
+                       
                         $agentpic->move('uploads/users', $newName);
                         $agentpic = $newName;
                     }
+
                 }
                 if ($role == 1) //admin
                 {
@@ -467,7 +469,11 @@ class Auth extends BaseController
                 $insert_id = $this->auth_model->insertID();
                 if ($save) {
                     $session->setFlashdata('success', 'Your Account has been register sucessfully. ');
-
+                    
+             
+                 send_email($idata['email'], "Add Signup");
+            
+            
                     $notification_data = [
                         'description' => 'New Account has been created',
                         'to_user_id' => $insert_id,
@@ -487,6 +493,7 @@ class Auth extends BaseController
 
         return view('user-register', $data);
     }
+
 
     public function deleteUser($id)
     {
