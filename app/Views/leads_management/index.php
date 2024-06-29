@@ -71,7 +71,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row d-flex">
-                                
+                                <?php if( is_admin()){ ?>
                                     <div class="col-sm-3 mb-3">
                                         <label class="form-label" for="formrow-campaign-input">Client<span
                                                 class="required"> </span></label>
@@ -100,6 +100,7 @@
 
                                 </div>
                                 <button id="filter-btn" class="btn btn-primary mb-3">Filter</button>
+                                <?php } ?>
 
                                 <div class="row  " id="assign-container" style="display:none !important;">
                                     <form id="lead_assign_form" action="<?= base_url() ?>assign-leads/" method="POST">
