@@ -550,6 +550,10 @@ class Auth extends BaseController
                     if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
                         unlink('uploads/users/' . $duser[0]['useruimage']);
                     }
+    
+                    // Update session with new user image
+                    $duser[0]['useruimage'] = $newName;
+                    $session->set('login_useruimage', $newName); // Example session key format
                 }
             }
     
@@ -559,6 +563,12 @@ class Auth extends BaseController
             if ($update) {
                 $session->setFlashdata('success', 'Your Account has been updated successfully.');
                 log_activity('Update user account [id: ' . $id . ']');
+    
+                // Update other session data if needed
+                foreach ($update_data as $k => $v) {
+                    $session->set('login_' . $k, $v); // Example session key format
+                }
+    
                 return redirect()->to('allUsers');
             } else {
                 $session->setFlashdata('error', 'Failed to update data.');
@@ -572,48 +582,6 @@ class Auth extends BaseController
         return view('user-edit', $data);
     }
     
-
-
-
-
-
-
-
-    public function update_user()
-    {
-        $session = session();
-        if ($this->request->getMethod() == 'post') {
-            extract($this->request->getPost());
-            $verify_password = password_verify($current_password, $session->login_password);
-            if ($password !== $cpassword) {
-                $session->setFlashdata('error', "Password does not match.");
-            } elseif (!$verify_password) {
-                $session->setFlashdata('error', "Current Password is Incorrect.");
-            } else {
-                $udata = [];
-                $udata['name'] = $name;
-                $udata['email'] = $email;
-                if (!empty($password))
-                    $udata['password'] = password_hash($password, PASSWORD_DEFAULT);
-                $update = $this->auth_model->where('id', $session->login_id)->set($udata)->update();
-                if ($update) {
-                    $session->setFlashdata('success', "Your Account has been updated successfully.");
-                    $user = $this->auth_model->where("id ='{$session->login_id}'")->first();
-                    foreach ($user as $k => $v) {
-                        $session->set('login_' . $k, $v);
-                    }
-                    return redirect()->to('update_user');
-                } else {
-                    $session->setFlashdata('error', "Your Account has failed to update.");
-                }
-            }
-        }
-
-        // $this->data['session'] = $session;
-        // $this->data['page_title'] = "Users";
-        // $this->data['user'] = $this->auth_model->where("id ='{$session->login_id}'")->first();
-        // return view('pages/users/update_account', $this->data);
-    }
 
     public function recoverpassword()
     {

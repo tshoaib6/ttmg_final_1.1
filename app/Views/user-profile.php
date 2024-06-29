@@ -117,79 +117,79 @@
                             </ul>
                             <!-- Tab content -->
                             <div class="tab-content p-4">
-                            <div class="tab-pane active" id="about" role="tabpanel">
-    <div>
-        <div class="row">
-            <div class="col-lg-6"> <!-- Adjust columns as needed -->
-                <h5 class="font-size-18 mb-3">Update Personal information</h5><br>
-                <form action="<?= base_url("editUser/{$duser[0]['id']}") ?>" method="post" class="custom-validation" id="registeruserform" accept-charset="utf-8" enctype="multipart/form-data">
-                    <!-- First Name -->
-                    <div class="mb-3">
-                        <label class="form-label" for="fname">First Name *</label>
-                        <input type="text" name="firstname" class="form-control" required id="fname" value="<?= $duser[0]['firstname'] ?>">
-                    </div>
+                                <div class="tab-pane active" id="about" role="tabpanel">
+                                    <div>
+                                        <div class="row">
+                                            <div class="col-lg-6"> <!-- Adjust columns as needed -->
+                                                <h5 class="font-size-18 mb-3">Update Personal information</h5><br>
+                                                <form action="<?= base_url("editUser/{$duser[0]['id']}") ?>" method="post" class="custom-validation" id="registeruserform" accept-charset="utf-8" enctype="multipart/form-data">
+                                                    <!-- First Name -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="fname">First Name *</label>
+                                                        <input type="text" name="firstname" class="form-control" required id="fname" value="<?= $duser[0]['firstname'] ?>">
+                                                    </div>
 
-                    <!-- Last Name -->
-                    <div class="mb-3">
-                        <label class="form-label" for="lname">Last Name *</label>
-                        <input type="text" name="lastname" class="form-control" required id="lname" value="<?= $duser[0]['lastname'] ?>">
-                    </div>
+                                                    <!-- Last Name -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="lname">Last Name *</label>
+                                                        <input type="text" name="lastname" class="form-control" required id="lname" value="<?= $duser[0]['lastname'] ?>">
+                                                    </div>
 
-                    <!-- Phone -->
-                    <div class="mb-3">
-                        <label class="form-label" for="phone">Phone</label>
-                        <input type="text" name="phone" class="form-control" id="phone" value="<?= $duser[0]['phone'] ?>">
-                    </div>
+                                                    <!-- Phone -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="phone">Phone</label>
+                                                        <input type="text" name="phone" class="form-control" id="phone" value="<?= $duser[0]['phone'] ?>">
+                                                    </div>
 
-                    <!-- Address -->
-                    <div class="mb-3">
-                        <label class="form-label" for="address">Address</label>
-                        <input type="text" name="address" class="form-control" id="address" value="<?= $duser[0]['address'] ?>">
-                    </div>
+                                                    <!-- Address -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="address">Address</label>
+                                                        <input type="text" name="address" class="form-control" id="address" value="<?= $duser[0]['address'] ?>">
+                                                    </div>
 
-                    <!-- Website -->
-                    <div class="mb-3">
-                        <label class="form-label" for="website">Website</label>
-                        <input type="text" name="website" class="form-control" id="website" value="<?= $duser[0]['website'] ?>">
-                    </div>
+                                                    <!-- Website -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="website">Website</label>
+                                                        <input type="text" name="website" class="form-control" id="website" value="<?= $duser[0]['website'] ?>">
+                                                    </div>
 
-                    <!-- Coverage Area -->
-                    <div class="mb-3">
-                        <label class="form-label" for="coverage">Coverage Area</label>
-                        <input type="text" name="coverage" class="form-control" id="coverage" value="<?= $duser[0]['coverage'] ?>">
-                    </div>
+                                                    <!-- Coverage Area -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="coverage">Coverage Area</label>
+                                                        <input type="text" name="coverage" class="form-control" id="coverage" value="<?= $duser[0]['coverage'] ?>">
+                                                    </div>
 
-                    <!-- Linkedin Profile -->
-                    <div class="mb-3">
-                        <label class="form-label" for="linkedin">Linkedin Profile</label>
-                        <input type="text" name="linkedin" class="form-control" id="linkedin" value="<?= $duser[0]['linkedin'] ?>">
-                    </div>
-                </div>
-                <div class="col-lg-6"> <!-- Adjust columns as needed -->
-                    <!-- Display Picture -->
-                    <div class="mb-3">
-                        <label class="form-label" for="agentpicture">Display Picture</label>
-                        <input type="file" class="form-control" name="agentpicture"><br>
-                        <img class="rounded" src="<?= base_url('uploads/users/') . $duser[0]['useruimage'] ?>" height="50">
-                    </div>
+                                                    <!-- Linkedin Profile -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="linkedin">Linkedin Profile</label>
+                                                        <input type="text" name="linkedin" class="form-control" id="linkedin" value="<?= $duser[0]['linkedin'] ?>">
+                                                    </div>
+                                            </div>
+                                            <div class="col-lg-6"> <!-- Adjust columns as needed -->
+                                                <!-- Display Picture -->
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="agentpicture">Display Picture</label>
+                                                    <input type="file" class="form-control" name="agentpicture"><br>
+                                                    <img class="rounded" src="<?= base_url('uploads/users/') . $duser[0]['useruimage'] ?>" height="50">
+                                                </div>
 
-                    <!-- Change Password -->
-                    <div class="mb-3">
-                        <label class="form-label" for="password">Change Password *</label>
-                        <input type="password" name="password" class="form-control" id="password" minlength="6">
-                    </div>
+                                                <!-- Change Password -->
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="password">Change Password *</label>
+                                                    <input type="password" name="password" class="form-control" id="password" minlength="6">
+                                                </div>
 
-                    <!-- Submit Button -->
-                    <div class="mb-3">
-                        <button type="submit" class="btn btn-primary waves-effect waves-light w-md" id="registeruserbtn">
-                            Update
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                                                <!-- Submit Button -->
+                                                <div class="mb-3">
+                                                    <button type="submit" class="btn btn-primary waves-effect waves-light w-md" id="registeruserbtn">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="tab-pane" id="tasks" role="tabpanel">
                                     <div>
