@@ -47,6 +47,7 @@ class LeadController extends BaseController
             'page_title' => view('partials/page-title', ['title' => 'All Leads', 'pagetitle' => 'Look For Leads']),
         ];
         $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
+        
         $client = get_client();
         $data['order'] = $orders;
         $data['client'] = $client;

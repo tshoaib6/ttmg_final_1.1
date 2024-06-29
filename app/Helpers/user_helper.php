@@ -22,7 +22,7 @@ function get_client($id="",$vendor_id="")
 function get_vendors($id='')
 {
     $db = \Config\Database::connect();
-    $builder = $db->table('users');
+    $builder = $db->table('ttmg_users');
     $builder->select('id,firstname,lastname,email');
     if($id!=''){
         $builder->where('userrole', 2)->where('block', 0)->where('id',$id);

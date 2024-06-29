@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      *    http://example.com/
      */
-    public string $baseURL = 'http://localhost:8888/ttmg_final/';
+    public string $baseURL = 'https://crm.lookforleads.com/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.

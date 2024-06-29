@@ -73,8 +73,10 @@
                                     <div class="col-sm-6 mb-3">
                                         <label class="form-label" for="formrow-campaign-input">Assigned to Client<span
                                                 class="required"> * </span></label>
-                                        <select class="form-control select2" name="fkclientid" style="width: 100%;">
-                                            <?php foreach ($clients as $c) { ?>
+                                        <select class="form-control select2"  name="fkclientid" style="width: 100%;">
+                                        <option value=0 selected> Select Client </option>
+
+                                        <?php foreach ($clients as $c) { ?>
                                                 <option value="<?php echo $c['id'] ?>">
                                                     <?php echo $c['firstname'] . " " . $c['lastname'] ?>
                                                 </option>
@@ -154,7 +156,7 @@
 
                                     <div class="col-sm-6 mb-3">
                                         <label class="form-label" for="formrow-fblink-input">FB link </label>
-                                        <input type="text" name="fblink" class="form-control rform" required=""
+                                        <input type="text" name="fblink" class="form-control rform"
                                             id="fblink" value="<?php echo set_value('fblink'); ?>">
                                     </div>
 

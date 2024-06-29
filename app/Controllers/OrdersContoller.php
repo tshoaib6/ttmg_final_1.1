@@ -221,7 +221,9 @@ class OrdersContoller extends BaseController
             if (!is_vendor()) {
                 send_email(get_email_by_user_id($data['fkvendorstaffid']), "Add Order");
             }
-            send_email(get_email_by_user_id($data['fkclientid']), "Add Order");
+            if($this->request->getPost('fkclientid')!=0 ){
+                send_email(get_email_by_user_id($data['fkclientid']), "Add Order");
+            }
 
             $notification_data = [
                 'description' => 'New Order Has Been Created',
