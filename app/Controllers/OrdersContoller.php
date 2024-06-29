@@ -480,6 +480,7 @@ class OrdersContoller extends BaseController
     {
         $session = session();
         $csvimport = new Csvimport();
+        ini_set('memory_limit', '256M');
 
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'Column Mapping']),
@@ -625,8 +626,9 @@ class OrdersContoller extends BaseController
                 send_email(get_email_by_user_id($temp_post_data['vendor_id']), "Add Lead");
             }
 
+            if($temp_post_data['client_id']!=0){
             send_email(get_email_by_user_id($temp_post_data['client_id']), "Add Lead");
-
+        }
             log_activity("Leads Added " . count($post_data), get_user_fullname());
             $notification_data = [
                 'description' => count($post_data) . ' Lead Added to Order',

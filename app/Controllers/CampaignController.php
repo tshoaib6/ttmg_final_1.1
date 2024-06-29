@@ -55,7 +55,8 @@ class CampaignController extends BaseController
         $db = db_connect();
         $builder = $db->table('ttmg_campaign')->select('campaign_name, campaign_columns,id', );
         $data = DataTable::of($builder)->edit('id', function ($row) {
-            $has_orders=$this->order_model->where('categoryname',$row->id)->get()->getResult();
+            // $has_orders=$this->order_model->where('categoryname',$row->id)->get()->getResult();
+            $has_orders=false;
             if($has_orders){
                 return '<a href="#" class="px-3" style="cursor: not-allowed" onclick="return false;" text-primary"><i class="uil uil-pen font-size-18"></i></a>
                 <a href="#" class="px-3"  style="cursor: not-allowed" onclick="return false; "text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>';
