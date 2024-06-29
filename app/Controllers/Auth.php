@@ -24,7 +24,7 @@ class Auth extends BaseController
         $this->request = \Config\Services::request();
         $this->auth_model = new Auth_Model;
         $this->referral_model = new Referral_model;
-        $this->lead_master_model= new LeadMaster;
+        $this->lead_master_model = new LeadMaster;
     }
 
     public function index()
@@ -170,7 +170,6 @@ class Auth extends BaseController
                         $agentpic->move('uploads/users', $newName);
                         $agentpic = $newName;
                     }
-
                 }
                 if ($role == 1) //admin
                 {
@@ -201,14 +200,12 @@ class Auth extends BaseController
 
                         if (!$input) {
                             $branchlogo = '';
-
                         } else {
 
                             $newName = $branchlogo->getRandomName();
                             $branchlogo->move('uploads/users', $newName);
                             $branchlogo = $newName;
                         }
-
                     }
                     $idata =
                         [
@@ -286,8 +283,6 @@ class Auth extends BaseController
                     return redirect()->to($ref_link);
                 }
             }
-
-
         }
         $data['session'] = $session;
 
@@ -296,7 +291,7 @@ class Auth extends BaseController
 
     public function register()
     {
-        
+
 
         $data = [];
         $data['page_title'] = "Registraion";
@@ -321,7 +316,7 @@ class Auth extends BaseController
                 $agentpic = '';
                 if ($agentpic = $this->request->getFile('agentpicture')) {
 
-                    
+
 
                     $input = $this->validate([
                         'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png],'
@@ -333,11 +328,10 @@ class Auth extends BaseController
                     } else {
 
                         $newName = $agentpic->getRandomName();
-                       
+
                         $agentpic->move('uploads/users', $newName);
                         $agentpic = $newName;
                     }
-
                 }
                 if ($role == 1) //admin
                 {
@@ -362,88 +356,85 @@ class Auth extends BaseController
                     $branchlogo = '';
                     $branchlogo = $this->request->getFile('branchlogo');
                     if ($branchlogo->isValid()) {
-                          
-    
+
+
                         $newName = $branchlogo->getRandomName();
                         $branchlogo->move('uploads/users', $newName);
                         $branchlogo = $newName;
-                        
-
                     }
 
-                    $refered_to=[];
-                    if($this->request->getPost('subvendor')){
-                        $refered_to=$this->request->getPost('subvendor');
+                    $refered_to = [];
+                    if ($this->request->getPost('subvendor')) {
+                        $refered_to = $this->request->getPost('subvendor');
                         $idata =
-                        [
-                            'firstname' => $this->request->getPost('firstname'),
-                            'lastname' => $this->request->getPost('lastname'),
-                            'email' => $email,
-                            'password' => $password,
-                            'phone' => $this->request->getPost('phone'),
-                            'address' => $this->request->getPost('address'),
-                            'website' => $this->request->getPost('website'),
-                            'coverage' => $this->request->getPost('coverage'),
-                            'linkedin' => $this->request->getPost('linkedin'),
-                            'useruimage' => $agentpic,
-                            'vendor' => 0,
-                            'smtpemail' => $this->request->getPost('smtpemail'),
-                            'smtppassword' => $this->request->getPost('smtppassword'),
-                            'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
-                            'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
-                            'smtpport' => $this->request->getPost('smtpport'),
-                            'branchname' => $this->request->getPost('branchname'),
-                            'branchslug' => $this->request->getPost('branchslug'),
-                            'branchcountry' => $this->request->getPost('branchcountry'),
-                            'branchaddress' => $this->request->getPost('branchaddress'),
-                            'brancheader' => $this->request->getPost('brancheader'),
-                            'branchnavbar' => $this->request->getPost('branchnavbar'),
-                            'branchnavtext' => $this->request->getPost('branchnavtext'),
-                            'branchnavhover' => $this->request->getPost('branchnavhover'),
-                            'branchlogo' => $branchlogo,
-                            'branchlogoheight' => $this->request->getPost('branchlogoheight'),
-                            'branchlogowidth' => $this->request->getPost('branchlogowidth'),
-                            'userrole' => 2,
-                            'block' => 0,
-                            'referred_to' => implode(', ', $this->request->getPost('subvendor')),
-                        ];
-                    }
-                    else{
+                            [
+                                'firstname' => $this->request->getPost('firstname'),
+                                'lastname' => $this->request->getPost('lastname'),
+                                'email' => $email,
+                                'password' => $password,
+                                'phone' => $this->request->getPost('phone'),
+                                'address' => $this->request->getPost('address'),
+                                'website' => $this->request->getPost('website'),
+                                'coverage' => $this->request->getPost('coverage'),
+                                'linkedin' => $this->request->getPost('linkedin'),
+                                'useruimage' => $agentpic,
+                                'vendor' => 0,
+                                'smtpemail' => $this->request->getPost('smtpemail'),
+                                'smtppassword' => $this->request->getPost('smtppassword'),
+                                'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
+                                'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
+                                'smtpport' => $this->request->getPost('smtpport'),
+                                'branchname' => $this->request->getPost('branchname'),
+                                'branchslug' => $this->request->getPost('branchslug'),
+                                'branchcountry' => $this->request->getPost('branchcountry'),
+                                'branchaddress' => $this->request->getPost('branchaddress'),
+                                'brancheader' => $this->request->getPost('brancheader'),
+                                'branchnavbar' => $this->request->getPost('branchnavbar'),
+                                'branchnavtext' => $this->request->getPost('branchnavtext'),
+                                'branchnavhover' => $this->request->getPost('branchnavhover'),
+                                'branchlogo' => $branchlogo,
+                                'branchlogoheight' => $this->request->getPost('branchlogoheight'),
+                                'branchlogowidth' => $this->request->getPost('branchlogowidth'),
+                                'userrole' => 2,
+                                'block' => 0,
+                                'referred_to' => implode(', ', $this->request->getPost('subvendor')),
+                            ];
+                    } else {
 
-                    $idata =
-                        [
-                            'firstname' => $this->request->getPost('firstname'),
-                            'lastname' => $this->request->getPost('lastname'),
-                            'email' => $email,
-                            'password' => $password,
-                            'phone' => $this->request->getPost('phone'),
-                            'address' => $this->request->getPost('address'),
-                            'website' => $this->request->getPost('website'),
-                            'coverage' => $this->request->getPost('coverage'),
-                            'linkedin' => $this->request->getPost('linkedin'),
-                            'useruimage' => $agentpic,
-                            'vendor' => 0,
-                            'smtpemail' => $this->request->getPost('smtpemail'),
-                            'smtppassword' => $this->request->getPost('smtppassword'),
-                            'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
-                            'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
-                            'smtpport' => $this->request->getPost('smtpport'),
-                            'branchname' => $this->request->getPost('branchname'),
-                            'branchslug' => $this->request->getPost('branchslug'),
-                            'branchcountry' => $this->request->getPost('branchcountry'),
-                            'branchaddress' => $this->request->getPost('branchaddress'),
-                            'brancheader' => $this->request->getPost('brancheader'),
-                            'branchnavbar' => $this->request->getPost('branchnavbar'),
-                            'branchnavtext' => $this->request->getPost('branchnavtext'),
-                            'branchnavhover' => $this->request->getPost('branchnavhover'),
-                            'branchlogo' => $branchlogo,
-                            'branchlogoheight' => $this->request->getPost('branchlogoheight'),
-                            'branchlogowidth' => $this->request->getPost('branchlogowidth'),
-                            'userrole' => 2,
-                            'block' => 0,
-                            // 'referred_to' => implode(', ', $this->request->getPost('subvendor')),
-                            'referred_to' => ""
-                        ];
+                        $idata =
+                            [
+                                'firstname' => $this->request->getPost('firstname'),
+                                'lastname' => $this->request->getPost('lastname'),
+                                'email' => $email,
+                                'password' => $password,
+                                'phone' => $this->request->getPost('phone'),
+                                'address' => $this->request->getPost('address'),
+                                'website' => $this->request->getPost('website'),
+                                'coverage' => $this->request->getPost('coverage'),
+                                'linkedin' => $this->request->getPost('linkedin'),
+                                'useruimage' => $agentpic,
+                                'vendor' => 0,
+                                'smtpemail' => $this->request->getPost('smtpemail'),
+                                'smtppassword' => $this->request->getPost('smtppassword'),
+                                'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
+                                'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
+                                'smtpport' => $this->request->getPost('smtpport'),
+                                'branchname' => $this->request->getPost('branchname'),
+                                'branchslug' => $this->request->getPost('branchslug'),
+                                'branchcountry' => $this->request->getPost('branchcountry'),
+                                'branchaddress' => $this->request->getPost('branchaddress'),
+                                'brancheader' => $this->request->getPost('brancheader'),
+                                'branchnavbar' => $this->request->getPost('branchnavbar'),
+                                'branchnavtext' => $this->request->getPost('branchnavtext'),
+                                'branchnavhover' => $this->request->getPost('branchnavhover'),
+                                'branchlogo' => $branchlogo,
+                                'branchlogoheight' => $this->request->getPost('branchlogoheight'),
+                                'branchlogowidth' => $this->request->getPost('branchlogowidth'),
+                                'userrole' => 2,
+                                'block' => 0,
+                                // 'referred_to' => implode(', ', $this->request->getPost('subvendor')),
+                                'referred_to' => ""
+                            ];
                     }
                 } else if ($role == 3) //client
                 {
@@ -469,11 +460,11 @@ class Auth extends BaseController
                 $insert_id = $this->auth_model->insertID();
                 if ($save) {
                     $session->setFlashdata('success', 'Your Account has been register sucessfully. ');
-                    
-             
-                 send_email($idata['email'], "Add Signup");
-            
-            
+
+
+                    send_email($idata['email'], "Add Signup");
+
+
                     $notification_data = [
                         'description' => 'New Account has been created',
                         'to_user_id' => $insert_id,
@@ -486,8 +477,6 @@ class Auth extends BaseController
                     return redirect()->to('allUsers');
                 }
             }
-
-
         }
         $data['session'] = $session;
 
@@ -521,113 +510,73 @@ class Auth extends BaseController
     }
 
     public function editUser($id)
-{
-    $data = [];
-    $data['page_title'] = "Edit User";
-
-    $data['data'] = $this->request;
-    $data = [
-        'title_meta' => view('partials/title-meta', ['title' => 'Edit User']),
-        'page_title' => view('partials/page-title', ['title' => 'Edit User', 'pagetitle' => 'Home'])
-    ];
-    $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
-
-    $session = session();
-    $duser = $this->auth_model->where('id', $id)->findAll();
-    if ($this->request->getMethod() == 'post') {
-        $email = $this->request->getPost('email');
-        $password = $this->request->getPost('password');
-        $role = $this->request->getPost('role');
-
-        $agentpic = $this->request->getFile('agentpicture');
-        if ($agentpic && $agentpic->isValid() && !$agentpic->hasMoved()) {
-            $input = $this->validate([
-                'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png]',
-            ]);
-
-            if ($input) {
-                $newName = $agentpic->getRandomName();
-                $agentpic->move('uploads/users', $newName);
-                $agentpic = $newName;
-
-                if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
-                    unlink('uploads/users/' . $duser[0]['useruimage']);
-                }
-            } else {
-                $agentpic = $duser[0]['useruimage'];
-            }
-        } else {
-            $agentpic = $duser[0]['useruimage'];
-        }
-
-        $idata = [
-            'firstname' => $this->request->getPost('firstname'),
-            'lastname' => $this->request->getPost('lastname'),
-            'email' => $email,
-            'password' => $password,
-            'phone' => $this->request->getPost('phone'),
-            'address' => $this->request->getPost('address'),
-            'website' => $this->request->getPost('website'),
-            'coverage' => $this->request->getPost('coverage'),
-            'linkedin' => $this->request->getPost('linkedin'),
-            'useruimage' => $agentpic,
-            'userrole' => $role,
-            'vendor' => ($role == 2) ? 0 : $this->request->getPost('vendor'),
-            'block' => 0
-        ];
-
-        if ($role == 2) {
-            $branchlogopic = $this->request->getFile('branchlogo');
-            if ($branchlogopic && $branchlogopic->isValid() && !$branchlogopic->hasMoved()) {
-                $newNamebranch = $branchlogopic->getRandomName();
-                $branchlogopic->move('uploads/users', $newNamebranch);
-                $branchlogopic = $newNamebranch;
-
-                if (is_file('uploads/users/' . $duser[0]['branchlogo'])) {
-                    unlink('uploads/users/' . $duser[0]['branchlogo']);
-                }
-            } else {
-                $branchlogopic = $duser[0]['branchlogo'];
-            }
-
-            $idata = array_merge($idata, [
-                'smtpemail' => $this->request->getPost('smtpemail'),
-                'smtppassword' => $this->request->getPost('smtppassword'),
-                'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
-                'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
-                'smtpport' => $this->request->getPost('smtpport'),
-                'branchname' => $this->request->getPost('branchname'),
-                'branchslug' => $this->request->getPost('branchslug'),
-                'branchcountry' => $this->request->getPost('branchcountry'),
-                'branchaddress' => $this->request->getPost('branchaddress'),
-                'brancheader' => $this->request->getPost('brancheader'),
-                'branchnavbar' => $this->request->getPost('branchnavbar'),
-                'branchnavtext' => $this->request->getPost('branchnavtext'),
-                'branchnavhover' => $this->request->getPost('branchnavhover'),
-                'branchlogo' => $branchlogopic,
-                'branchlogoheight' => $this->request->getPost('branchlogoheight'),
-                'branchlogowidth' => $this->request->getPost('branchlogowidth'),
-                'referred_to' => $this->request->getPost('subvendor') ? implode(', ', $this->request->getPost('subvendor')) : ''
-            ]);
-        }
-
-        $update = $this->auth_model->update($id, $idata);
-
-        if ($update) {
-            $session->setFlashdata('success', 'Your Account has been updated successfully.');
-            log_activity('Update user account [email: ' . $idata['email'] . ', Role:' . get_user_role($idata['userrole']) . ']');
-            return redirect()->to('allUsers');
-        } else {
-            $session->setFlashdata('error', 'Failed to update data.');
-        }
-    }
-
-    $data['duser'] = $duser;
-    $data['session'] = $session;
-    return view('user-edit', $data);
-}
-
+    {
+        $data = [];
+        $data['page_title'] = "Edit User";
     
+        $session = session();
+        $duser = $this->auth_model->where('id', $id)->findAll();
+    
+        if ($this->request->getMethod() == 'post') {
+            $update_data = [];
+    
+            // Retrieve submitted data
+            $update_data['firstname'] = $this->request->getPost('firstname');
+            $update_data['lastname'] = $this->request->getPost('lastname');
+            $update_data['phone'] = $this->request->getPost('phone');
+            $update_data['address'] = $this->request->getPost('address');
+            $update_data['website'] = $this->request->getPost('website');
+            $update_data['coverage'] = $this->request->getPost('coverage');
+            $update_data['linkedin'] = $this->request->getPost('linkedin');
+    
+            // Check if password is provided
+            $password = $this->request->getPost('password');
+            if (!empty($password)) {
+                $update_data['password'] = $password;
+            }
+    
+            // Handle file uploads for agent picture
+            $agentpic = $this->request->getFile('agentpicture');
+            if ($agentpic && $agentpic->isValid() && !$agentpic->hasMoved()) {
+                $input = $this->validate([
+                    'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png]',
+                ]);
+    
+                if ($input) {
+                    $newName = $agentpic->getRandomName();
+                    $agentpic->move('uploads/users', $newName);
+                    $update_data['useruimage'] = $newName;
+    
+                    if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
+                        unlink('uploads/users/' . $duser[0]['useruimage']);
+                    }
+                }
+            }
+    
+            // Update the user data in the database
+            $update = $this->auth_model->update($id, $update_data);
+    
+            if ($update) {
+                $session->setFlashdata('success', 'Your Account has been updated successfully.');
+                log_activity('Update user account [id: ' . $id . ']');
+                return redirect()->to('allUsers');
+            } else {
+                $session->setFlashdata('error', 'Failed to update data.');
+            }
+        }
+    
+        // Pass user data and session to the view
+        $data['duser'] = $duser;
+        $data['session'] = $session;
+    
+        return view('user-edit', $data);
+    }
+    
+
+
+
+
+
 
 
     public function update_user()
@@ -770,7 +719,6 @@ class Auth extends BaseController
         $html .= '</table>';
 
         echo $html;
-
     }
 
     public function getAllUsers()
@@ -819,8 +767,6 @@ class Auth extends BaseController
                 } else {
                     return '<span class="badge bg-danger">Blocked</span>';
                 }
-
-
             })
             ->add('Action', function ($row) {
                 $block = 0;
@@ -838,7 +784,6 @@ class Auth extends BaseController
 
                 if ($request->filter_role)
                     $builder->where('userrole', $request->filter_role);
-
             })
             ->toJson();
     }
@@ -872,33 +817,28 @@ class Auth extends BaseController
                         helper('text');
                         $token = random_string('alnum', 16);
                         $this->auth_model->update($user['id'], ["token" => $token]);
-                        $response['user_id']=$user['id'];
-                        $response["data"]=$verify_password;
-                        $response["token"]=$token;
-                        $response["status"] =1;
-                           
-                        
+                        $response['user_id'] = $user['id'];
+                        $response["data"] = $verify_password;
+                        $response["token"] = $token;
+                        $response["status"] = 1;
                     }
                 } else {
                     $message = "Incorrect Password.";
-                    $response["status"] =0;
-
+                    $response["status"] = 0;
                 }
             } else {
                 $message = "Incorrect Email or Password";
-                $response["status"] =0;
-
+                $response["status"] = 0;
             }
-            $response["message"]=$message;
-           echo json_encode( $response);
+            $response["message"] = $message;
+            echo json_encode($response);
         }
     }
 
 
-    public function get_agents(){
-       $agents= $this->lead_master_model->select('agent_name')->findAll();
+    public function get_agents()
+    {
+        $agents = $this->lead_master_model->select('agent_name')->findAll();
         echo json_encode($agents);
     }
-
-
 }
