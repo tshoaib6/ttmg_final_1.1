@@ -384,7 +384,7 @@ class OrdersContoller extends BaseController
             if (email_allowed('vendorleads')) {
                 send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
             }
-            if (email_allowed('clientleads')) {
+            if (email_allowed('clientleads') && $post_data['client_id']!=0) {
                 send_email(get_email_by_user_id($post_data['client_id']), "Add Lead", $post_data['vendor_id']);
             }
             if (email_allowed('adminleads')) {
