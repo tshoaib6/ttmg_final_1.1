@@ -16,6 +16,11 @@
             width: 600px;
         }
 
+        .offcanvas-body {
+            max-height: calc(100vh - 150px); /* Adjust based on your header height */
+            overflow-y: auto;
+        }
+
         .counter {
             display: inline;
             margin-top: 0;
@@ -512,6 +517,7 @@
                     url: '<?= base_url() ?>/getleaddetail/' + uid,
                 type: 'get',
                 success: function (data) {
+                    console.log("SSS");
                     console.log(data);
                 $("#lead-detail").html(data);
         }

@@ -2,7 +2,7 @@
 
 <head>
 
-    <?php $title_meta ?>
+    <?php echo $title_meta ?>
 
 
     </style>

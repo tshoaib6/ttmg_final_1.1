@@ -268,11 +268,15 @@ class LeadController extends BaseController
     {
         $this->lead_model->select('complete_lead,status,reject_reason');
         $lead = $this->lead_model->where('id', $id)->findAll();
-        $complete_lead = json_decode($lead[0]['complete_lead']);
+        $complete_lead = json_decode($lead[0]['complete_lead'], true); // Decoding as associative array
         $html = '<table class="table table-bordered">';
-
+    
         foreach ($complete_lead as $key => $cp) {
-            $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td>' . $cp . '</td></tr>';
+            if (in_array($key, ['recording_link_1', 'recording_link_2'])) {
+                $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td><a href="' . $cp . '" target="_blank">' . $cp . '</a></td></tr>';
+            } else {
+                $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td>' . $cp . '</td></tr>';
+            }
         }
         if ($lead[0]['status'] == 1) {
             $html .= '<tr><td style="  font-weight: bold;">Status</td><td><span class="badge bg-success"> Approved </span></td></tr>';
@@ -285,6 +289,37 @@ class LeadController extends BaseController
         $html .= '</table>';
         echo $html;
     }
+
+    public function get_lead_master_detail($id)
+    {
+        $this->lead_model->select('complete_lead,status,reject_reason');
+        $lead = $this->lead_master_model->where('id', $id)->findAll();
+      
+        $complete_lead = json_decode($lead[0]['complete_lead'], true); // Decoding as associative array
+        var_dump($lead[0]['complete_lead']);
+        return 0;
+       
+        $html = '<table class="table table-bordered">';
+    
+        foreach ($complete_lead as $key => $cp) {
+            if (in_array($key, ['recording_link_1', 'recording_link_2'])) {
+                $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td><a href="' . $cp . '" target="_blank">' . $cp . '</a></td></tr>';
+            } else {
+                $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td>' . $cp . '</td></tr>';
+            }
+        }
+        if ($lead[0]['status'] == 1) {
+            $html .= '<tr><td style="  font-weight: bold;">Status</td><td><span class="badge bg-success"> Approved </span></td></tr>';
+        } else if ($lead[0]['status'] == 2) {
+            $html .= '<tr><td style="  font-weight: bold;">Status</td><td><span class="badge bg-danger"> Rejected </span></td></tr>';
+        }
+        if ($lead[0]['status'] == 2 && $lead[0]['reject_reason'] != "") {
+            $html .= '<tr><td style="  font-weight: bold;">Rejection Reason </td><td>' . $lead[0]['reject_reason'] . ' </td></tr>';
+        }
+        $html .= '</table>';
+        echo $html;
+    }
+    
 
     public function reject_lead()
     {

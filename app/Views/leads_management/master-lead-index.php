@@ -702,7 +702,7 @@
             });
 
             $.ajax({
-                url: '<?= base_url() ?>/getleaddetail/' + uid,
+                url: '<?= base_url() ?>/getleadmasterdetail/' + uid,
                 type: 'get',
                 success: function(data) {
                     console.log(data);
