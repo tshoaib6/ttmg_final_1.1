@@ -115,11 +115,14 @@
 <script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
-
-
-</script>
 <script type="text/javascript">
-
+    document.getElementById('mapping_form').addEventListener('submit', function(event) {
+        let phoneNumberField = document.querySelector('select[name="map_head[]"]').value;
+        if (phoneNumberField === "-" || !phoneNumberField.includes("phone_number")) {
+            toastr.warning("Phone Number","Phone Number is Required")
+            event.preventDefault(); // Prevent form submission
+        }
+    });
 </script>
 
 <!-- App js -->
