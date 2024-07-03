@@ -70,81 +70,97 @@ class LeadController extends BaseController
 
 
     public function ajax_Datatable_leads($id = "")
-    {
-        $db = db_connect();
-        $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
-        if ($id != 0) {
-            $builder->where('order_id', $id);
-        }
-        if (is_vendor()) {
-            $builder->where('vendor_id', get_user_id());
-        } else if (is_client()) {
-            $builder->where('client_id', get_user_id());
-        }
-
-        $data = DataTable::of($builder)
-            ->edit('lead_id', function ($row) {
-                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
-                <a href="javascript:void(0);" class="px-3 text-danger" onclick="deleteLead(' . $row->id . ')"><i class="uil uil-trash-alt font-size-18"></i></a>
-                <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
-            })
-            ->edit('option_id', function ($row) {
-                if ($row->status == 3) {
-                    return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
-                        . '<button class="btn btn-danger px-3 mx-2" onclick="rejectLead(' . $row->id . ')">Reject</button>';
-                } else if ($row->status == 2) {
-                    return '<span class="badge bg-danger">Rejected</span>';
-                } else if ($row->status == 1) {
-                    return '<span class="badge bg-success">Approved</span>';
-                }
-            })->hide('status')->hide('order_id')
-            ->filter(function ($builder, $request) {
-                if ($request->lead_status) {
-                    $builder->where('client_id', $request->client);
-                }
-            })
-            ->toJson();
-
-        return $data;
+{
+    $db = db_connect();
+    $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+    
+    // Order by 'id' in descending order to get the latest entries first
+    $builder->orderBy('id', 'DESC');
+    
+    if ($id != 0) {
+        $builder->where('order_id', $id);
+    }
+    if (is_vendor()) {
+        $builder->where('vendor_id', get_user_id());
+    } else if (is_client()) {
+        $builder->where('client_id', get_user_id());
     }
 
-    public function ajax_Datatable_master_leads($id = "")
-    {
-        $db = db_connect();
-        $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
-        if ($id != 0) {
-            $builder->where('order_id', $id);
-        }
-        if (is_vendor()) {
-            $builder->where('vendor_id', get_user_id());
-        } else if (is_client()) {
-            $builder->where('client_id', get_user_id());
-        }
-
-        $data = DataTable::of($builder)
-            ->edit('lead_id', function ($row) {
-                return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
+    $data = DataTable::of($builder)
+        ->edit('lead_id', function ($row) {
+            return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
                 <a href="javascript:void(0);" class="px-3 text-danger" onclick="deleteLead(' . $row->id . ')"><i class="uil uil-trash-alt font-size-18"></i></a>
-                    ';
-            })
+                <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
+        })
+        ->edit('option_id', function ($row) {
+            if ($row->status == 3) {
+                return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
+                    . '<button class="btn btn-danger px-3 mx-2" onclick="rejectLead(' . $row->id . ')">Reject</button>';
+            } else if ($row->status == 2) {
+                return '<span class="badge bg-danger">Rejected</span>';
+            } else if ($row->status == 1) {
+                return '<span class="badge bg-success">Approved</span>';
+            }
+        })->hide('status')->hide('order_id')
+        ->filter(function ($builder, $request) {
+            if ($request->lead_status) {
+                $builder->where('client_id', $request->client);
+            }
+        })
+        ->toJson();
 
-            ->add('CHe', function ($row) {
-                return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
-            }, 'last')->hide('status')->hide('order_id')
+    return $data;
+}
 
-            ->filter(function ($builder, $request) {
+public function ajax_Datatable_master_leads($id = "")
+{
+    $db = db_connect();
+    $builder = $db->table('ttmg_leads_master')->select('id,agent_name,firstname,lastname,state,phone_number,id as lead_id,status,order_id');
+    
+    // Order by 'id' in descending order to get the latest entries first
+    $builder->orderBy('id', 'DESC');
+    
+    if ($id != 0) {
+        $builder->where('order_id', $id);
+    }
+    if (is_vendor()) {
+        $builder->where('vendor_id', get_user_id());
+    } else if (is_client()) {
+        $builder->where('client_id', get_user_id());
+    }
 
-                if ($request->filterActive == 1) {
+    $data = DataTable::of($builder)
+        ->edit('lead_id', function ($row) {
+            return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
+                <a href="javascript:void(0);" class="px-3 text-danger" onclick="deleteLead(' . $row->id . ')"><i class="uil uil-trash-alt font-size-18"></i></a>';
+        })
+        ->add('CHe', function ($row) {
+            return '<input class="form-check-input lead-check" name="checkbox" type="checkbox" id="formCheck2">';
+        }, 'last')->hide('status')->hide('order_id')
+        ->filter(function ($builder, $request) {
+            if ($request->filterActive == 1) {
+                $column = $request->column;
+                $operator = $request->operator;
+                $value = $request->value;
+                $condition = $request->condition;
+                $categoryId = $request->category;
 
-                    $column = $request->column;
-                    $operator = $request->operator;
-                    $value = $request->value;
-                    $condition = $request->condition;
-                    $categoryId = $request->category;
-
-                    if (count($value) > 0) {
-                        foreach ($column as $key => $col) {
-                            if ($key == 0) {
+                if (count($value) > 0) {
+                    foreach ($column as $key => $col) {
+                        if ($key == 0) {
+                            if ($operator[$key] == "is") {
+                                $builder->where($col, $value[$key]);
+                            } else if ($operator[$key] == 'contains') {
+                                $builder->like($col, $value[$key]);
+                            } elseif ($operator[$key] == 'does not contain') {
+                                $builder->notLike($col, $value[$key]);
+                            } else if ($operator[$key] == 'is blank') {
+                                $builder->where($col, "");
+                            } else if ($operator[$key] == 'is not blank') {
+                                $builder->where($col . "!=", "");
+                            }
+                        } else {
+                            if ($condition[$key] == "AND") {
                                 if ($operator[$key] == "is") {
                                     $builder->where($col, $value[$key]);
                                 } else if ($operator[$key] == 'contains') {
@@ -156,56 +172,44 @@ class LeadController extends BaseController
                                 } else if ($operator[$key] == 'is not blank') {
                                     $builder->where($col . "!=", "");
                                 }
-                            } else {
-                                if ($condition[$key] == "AND") {
-                                    if ($operator[$key] == "is") {
-                                        $builder->where($col, $value[$key]);
-                                    } else if ($operator[$key] == 'contains') {
-                                        $builder->like($col, $value[$key]);
-                                    } elseif ($operator[$key] == 'does not contain') {
-                                        $builder->notLike($col, $value[$key]);
-                                    } else if ($operator[$key] == 'is blank') {
-                                        $builder->where($col, "");
-                                    } else if ($operator[$key] == 'is not blank') {
-                                        $builder->where($col . "!=", "");
-                                    }
-                                } else {  // OR condition
-
-                                    if ($operator[$key] == "is") {
-                                        $builder->orWhere($col, $value[$key]);
-                                    } else if ($operator[$key] == 'contains') {
-                                        $builder->orWhere($col, $value);
-                                    } elseif ($operator[$key] == 'does not contain') {
-                                        $builder->orWhere($col . " NOT LIKE", "%$value%");
-                                    } else if ($operator[$key] == 'is blank') {
-                                        $builder->orWhere($col, "");
-                                    } else if ($operator[$key] == 'is not blank') {
-                                        $builder->orWhere($col . "!=", "");
-                                    }
+                            } else {  // OR condition
+                                if ($operator[$key] == "is") {
+                                    $builder->orWhere($col, $value[$key]);
+                                } else if ($operator[$key] == 'contains') {
+                                    $builder->orWhere($col, $value[$key]);
+                                } elseif ($operator[$key] == 'does not contain') {
+                                    $builder->orWhere($col . " NOT LIKE", "%$value[$key]%");
+                                } else if ($operator[$key] == 'is blank') {
+                                    $builder->orWhere($col, "");
+                                } else if ($operator[$key] == 'is not blank') {
+                                    $builder->orWhere($col . "!=", "");
                                 }
                             }
                         }
                     }
-
-                    if ($categoryId != "0") {
-                        $builder->where('camp_id', $categoryId);
-                    }
                 }
 
-                if ($request->lead_status == '0') {
-                } else if ($request->lead_status == '1') {
-                    $builder->where('assigned', 1);
-                } else if ($request->lead_status == '2') {
-                    $builder->where('assigned', 0);
+                if ($categoryId != "0") {
+                    $builder->where('camp_id', $categoryId);
                 }
+            }
 
-                if ($request->start_date != '' && $request->end_date != '') {
-                    $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') >=", $request->start_date);
-                    $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') <=", $request->end_date);
-                }
-            })->toJson();
-        return $data;
-    }
+            if ($request->lead_status == '0') {
+                // No specific filter for lead status '0'
+            } else if ($request->lead_status == '1') {
+                $builder->where('assigned', 1);
+            } else if ($request->lead_status == '2') {
+                $builder->where('assigned', 0);
+            }
+
+            if ($request->start_date != '' && $request->end_date != '') {
+                $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') >=", $request->start_date);
+                $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') <=", $request->end_date);
+            }
+        })->toJson();
+
+    return $data;
+}
 
 
 
