@@ -47,7 +47,7 @@ class LeadController extends BaseController
             'page_title' => view('partials/page-title', ['title' => 'All Leads', 'pagetitle' => 'Look For Leads']),
         ];
         $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
-        
+
         $client = get_client();
         $data['order'] = $orders;
         $data['client'] = $client;
@@ -85,11 +85,9 @@ class LeadController extends BaseController
         $data = DataTable::of($builder)
             ->edit('lead_id', function ($row) {
                 return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
-                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
-                    <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
+                <a href="javascript:void(0);" class="px-3 text-danger" onclick="deleteLead(' . $row->id . ')"><i class="uil uil-trash-alt font-size-18"></i></a>
+                <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
             })
-
-
             ->edit('option_id', function ($row) {
                 if ($row->status == 3) {
                     return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
@@ -101,27 +99,11 @@ class LeadController extends BaseController
                 }
             })->hide('status')->hide('order_id')
             ->filter(function ($builder, $request) {
-
-                // if ($request->state) {
-                //     $builder->where('state', $request->state);
-                // }
-                // if ($request->lead_status == 'all') {
-                //     $builder->where('order_id !=', 0);
-                // }
-                // if ($request->lead_status == 'un') {
-                //     $builder->where('order_id', 0);
-                // }
-                // if ($request->client) {
-                //     $builder->where('client_id', $request->client);
-                // }
-
                 if ($request->lead_status) {
                     $builder->where('client_id', $request->client);
                 }
             })
-
             ->toJson();
-
 
         return $data;
     }
@@ -263,14 +245,29 @@ class LeadController extends BaseController
         return view('leads_management/add_lead', $data);
     }
 
+    public function delete_lead($id)
+    {
+        $lead = $this->lead_model->where('id', $id)->delete();
+        if($lead){
 
+            $l=$this->lead_model->select('order_id')->where('id',$id)->first();
+
+            return json_encode(['success' => true, 'message' =>$l ]);
+
+        }
+        else{
+            return json_encode(['success' => false, 'message' => 'Lead deleted unsuccessfull.']);
+        }
+        
+        return $this->response->setJSON(['success' => true, 'message' => 'Lead deleted successfully.']);
+    }
     public function get_lead_detail($id)
     {
         $this->lead_model->select('complete_lead,status,reject_reason');
         $lead = $this->lead_model->where('id', $id)->findAll();
         $complete_lead = json_decode($lead[0]['complete_lead'], true); // Decoding as associative array
         $html = '<table class="table table-bordered">';
-    
+
         foreach ($complete_lead as $key => $cp) {
             if (in_array($key, ['recording_link_1', 'recording_link_2'])) {
                 $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td><a href="' . $cp . '" target="_blank">' . $cp . '</a></td></tr>';
@@ -294,13 +291,13 @@ class LeadController extends BaseController
     {
         $this->lead_model->select('complete_lead,status,reject_reason');
         $lead = $this->lead_master_model->where('id', $id)->findAll();
-      
+
         $complete_lead = json_decode($lead[0]['complete_lead'], true); // Decoding as associative array
         var_dump($lead[0]['complete_lead']);
         return 0;
-       
+
         $html = '<table class="table table-bordered">';
-    
+
         foreach ($complete_lead as $key => $cp) {
             if (in_array($key, ['recording_link_1', 'recording_link_2'])) {
                 $html .= '<tr><td style="  font-weight: bold;">' . ucfirst(str_replace('_', ' ', $key)) . '</td><td><a href="' . $cp . '" target="_blank">' . $cp . '</a></td></tr>';
@@ -319,7 +316,7 @@ class LeadController extends BaseController
         $html .= '</table>';
         echo $html;
     }
-    
+
 
     public function reject_lead()
     {

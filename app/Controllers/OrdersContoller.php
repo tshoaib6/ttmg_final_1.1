@@ -560,7 +560,7 @@ class OrdersContoller extends BaseController
         $duplicate = array();
         if ($o_id != "") {
             foreach ($leads as $l) {
-                $lead_check = $this->lead_model->where('phone_number', $l['phone_number'])->where('client_id', $order_detail['fkclientid'])->where('camp_id', $camp_id)->first();
+                $lead_check = $this->lead_model->where('phone_number', $l['phone_number'])->where('vendor_id', $order_detail['fkvendorstaffid'])->where('camp_id', $camp_id)->first();
                 $temp_post_data = [
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
@@ -576,8 +576,6 @@ class OrdersContoller extends BaseController
                     "master_search" => json_encode($l),
                     "assigned" => 1,
                     "lead_date" => date('Y-m-d', strtotime($l['date'])),
-
-
                 ];
                 if (!$lead_check) {
                     array_push($post_data, $temp_post_data);
