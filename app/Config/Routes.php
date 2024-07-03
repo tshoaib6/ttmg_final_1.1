@@ -155,6 +155,8 @@ $routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_
 $routes->get('/getleaddetail/(:any)', 'LeadController::get_lead_detail/$1', ['filter' => 'authenticate']);
 $routes->get('/getleadmasterdetail/(:any)', 'LeadController::get_lead_master_detail/$1', ['filter' => 'authenticate']);
 $routes->get('/delete-lead/(:any)', 'LeadController::delete_lead/$1', ['filter' => 'authenticate']);
+$routes->get('/delete-master-lead/(:any)', 'LeadController::delete_lead_master/$1', ['filter' => 'authenticate']);
+
 
 
 $routes->post('/reject-lead', 'LeadController::reject_lead', ['filter' => 'authenticate']);

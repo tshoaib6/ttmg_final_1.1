@@ -269,6 +269,30 @@
 
 
 <script type="text/javascript">
+
+     function deleteLead(id) {
+        if (confirm('Are you sure you want to delete this lead?')) {
+            $.ajax({
+                url: '<?= site_url('delete-master-lead/') ?>' + id,
+                type: 'GET',
+                success: function(response) {
+                    if (JSON.parse(response).success) {
+                        toastr.success('Lead Delete', 'Lead Deleted Successfully')
+
+                        // Reload the datatable
+                        $('#table').DataTable().ajax.reload();
+                    } else {
+                        console.log(JSON.parse(response).success);
+                        // toastr.error('Lead Delete', 'Error')
+                    }
+                },
+                error: function() {
+                    alert('Error deleting lead');
+                }
+            });
+        }
+    }
+
     function createListItem(currentDateTime, post) {
         var listItem = $('<li>');
         var dateTimeSpan = $('<span>').text(currentDateTime).addClass('datetime');

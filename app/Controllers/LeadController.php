@@ -124,7 +124,7 @@ class LeadController extends BaseController
         $data = DataTable::of($builder)
             ->edit('lead_id', function ($row) {
                 return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
-                    <a href="' . base_url('lead-delete/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
+                <a href="javascript:void(0);" class="px-3 text-danger" onclick="deleteLead(' . $row->id . ')"><i class="uil uil-trash-alt font-size-18"></i></a>
                     ';
             })
 
@@ -246,6 +246,23 @@ class LeadController extends BaseController
     }
 
     public function delete_lead($id)
+    {
+        $lead = $this->lead_model->where('id', $id)->delete();
+        if($lead){
+
+            $l=$this->lead_model->select('order_id')->where('id',$id)->first();
+
+            return json_encode(['success' => true, 'message' =>$l ]);
+
+        }
+        else{
+            return json_encode(['success' => false, 'message' => 'Lead deleted unsuccessfull.']);
+        }
+        
+        return $this->response->setJSON(['success' => true, 'message' => 'Lead deleted successfully.']);
+    }
+
+    public function delete_lead_master($id)
     {
         $lead = $this->lead_model->where('id', $id)->delete();
         if($lead){
