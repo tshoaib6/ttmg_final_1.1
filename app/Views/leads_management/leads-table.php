@@ -12,7 +12,9 @@
                         <th>Phone Number</th>
                         <th> Reason </th>
                         <th>Options</th>
+                        <?php if(is_admin()){ ?>
                         <th>Action </th>
+                        <?php }?>
                     </tr>
                 </thead>
                 <tbody></tbody>

@@ -88,10 +88,11 @@ class LeadController extends BaseController
 
     $data = DataTable::of($builder)
         ->edit('lead_id', function ($row) {
+            if (is_admin()) {
             return '<a href="' . site_url('add-lead/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
                 <a href="javascript:void(0);" class="px-3 text-danger" onclick="deleteLead(' . $row->id . ')"><i class="uil uil-trash-alt font-size-18"></i></a>
                 <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
-        })
+ } })
         ->edit('option_id', function ($row) {
             if ($row->status == 3) {
                 return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
