@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class=" text-end">
-                                        <button class="btn btn-primary w-sm waves-effect waves-light" id="invoice_modal">Generate Invoice</button>
+                                        <!-- <button class="btn btn-primary w-sm waves-effect waves-light" id="invoice_modal">Generate Invoice</button> -->
                                     </div>
                                 </div>
 
@@ -91,6 +91,31 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade bs-example-modal-center" id="rejectLeadModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject Lead</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" id="reject_lead_form">
+                            <div class="col-sm-12 mb-3">
+                                <label class="form-label" for="formrow-reason-input">Reason <span class="required"> *
+                                    </span></label>
+                                <textarea name="reason" class="form-control rform" required id="reason">
+                            </textarea>
+                            </div>
+                            <input type="hidden" name="l_id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="rejectLeadSubmit()" class="btn btn-primary">Save </button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
         <?= $this->include('invoice/invoice_modal') ?>
         <?= $this->include('partials/footer') ?>
     </div>
@@ -141,7 +166,28 @@
             });
         }
     }
-    
+    function rejectLead(leadID) {
+
+$('#rejectLeadModal').modal('show');
+$('input[name="l_id"]').val(leadID);
+
+
+console.log("Lead Rejecterd");
+}
+    function rejectLeadSubmit() {
+        $formData = $("#reject_lead_form").serialize();
+        $.ajax({
+            url: '<?= base_url() ?>reject-lead/',
+            type: 'post',
+            data: $formData,
+            success: function(data) {
+                toastr.error('Lead Rejected', 'Lead Rejected Successfully')
+                $('#rejectLeadModal').modal('hide');
+                $('#table').DataTable().ajax.reload(); // Reload DataTable
+            }
+        });
+        return 0;
+    }
     var table = $('#table').DataTable({
         processing: true,
         serverSide: true,

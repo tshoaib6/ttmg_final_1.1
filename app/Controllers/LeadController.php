@@ -252,20 +252,42 @@ public function ajax_Datatable_master_leads($id = "")
 
     public function delete_lead($id)
     {
-        $lead = $this->lead_model->where('id', $id)->delete();
-        if($lead){
-
-            $l=$this->lead_model->select('order_id')->where('id',$id)->first();
-
-            return json_encode(['success' => true, 'message' =>$l ]);
-
-        }
-        else{
-            return json_encode(['success' => false, 'message' => 'Lead deleted unsuccessfull.']);
-        }
+        // Get the order_id of the lead to be deleted
+        $lead = $this->lead_model->select('order_id')->where('id', $id)->first();
         
-        return $this->response->setJSON(['success' => true, 'message' => 'Lead deleted successfully.']);
+        if (!$lead) {
+            return json_encode(['success' => false, 'message' => 'Lead not found.']);
+        }
+    
+        // Delete the lead
+        $leadDeleted = $this->lead_model->where('id', $id)->delete();
+    
+        if ($leadDeleted) {
+            // Get the order details
+            $order = $this->order_model->select('lead_requested, remainingLeads')
+                                       ->where('pkorderid', $lead['order_id'])
+                                       ->first();
+                                       
+            if (!$order) {
+                return json_encode(['success' => false, 'message' => 'Order not found.']);
+            }
+    
+            // Count remaining leads for the order
+            $remainingLeadsCount = $this->lead_model->where('order_id', $lead['order_id'])
+            ->where('status !=', 2) // Exclude rejected leads
+            ->countAllResults();
+            
+            // Update the order's remainingLeads
+            $this->order_model->where('pkorderid', $lead['order_id'])
+                              ->set(['remainingLeads' => $order['lead_requested'] - $remainingLeadsCount])
+                              ->update();
+    
+            return json_encode(['success' => true, 'message' => 'Lead deleted successfully.', 'id' => $id]);
+        } else {
+            return json_encode(['success' => false, 'message' => 'Lead deletion unsuccessful.']);
+        }
     }
+    
 
     public function delete_lead_master($id)
     {
@@ -344,17 +366,47 @@ public function ajax_Datatable_master_leads($id = "")
     {
         $id = $this->request->getPost('l_id');
         $reason = $this->request->getPost('reason');
+    
+        // Update the lead with reject reason and status
         $this->lead_model->update($id, ['reject_reason' => trim($reason), 'status' => 2]);
+    
+        // Log the activity
         log_activity("Lead Rejected Id : " . $id, get_user_fullname());
+    
+        // Get the order_id associated with the lead
+        $lead = $this->lead_model->select('order_id')->where('id', $id)->first();
+    
+        if ($lead) {
+            // Get the order details
+            $order = $this->order_model->select('lead_requested, remainingLeads')
+                                       ->where('pkorderid', $lead['order_id'])
+                                       ->first();
+    
+            if ($order) {
+                // Count remaining leads for the order
+                $remainingLeadsCount = $this->lead_model->where('order_id', $lead['order_id'])
+                                                        ->where('status !=', 2) // Exclude rejected leads
+                                                        ->countAllResults();
+    
+                // Update the order's remainingLeads
+                $this->order_model->where('pkorderid', $lead['order_id'])
+                                  ->set(['remainingLeads' => $order['lead_requested'] - $remainingLeadsCount])
+                                  ->update();
+            }
+        }
+    
+        // Prepare and add notification
         $notification_data = [
             'description' => 'Lead Rejected ID : ' . $id,
             'to_user_id' => 1,
             'link' => base_url() . "lead-index/"
         ];
-
+    
         add_notification($notification_data);
+    
         echo json_encode($id);
     }
+    
     public function accept_lead()
     {
         $id = $this->request->getPost('id');

@@ -279,7 +279,7 @@
                 success: function(response) {
                     if (JSON.parse(response).success) {
                         toastr.success('Lead Delete', 'Lead Deleted Successfully')
-
+                        console.log(response);
                         // Reload the datatable
                         $('#table').DataTable().ajax.reload();
                     } else {
