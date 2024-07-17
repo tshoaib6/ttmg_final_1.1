@@ -114,10 +114,16 @@ $routes->get('/campaign-datatable', 'CampaignController::ajaxDataTables');
 $routes->get('/campaign-delete/(:any)', 'CampaignController::delete/$1', ['filter' => 'authenticate']);
 $routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1', ['filter' => 'authenticate']);
 
+// $routes->match(["get", "post"], "/create-order/(:any)", 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
 
 //Order
-$routes->match(["get", "post"], "/create-order", 'OrdersContoller::create', ['filter' => 'authenticate']);
-$routes->get('/create-order/(:any)', 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
+$routes->get('/delete-order', 'OrdersContoller::deleteOrder', ['filter' => 'authenticate']);
+$routes->get("/create-order", 'OrdersContoller::create', ['filter' => 'authenticate']);
+$routes->post("/create-order", 'OrdersContoller::create', ['filter' => 'authenticate']);
+$routes->post("/create-order/(:any)", 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
+
+// $routes->match(["get", "post"], "/create-order/(:any)", 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
+$routes->get('/edit-order/(:any)', 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
 $routes->get('/order-index', 'OrdersContoller::index', ['filter' => 'authenticate']);
 $routes->get('(:any)?/order-index/(:any)', 'OrdersContoller::sub_vendor_index/$1/$2', ['filter' => 'authenticate']);
 
@@ -131,7 +137,7 @@ $routes->post('/upload-lead', 'OrdersContoller::upload_lead', ['filter' => 'auth
 $routes->get('/map-headers', 'OrdersContoller::map_headers', ['filter' => 'authenticate']);
 $routes->post('/import-leads', 'OrdersContoller::importLeads', ['filter' => 'authenticate']);
 $routes->get('/order-detail/(:any)', 'OrdersContoller::order_detail/$1', ['filter' => 'authenticate']);
-$routes->get('/order-delete/(:any)', 'OrdersContoller::delete/$1', ['filter' => 'authenticate']);
+// $routes->get('/order-delete/(:any)', 'OrdersContoller::delete/$1', ['filter' => 'authenticate']);
 $routes->post('/block-order', 'OrdersContoller::block_order', ['filter' => 'authenticate']);
 $routes->post('/unblock-order', 'OrdersContoller::unblock_order', ['filter' => 'authenticate']);
 

@@ -198,6 +198,28 @@
         }
     }
 
+    function deleteOrder(orderId) {
+    if (confirm('Are you sure you want to delete this order?')) {
+        $.ajax({
+            url: '<?php echo site_url('delete-order')?>',
+            type: 'GET',
+            data:{orderId:orderId},
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                    $('#table').DataTable().ajax.reload()
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error : ' + error);
+            }
+        });
+    }
+}
+
+
     function unblockOrder(id = "") {
         if (confirm("Do you want to Unblock the Order ?") == true) {
             $.ajax({

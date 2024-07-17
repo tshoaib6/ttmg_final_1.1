@@ -117,168 +117,201 @@ class OrdersContoller extends BaseController
         return $data;
     }
     public function ajax_Datatable_orders($id = "")
-    {
-        $db = db_connect();
-        $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+{
+    $db = db_connect();
+    $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
 
-        if ($id != 0) {
-            $builder->where('categoryname', $id);
-        }
-    
-        if (is_vendor()) {
-            $builder->where('fkvendorstaffid', get_user_id());
-        } elseif (is_client()) {
-            $builder->where('fkclientid', get_user_id());
-        }
-        $data = DataTable::of($builder)->edit('agent', function ($row) {
-            return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
-        })->edit('pkorderid', function ($row) {
-            $btn = '<a href="' . site_url('create-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
-            if (is_admin()) {
-                if ($row->status == 0) {
-                    $btn .= '<a href="#" onclick="unblockOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="fas fa-lock font-size-18"></i></a>';
-                } else {
-                    $btn .= '<a href="#" onclick="blockOrder(' . $row->pkorderid . ')" class="px-3 text-success"><i class="fas fa-lock-open font-size-18"></i></a>';
-                }
-                return $btn;
-            }
-        })->edit('fkvendorstaffid', function ($row) {
-            $vendor = get_vendors($row->fkvendorstaffid);
-            return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
-        })->edit('status', function ($row) {
-            $status = '';
-            if ($row->status == 0) {
-                $status = '<span class="badge bg-danger">Blocked</span>';
-            } else if ($row->status == 1) {
-                $status = '<span class="badge bg-primary">Active</span>';
-            } else if ($row->status == 3) {
-                $status = '<span class="badge bg-success">Completed</span>';
-            }
-            return $status;
-        })
-        ->edit('id', function ($row) {
-            if (is_admin() && $row->status != 0 && $row->status != 3) {
-                return '<div class="d-flex flex-row">
-                            <button class="btn btn-primary m-1" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>
-                            <button class="btn btn-secondary m-1" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>
-                        </div>';
-            } else {
-                return "N/A";
-            }
-        })
-            ->filter(function ($builder, $request) {
-    
-                if ($request->order_status == "0") {// blocked orders
-                    $builder->where('status', 0);
-                }
-                if ($request->order_status == '1') {// active/open/orders
-                    $builder->where('status', 1);
-                }
-                if ($request->order_status == '3') {// complete_orders
-                    $builder->where('status', 3);
-                }
-                if ($request->order_status == '4') {// All Orders
-                }
-    
-                if ($request->filter_campaign) {
-                    $builder->where('categoryname', $request->filter_campaign);
-                }
-                if ($request->filter_vendor) {
-                    $builder->where('fkvendorstaffid', $request->filter_vendor);
-                }
-            })->addNumbering()
-            ->toJson();
-        return $data;
+    if ($id != 0) {
+        $builder->where('categoryname', $id);
     }
+
+    if (is_vendor()) {
+        $builder->where('fkvendorstaffid', get_user_id());
+    } elseif (is_client()) {
+        $builder->where('fkclientid', get_user_id());
+    }
+
+    $data = DataTable::of($builder)->edit('agent', function ($row) {
+        return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
+    })->edit('pkorderid', function ($row) {
+        $btn = '<a href="' . site_url('edit-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
+        if (is_admin()) {
+            if ($row->status == 0) {
+                $btn .= '<a href="#" onclick="unblockOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="fas fa-lock font-size-18"></i></a>';
+            } else {
+                $btn .= '<a href="#" onclick="blockOrder(' . $row->pkorderid . ')" class="px-3 text-success"><i class="fas fa-lock-open font-size-18"></i></a>';
+            }
+        }
+        $btn .= '<a href="#" onclick="deleteOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>';
+        return $btn;
+    })->edit('fkvendorstaffid', function ($row) {
+        $vendor = get_vendors($row->fkvendorstaffid);
+        return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+    })->edit('status', function ($row) {
+        $status = '';
+        if ($row->status == 0) {
+            $status = '<span class="badge bg-danger">Blocked</span>';
+        } else if ($row->status == 1) {
+            $status = '<span class="badge bg-primary">Active</span>';
+        } else if ($row->status == 3) {
+            $status = '<span class="badge bg-success">Completed</span>';
+        }
+        return $status;
+    })->edit('id', function ($row) {
+        if (is_admin() && $row->status != 0 && $row->status != 3) {
+            return '<div class="d-flex flex-row">
+                        <button class="btn btn-primary m-1" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>
+                        <button class="btn btn-secondary m-1" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>
+                    </div>';
+        } else {
+            return "N/A";
+        }
+    })->filter(function ($builder, $request) {
+        if ($request->order_status == "0") {// blocked orders
+            $builder->where('status', 0);
+        }
+        if ($request->order_status == '1') {// active/open/orders
+            $builder->where('status', 1);
+        }
+        if ($request->order_status == '3') {// complete_orders
+            $builder->where('status', 3);
+        }
+        if ($request->order_status == '4') {// All Orders
+        }
+
+        if ($request->filter_campaign) {
+            $builder->where('categoryname', $request->filter_campaign);
+        }
+        if ($request->filter_vendor) {
+            $builder->where('fkvendorstaffid', $request->filter_vendor);
+        }
+    })->addNumbering()->toJson();
+
+    return $data;
+}
+public function deleteOrder()
+{
+    $id=    $this->request->getGet('orderId');
+
+    $this->order_model->delete($id);
+    log_activity("Order Deleted Id : " . $id, get_user_fullname());
+    return $this->response->setJSON(['status' => 'success', 'message' => 'Order deleted successfully']);
+}
+
     
     public function create($id = "")
-    {
+{
+    $states = [
+        "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "IA", "ID", "IL", 
+        "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", 
+        "NH", "NJ", "NM", "NV"
+    ];
 
-        if ($this->request->getMethod() === 'post') {
+    if ($this->request->getMethod() === 'post') {
+        $data = [
+            'agent' => $this->request->getPost('agent'),
+            'categoryname' => $this->request->getPost('categoryname'),
+            'state' => $this->request->getPost('state'),
+            'fkvendorstaffid' => $this->request->getPost('fkvendorstaffid'),
+            'fkclientid' => $this->request->getPost('fkclientid'),
+            'prioritylevel' => $this->request->getPost('prioritylevel'),
+            'ageranges' => $this->request->getPost('ageranges'),
+            'lead_requested' => $this->request->getPost('lead_requested'),
+            'remainingLeads' => $this->request->getPost('lead_requested'),
+            'notes' => $this->request->getPost('notes'),
+            'orderdate' => $this->request->getPost('orderdate'),
+            'status' => "1"
+        ];
 
-            $data = [
-                'agent' => $this->request->getPost('agent'),
-                'categoryname' => $this->request->getPost('categoryname'),
-                'state' => $this->request->getPost('state'),
-                'fkvendorstaffid' => $this->request->getPost('fkvendorstaffid'),
-                'fkclientid' => $this->request->getPost('fkclientid'),
-                'prioritylevel' => $this->request->getPost('prioritylevel'),
-                'ageranges' => $this->request->getPost('ageranges'),
-                'lead_requested' => $this->request->getPost('lead_requested'),
-                'remainingLeads' => $this->request->getPost('lead_requested'),
-                // 'fblink' => $this->request->getPost('fblink'),
-                'notes' => $this->request->getPost('notes'),
-                'orderdate' => $this->request->getPost('orderdate'),
-                'status' => "1"
-            ];
+        if ($id == "") {
+            // Create new order
             $insert_id = $this->order_model->insert($data);
+
+            // Notification for the client
             $notification_data = [
                 'description' => 'New Order Has Been Created',
                 'to_user_id' => $data['fkclientid'],
                 'link' => base_url() . "order-detail/" . $insert_id,
             ];
             add_notification($notification_data);
+
+            // Send email if not vendor
             if (!is_vendor()) {
                 send_email(get_email_by_user_id($data['fkvendorstaffid']), "Add Order");
             }
-            if($this->request->getPost('fkclientid')!=0 ){
+            if ($data['fkclientid'] != 0) {
                 send_email(get_email_by_user_id($data['fkclientid']), "Add Order");
             }
 
+            // Notification for the vendor staff
             $notification_data = [
                 'description' => 'New Order Has Been Created',
                 'to_user_id' => $data['fkvendorstaffid'],
                 'link' => base_url() . "order-detail/" . $insert_id,
             ];
             add_notification($notification_data);
+
             log_activity("Order Added Id : " . $insert_id, get_user_fullname());
 
-            session()->setFlashdata('success', 'Order Created Successful!');
-            return redirect()->to('order-index');
-        } elseif ($id != "") {
+            session()->setFlashdata('success', 'Order Created Successfully!');
+        } else {
+            // Update existing order
+            $this->order_model->update($id, $data);
+
+            log_activity("Order Updated Id : " . $id, get_user_fullname());
+
+            session()->setFlashdata('success', 'Order Updated Successfully!');
+        }
+
+        return redirect()->to('order-index');
+    } else {
+        // Prepare data for view
+        if ($id != "") {
+            // Edit order
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Order']),
                 'page_title' => view('partials/page-title', ['title' => 'Edit Order', 'pagetitle' => 'Look For Leads']),
+                'order' => $this->order_model->find($id),
+                'campaigns' => $this->campaign_model->select('id, campaign_name')->orderBy('id', 'DESC')->findAll(),
+                'states' => $states
             ];
-
-            $data['order'] = $this->order_model->find($id);
-
-            $data['campaigns'] = $this->campaign_model
-                ->select('id,campaign_name') // Specify the columns you want
-                ->orderBy('id', 'DESC')
-                ->findAll();
 
             if (is_vendor()) {
                 $data['vendors'] = get_vendors(get_user_id());
-                $data['clients'] = get_client($id = "", get_user_id());
+                $data['clients'] = get_client("", get_user_id());
             } elseif (is_admin()) {
                 $data['vendors'] = get_vendors();
                 $data['clients'] = get_client();
             }
+
+            $data['form_action'] = base_url('create-order/' . $id);
+
+            return view('orders_management/add_order', $data);
         } else {
+            // New order
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'New Order']),
                 'page_title' => view('partials/page-title', ['title' => 'New Order', 'pagetitle' => 'Look For Leads']),
+                'campaigns' => $this->campaign_model->select('id, campaign_name')->orderBy('id', 'DESC')->findAll(),
+                'states' => $states
             ];
-
-            $data['campaigns'] = $this->campaign_model
-                ->select('id,campaign_name') // Specify the columns you want
-                ->orderBy('id', 'DESC')
-                ->findAll();
 
             if (is_vendor()) {
                 $data['vendors'] = get_vendors(get_user_id());
-                $data['clients'] = get_client($id = "", get_user_id());
+                $data['clients'] = get_client("", get_user_id());
             } elseif (is_admin()) {
                 $data['vendors'] = get_vendors();
                 $data['clients'] = get_client();
             }
 
+            $data['form_action'] = base_url('create-order');
 
             return view('orders_management/add_order', $data);
         }
-        return view('orders_management/add_order', $data);
     }
+}
+
+    
     public function getLeadFormData()
     {
         $orderId = $this->request->getGet('orderId');
@@ -706,6 +739,9 @@ class OrdersContoller extends BaseController
            }
            elseif($user['userrole']==2){
             $orders=$this->order_model->where('fkvendorstaffid',$id)->findAll();
+
+
+            
 
             $response['leads']=$orders;
            }
