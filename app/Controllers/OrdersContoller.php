@@ -124,6 +124,7 @@ class OrdersContoller extends BaseController
     if ($id != 0) {
         $builder->where('categoryname', $id);
     }
+    $builder->orderBy('id', 'DESC');
 
     if (is_vendor()) {
         $builder->where('fkvendorstaffid', get_user_id());
@@ -134,16 +135,18 @@ class OrdersContoller extends BaseController
     $data = DataTable::of($builder)->edit('agent', function ($row) {
         return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
     })->edit('pkorderid', function ($row) {
-        $btn = '<a href="' . site_url('edit-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
         if (is_admin()) {
+        $btn = '<a href="' . site_url('edit-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
+      
             if ($row->status == 0) {
                 $btn .= '<a href="#" onclick="unblockOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="fas fa-lock font-size-18"></i></a>';
             } else {
                 $btn .= '<a href="#" onclick="blockOrder(' . $row->pkorderid . ')" class="px-3 text-success"><i class="fas fa-lock-open font-size-18"></i></a>';
             }
-        }
         $btn .= '<a href="#" onclick="deleteOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>';
         return $btn;
+    }
+
     })->edit('fkvendorstaffid', function ($row) {
         $vendor = get_vendors($row->fkvendorstaffid);
         return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];

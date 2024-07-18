@@ -4,10 +4,53 @@
 
     <?php echo $title_meta ?>
 
+    <link rel="stylesheet" href="<?php echo base_url('assets/libs/flatpickr/flatpickr.min.css') ?>">
+    <link href="<?php echo base_url('assets/libs/select2/css/select2.min.css') ?>" rel="stylesheet" type="text/css" />
 
+    <?= $this->include('partials/datatable-css') ?>
+    <?= $this->include('partials/head-css') ?>
+
+    <style>
+        .offcanvas.offcanvas-end {
+            width: 600px;
+        }
+
+        .offcanvas-body {
+            max-height: calc(100vh - 150px);
+            /* Adjust based on your header height */
+            overflow-y: auto;
+        }
+
+        .counter {
+            display: inline;
+            margin-top: 0;
+            margin-bottom: 0;
+            margin-right: 10px;
+        }
+
+        .posts {
+            clear: both;
+            list-style: none;
+            padding-left: 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        .posts li {
+            background-color: #fff;
+            border: 1.5px solid #d8d8d8;
+            border-radius: 10px;
+            padding-top: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            min-height: 42px;
+        }
     </style>
 
-    <?= $this->include('partials/head-css') ?>
+
 
 
 </head>
@@ -18,10 +61,6 @@
 <div id="layout-wrapper">
 
     <?= $this->include('partials/menu') ?>
-
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
     <div class="main-content">
 
         <div class="page-content">
@@ -74,11 +113,11 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <!-- <div class="col-md-3">
                                     <div class=" text-end">
-                                        <!-- <button class="btn btn-primary w-sm waves-effect waves-light" id="invoice_modal">Generate Invoice</button> -->
+                                        <button class="btn btn-primary w-sm waves-effect waves-light" id="invoice_modal">Generate Invoice</button>
                                     </div>
-                                </div>
+                                </div> -->
 
 
                             </div>
@@ -91,140 +130,68 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade bs-example-modal-center" id="rejectLeadModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Reject Lead</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="" id="reject_lead_form">
-                            <div class="col-sm-12 mb-3">
-                                <label class="form-label" for="formrow-reason-input">Reason <span class="required"> *
-                                    </span></label>
-                                <textarea name="reason" class="form-control rform" required id="reason">
-                            </textarea>
-                            </div>
-                            <input type="hidden" name="l_id">
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" onclick="rejectLeadSubmit()" class="btn btn-primary">Save </button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+
+        <?= $this->include('leads_management/reject_lead_modal') ?>
+        <?= $this->include('leads_management/lead_detail_canva') ?>
         <?= $this->include('invoice/invoice_modal') ?>
         <?= $this->include('partials/footer') ?>
     </div>
-    <!-- end main content-->
 </div>
-<!-- END layout-wrapper -->
-
 <?= $this->include('partials/right-sidebar') ?>
-
 <?= $this->include('partials/vendor-scripts') ?>
+<?= $this->include('partials/datatable-scripts') ?>
 
-<!-- Required datatable js -->
-<script src="<?php echo base_url('assets/libs/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') ?>"></script>
-<!-- Buttons examples -->
-<script src="<?php echo base_url('assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/jszip/jszip.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/pdfmake/build/pdfmake.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/pdfmake/build/vfs_fonts.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/datatables.net-buttons/js/buttons.html5.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/datatables.net-buttons/js/buttons.print.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/libs/datatables.net-buttons/js/buttons.colVis.min.js') ?>"></script>
+<script src="<?=base_url('assets/libs/flatpickr/flatpickr.min.js')?>"></script>
+<script src="<?=base_url('assets/libs/select2/js/select2.min.js')?>"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.6/xlsx.full.min.js"></script>
 
 
 <script type="text/javascript">
+    $(document).ready(function() {
 
-     function deleteLead(id) {
-        if (confirm('Are you sure you want to delete this lead?')) {
-            $.ajax({
-                url: '<?= site_url('delete-lead/') ?>' + id,
-                type: 'GET',
-                success: function(response) {
-                    if (JSON.parse(response).success) {
-                        toastr.success('Lead Delete', 'Lead Deleted Successfully')
+        var table = $('#table').DataTable({
+            processing: true,
+            serverSide: true,
+            columnDefs: [{
+                target: 0,
+                visible: false,
+                searchable: false
+            }, ],
+            order: [],
+            ajax: {
+                url: "<?php echo site_url('leads-datatable') ?>/" + <?php echo $order['pkorderid'] ?>,
+                data: function(d) {
+                    d.lead_status = "";
+                    d.state = "";
+                    d.client = "";
 
-                        // Reload the datatable
-                        $('#table').DataTable().ajax.reload();
-                    } else {
-                        console.log(JSON.parse(response).success);
-                        // toastr.error('Lead Delete', 'Error')
-                    }
-                },
-                error: function() {
-                    alert('Error deleting lead');
                 }
-            });
-        }
-    }
-    function rejectLead(leadID) {
 
-$('#rejectLeadModal').modal('show');
-$('input[name="l_id"]').val(leadID);
+            },
+            "fnCreatedRow": function(nRow, aData, iDataIndex) {
+                $(nRow).attr('id', aData[0]);
+                console.log(aData[0]);
+            },
 
-
-console.log("Lead Rejecterd");
-}
-    function rejectLeadSubmit() {
-        $formData = $("#reject_lead_form").serialize();
-        $.ajax({
-            url: '<?= base_url() ?>reject-lead/',
-            type: 'post',
-            data: $formData,
-            success: function(data) {
-                toastr.error('Lead Rejected', 'Lead Rejected Successfully')
-                $('#rejectLeadModal').modal('hide');
-                $('#table').DataTable().ajax.reload(); // Reload DataTable
-            }
         });
-        return 0;
-    }
-    var table = $('#table').DataTable({
-        processing: true,
-        serverSide: true,
-        columnDefs: [{
-            target: 0,
-            visible: false,
-            searchable: false
-        }, ],
-        order: [],
-        ajax: {
-            url: "<?php echo site_url('leads-datatable') ?>/" + <?php echo $order['pkorderid'] ?>,
-            data: function(d) {
-                d.lead_status = "";
-                d.state = "";
-                d.client = "";
-
-            }
-
-        },
-        "fnCreatedRow": function(nRow, aData, iDataIndex) {
-            $(nRow).attr('id', aData[0]);
-            console.log(aData[0]);
-        },
-
-    });
-
-    $(function() {
 
         $("#invoice_modal").click(function() {
             $("#invoiceModal").modal('show');
         });
+
+       
+
+        $('input[name=amount]').keyup(function(event) {
+            var total = <?php echo $order['lead_requested']; ?>;
+            var newTotal = event.target.value * total;
+            $("input[name=total]").val(newTotal);
+        });
+
     });
 </script>
-
-<!-- App js -->
 <script src="<?php echo base_url('assets/js/app.js') ?>"></script>
-
+<?php require('assets/js/lead/lead-table-js.php'); ?>
 </body>
 
 </html>
