@@ -94,7 +94,7 @@ class LeadController extends BaseController
                 <a href="' . site_url('replace-lead/') . $row->id . '" class="px-3 text-success"><i class="uil uil-refresh font-size-18"></i></a>';
  } })
         ->edit('option_id', function ($row) {
-            // if(is_admin()){
+            if(is_admin()){
             if ($row->status == 3) {
                 return '<button class="btn btn-success px-3" onclick="acceptLead(' . $row->id . ')">Accept</button>'
                     . '<button class="btn btn-danger px-3 mx-2" onclick="rejectLead(' . $row->id . ')">Reject</button>';
@@ -103,7 +103,7 @@ class LeadController extends BaseController
             } else if ($row->status == 1) {
                 return '<span class="badge bg-success">Approved</span>';
             }
-        // }
+        }
         })->hide('status')->hide('order_id')
         ->filter(function ($builder, $request) {
             if ($request->lead_status) {
