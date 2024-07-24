@@ -1,6 +1,6 @@
 <?= $this->include('partials/main') ?>
 <head>
-    <?php $title_meta ?>
+    <?php echo $title_meta ?>
     <!-- datepicker css -->
     <link rel="stylesheet" href="<?php echo base_url('assets/libs/flatpickr/flatpickr.min.css') ?>">
     <link href="<?php echo base_url('assets/libs/select2/css/select2.min.css') ?>" rel="stylesheet" type="text/css" />

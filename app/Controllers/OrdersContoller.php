@@ -692,13 +692,24 @@ public function deleteOrder()
         $order = $this->order_model->find($id);
         $data["order"] = $order;
 
-        // var_dump($order);
+        // var_dump(get_current_user());
         // return 0;
         return view('orders_management/order_detail', $data);
     }
 
     public function get_leads_for_csv($orderId){
-        $leads = $this->lead_model->select('complete_lead')->where('order_id',$orderId)->findAll();
+        if($orderId==0){
+            if (is_vendor()) {
+               $leads= $this->lead_model->select('complete_lead')->where('vendor_id', get_user_id());
+            } else if (is_client()) {
+               $leads= $this->lead_model->select('complete_lead')->where('client_id', get_user_id());
+            }else{
+                $leads = $this->lead_model->select('complete_lead')->findAll();
+            }
+
+        }else{
+            $leads = $this->lead_model->select('complete_lead')->where('order_id',$orderId)->findAll();
+        }
         
         echo json_encode($leads);
     }

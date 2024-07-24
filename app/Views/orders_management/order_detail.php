@@ -188,66 +188,7 @@
             $("input[name=total]").val(newTotal);
         });
 
-        function flattenObject(obj) {
-            const result = {};
-            for (const key in obj) {
-                if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-                    const temp = flattenObject(obj[key]);
-                    for (const tempKey in temp) {
-                        result[key + '_' + tempKey] = temp[tempKey];
-                    }
-                } else {
-                    result[key] = obj[key];
-                }
-            }
-            return result;
-        }
-
-        function convertToCSV(arr) {
-            
-            const array = [Object.keys(arr[0])].concat(arr);
-
-            return array.map(row => {
-                return Object.values(row).map(value => {
-                    return typeof value === 'string' ? JSON.stringify(value) : value;
-                }).join(',');
-            }).join('\n');
-        }
-
-        function downloadCSV(csv, filename) {
-            const csvFile = new Blob([csv], { type: 'text/csv' });
-            const downloadLink = document.createElement('a');
-            downloadLink.download = filename;
-            downloadLink.href = window.URL.createObjectURL(csvFile);
-            downloadLink.style.display = 'none';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-        }
-
-        $("#download-csv").click(function() {
-            orderId= <?php echo $order['pkorderid']; ?>;
-            agentName= '<?php echo $order['agent']??''; ?>';
-
-        fetch('<?= base_url() ?>get_leads_for_csv/' + orderId)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.text(); 
-        })
-        .then(data => {
-            json_data=JSON.parse(data);
-            const flattenedData = json_data.map(item => flattenObject(JSON.parse(item.complete_lead)));
-            
-            const csv = convertToCSV(flattenedData);
-            const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
-            const filename = `${agentName}_${timestamp}.csv`;
-            downloadCSV(csv, filename);
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-        });
-});
+       
 
     });
 
