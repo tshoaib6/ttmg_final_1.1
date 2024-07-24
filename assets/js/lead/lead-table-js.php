@@ -81,6 +81,17 @@
 
 
 
+
+       
+
+        $("#download-csv").click(function() {
+            console.log("Shoaib")
+        });
+
+        
+
+
+
         $('#post-btn').click(function() {
             var post = $('.status-box').val();
             var id = $('input[name="l_id"]').val();

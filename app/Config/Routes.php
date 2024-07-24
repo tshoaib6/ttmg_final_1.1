@@ -159,6 +159,8 @@ $routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_
 
 
 $routes->get('/getleaddetail/(:any)', 'LeadController::get_lead_detail/$1', ['filter' => 'authenticate']);
+$routes->get('/get_leads_for_csv/(:any)', 'OrdersContoller::get_leads_for_csv/$1', ['filter' => 'authenticate']);
+
 $routes->get('/getleadmasterdetail/(:any)', 'LeadController::get_lead_master_detail/$1', ['filter' => 'authenticate']);
 $routes->get('/delete-lead/(:any)', 'LeadController::delete_lead/$1', ['filter' => 'authenticate']);
 $routes->get('/delete-master-lead/(:any)', 'LeadController::delete_lead_master/$1', ['filter' => 'authenticate']);
@@ -291,6 +293,7 @@ $routes->get('tables-basic', 'ComponentController::show_tables_basic');
 $routes->get('tables-datatable', 'ComponentController::show_tables_datatable');
 $routes->get('tables-responsive', 'ComponentController::show_tables_responsive');
 $routes->get('tables-editable', 'ComponentController::show_tables_editable');
+
 
 $routes->get('charts-apex', 'ComponentController::show_charts_apex');
 $routes->get('charts-chartjs', 'ComponentController::show_charts_chartjs');

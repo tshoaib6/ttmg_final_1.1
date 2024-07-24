@@ -691,9 +691,16 @@ public function deleteOrder()
 
         $order = $this->order_model->find($id);
         $data["order"] = $order;
+
         // var_dump($order);
         // return 0;
         return view('orders_management/order_detail', $data);
+    }
+
+    public function get_leads_for_csv($orderId){
+        $leads = $this->lead_model->select('complete_lead')->where('order_id',$orderId)->findAll();
+        
+        echo json_encode($leads);
     }
 
     public function delete($id)
