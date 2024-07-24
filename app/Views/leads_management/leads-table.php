@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card-body">
             <!-- Download Button -->
-            <!-- <button id="download-csv" class="btn btn-primary mb-3">Download CSV</button> -->
+            <button  id="download-csv" class="btn btn-primary mb-3">Download CSV</button>
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                 <thead>
                     <tr>
