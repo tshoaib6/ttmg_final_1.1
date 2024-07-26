@@ -118,6 +118,11 @@
             downloadLink.click();
         }
 
+        // <button  id="download-csv" class="btn btn-primary mb-3">Download CSV</button>
+ if(currentURL.includes('order-detail')){
+    var button = $('<button id="download-csv" class="btn btn-primary mb-3">Download CSV</button>');
+    $('.button').append(button);
+ }
        
         $("#download-csv").click(function() {
 
