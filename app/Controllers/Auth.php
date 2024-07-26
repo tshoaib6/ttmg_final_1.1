@@ -328,7 +328,6 @@ class Auth extends BaseController
                     } else {
 
                         $newName = $agentpic->getRandomName();
-
                         $agentpic->move('uploads/users', $newName);
                         $agentpic = $newName;
                     }
@@ -510,78 +509,150 @@ class Auth extends BaseController
     }
 
     public function editUser($id)
-    {
-        $data = [];
-        $data['page_title'] = "Edit User";
-    
-        $session = session();
-        $duser = $this->auth_model->where('id', $id)->findAll();
-    
-        if ($this->request->getMethod() == 'post') {
-            $update_data = [];
-    
-            // Retrieve submitted data
-            $update_data['firstname'] = $this->request->getPost('firstname');
-            $update_data['lastname'] = $this->request->getPost('lastname');
-            $update_data['phone'] = $this->request->getPost('phone');
-            $update_data['address'] = $this->request->getPost('address');
-            $update_data['website'] = $this->request->getPost('website');
-            $update_data['coverage'] = $this->request->getPost('coverage');
-            $update_data['linkedin'] = $this->request->getPost('linkedin');
-    
-            // Check if password is provided
-            $password = $this->request->getPost('password');
-            if (!empty($password)) {
-                $update_data['password'] = $password;
-            }
-    
-            // Handle file uploads for agent picture
-            $agentpic = $this->request->getFile('agentpicture');
-            if ($agentpic && $agentpic->isValid() && !$agentpic->hasMoved()) {
-                $input = $this->validate([
-                    'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png]',
-                ]);
-    
-                if ($input) {
-                    $newName = $agentpic->getRandomName();
-                    $agentpic->move('uploads/users', $newName);
-                    $update_data['useruimage'] = $newName;
-    
-                    if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
-                        unlink('uploads/users/' . $duser[0]['useruimage']);
-                    }
-    
-                    // Update session with new user image
-                    $duser[0]['useruimage'] = $newName;
-                    $session->set('login_useruimage', $newName); // Example session key format
+{
+    $data = [];
+    $data['page_title'] = "Edit User";
+
+    $data['data'] = $this->request;
+    $data = [
+        'title_meta' => view('partials/title-meta', ['title' => 'Edit User']),
+        'page_title' => view('partials/page-title', ['title' => 'Edit User', 'pagetitle' => 'Home'])
+    ];
+    $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
+
+    $session = session();
+    $duser = $this->auth_model->where('id', $id)->findAll();
+    if ($this->request->getMethod() == 'post') {
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+        $role = $this->request->getPost('role');
+
+        $agentpic = $this->request->getFile('agentpicture');
+        if ($agentpic && $agentpic->isValid() && !$agentpic->hasMoved()) {
+            $input = $this->validate([
+                'agentpicture' => 'uploaded[agentpicture]|max_size[agentpicture,1024]|ext_in[agentpicture,jpg,jpeg,png]',
+            ]);
+
+            if ($input) {
+                $newName = $agentpic->getRandomName();
+                $agentpic->move('uploads/users', $newName);
+                $agentpic = $newName;
+
+                if (is_file('uploads/users/' . $duser[0]['useruimage'])) {
+                    unlink('uploads/users/' . $duser[0]['useruimage']);
                 }
-            }
-    
-            // Update the user data in the database
-            $update = $this->auth_model->update($id, $update_data);
-    
-            if ($update) {
-                $session->setFlashdata('success', 'Your Account has been updated successfully.');
-                log_activity('Update user account [id: ' . $id . ']');
-    
-                // Update other session data if needed
-                foreach ($update_data as $k => $v) {
-                    $session->set('login_' . $k, $v); // Example session key format
-                }
-    
-                return redirect()->to('allUsers');
             } else {
-                $session->setFlashdata('error', 'Failed to update data.');
+                $agentpic = $duser[0]['useruimage'];
+            }
+        } else {
+            $agentpic = $duser[0]['useruimage'];
+        }
+
+        $idata = [
+            'firstname' => $this->request->getPost('firstname'),
+            'lastname' => $this->request->getPost('lastname'),
+            'email' => $email,
+            'password' => $password,
+            'phone' => $this->request->getPost('phone'),
+            'address' => $this->request->getPost('address'),
+            'website' => $this->request->getPost('website'),
+            'coverage' => $this->request->getPost('coverage'),
+            'linkedin' => $this->request->getPost('linkedin'),
+            'useruimage' => $agentpic,
+            'userrole' => $role,
+            'vendor' => ($role == 2) ? 0 : $this->request->getPost('vendor'),
+            'block' => 0
+        ];
+
+        if ($role == 2) {
+            $branchlogopic = $this->request->getFile('branchlogo');
+            if ($branchlogopic && $branchlogopic->isValid() && !$branchlogopic->hasMoved()) {
+                $newNamebranch = $branchlogopic->getRandomName();
+                $branchlogopic->move('uploads/users', $newNamebranch);
+                $branchlogopic = $newNamebranch;
+
+                if (is_file('uploads/users/' . $duser[0]['branchlogo'])) {
+                    unlink('uploads/users/' . $duser[0]['branchlogo']);
+                }
+            } else {
+                $branchlogopic = $duser[0]['branchlogo'];
+            }
+
+            $idata = array_merge($idata, [
+                'smtpemail' => $this->request->getPost('smtpemail'),
+                'smtppassword' => $this->request->getPost('smtppassword'),
+                'smtpincomingserver' => $this->request->getPost('smtpincomingserver'),
+                'smtpoutgoingserver' => $this->request->getPost('smtpoutgoingserver'),
+                'smtpport' => $this->request->getPost('smtpport'),
+                'branchname' => $this->request->getPost('branchname'),
+                'branchslug' => $this->request->getPost('branchslug'),
+                'branchcountry' => $this->request->getPost('branchcountry'),
+                'branchaddress' => $this->request->getPost('branchaddress'),
+                'brancheader' => $this->request->getPost('brancheader'),
+                'branchnavbar' => $this->request->getPost('branchnavbar'),
+                'branchnavtext' => $this->request->getPost('branchnavtext'),
+                'branchnavhover' => $this->request->getPost('branchnavhover'),
+                'branchlogo' => $branchlogopic,
+                'branchlogoheight' => $this->request->getPost('branchlogoheight'),
+                'branchlogowidth' => $this->request->getPost('branchlogowidth'),
+                'referred_to' => $this->request->getPost('subvendor') ? implode(', ', $this->request->getPost('subvendor')) : ''
+            ]);
+        }
+
+        $update = $this->auth_model->update($id, $idata);
+
+        if ($update) {
+            $session->setFlashdata('success', 'Your Account has been updated successfully.');
+            log_activity('Update user account [email: ' . $idata['email'] . ', Role:' . get_user_role($idata['userrole']) . ']');
+            return redirect()->to('allUsers');
+        } else {
+            $session->setFlashdata('error', 'Failed to update data.');
+        }
+    }
+
+    $data['duser'] = $duser;
+    $data['session'] = $session;
+    return view('user-edit', $data);
+}
+
+    
+
+
+    public function update_user()
+    {
+        $session = session();
+        if ($this->request->getMethod() == 'post') {
+            extract($this->request->getPost());
+            $verify_password = password_verify($current_password, $session->login_password);
+            if ($password !== $cpassword) {
+                $session->setFlashdata('error', "Password does not match.");
+            } elseif (!$verify_password) {
+                $session->setFlashdata('error', "Current Password is Incorrect.");
+            } else {
+                $udata = [];
+                $udata['name'] = $name;
+                $udata['email'] = $email;
+                if (!empty($password))
+                    $udata['password'] = password_hash($password, PASSWORD_DEFAULT);
+                $update = $this->auth_model->where('id', $session->login_id)->set($udata)->update();
+                if ($update) {
+                    $session->setFlashdata('success', "Your Account has been updated successfully.");
+                    $user = $this->auth_model->where("id ='{$session->login_id}'")->first();
+                    foreach ($user as $k => $v) {
+                        $session->set('login_' . $k, $v);
+                    }
+                    return redirect()->to('update_user');
+                } else {
+                    $session->setFlashdata('error', "Your Account has failed to update.");
+                }
             }
         }
-    
-        // Pass user data and session to the view
-        $data['duser'] = $duser;
-        $data['session'] = $session;
-    
-        return view('user-edit', $data);
+
+        // $this->data['session'] = $session;
+        // $this->data['page_title'] = "Users";
+        // $this->data['user'] = $this->auth_model->where("id ='{$session->login_id}'")->first();
+        // return view('pages/users/update_account', $this->data);
     }
-    
 
     public function recoverpassword()
     {
