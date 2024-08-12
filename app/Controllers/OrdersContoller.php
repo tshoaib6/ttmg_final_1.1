@@ -575,28 +575,31 @@ public function deleteOrder()
         $leads = array();
 
         foreach ($csv_array[1] as $row) {
-         
             $temp = array();
             foreach ($head_arr as $key => $h) {
-                if($h=="-"){
-                    $temp[$mapping_headers[$key]] ="";
-                }
-                else{
-                    if (isset($row[$h])) {
-                        $temp[$mapping_headers[$key]] = $row[$h];
+                if ($h == "-") {
+                    $temp[$mapping_headers[$key]] = "";
+                } else {
+                    if ($mapping_headers[$key] == 'lead_date') {
+                        $temp[$mapping_headers[$key]] = date('Y-m-d H:i:s');
                     } else {
-                        // Handle missing key
-                        $temp[$mapping_headers[$key]] = null; // or some default value
-                    }                }
-
+                        if (isset($row[$h])) {
+                            $temp[$mapping_headers[$key]] = $row[$h];
+                        } else {
+                            $temp[$mapping_headers[$key]] = null; 
+                        }
+                    }
+                }
             }
             array_push($leads, $temp);
         }
+        
         $post_data = array();
         $duplicate = array();
         if ($o_id != "") {
             foreach ($leads as $l) {
                 $lead_check = $this->lead_model->where('phone_number', $l['phone_number'])->where('vendor_id', $order_detail['fkvendorstaffid'])->where('camp_id', $camp_id)->first();
+                $l['lead_date']=date('Y-m-d H:i:s');
                 $temp_post_data = [
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
@@ -611,7 +614,7 @@ public function deleteOrder()
                     "status" => 3,
                     "master_search" => json_encode($l),
                     "assigned" => 1,
-                    "lead_date" => date('Y-m-d', strtotime($l['date'])),
+                    "lead_date" => date('Y-m-d H:i:s'),
                 ];
                 if (!$lead_check) {
                     array_push($post_data, $temp_post_data);
@@ -621,6 +624,7 @@ public function deleteOrder()
             }
         } else {
             foreach ($leads as $l) {
+                $l['lead_date']=date('Y-m-d H:i:s');
                 $temp_post_data = [
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
@@ -634,7 +638,7 @@ public function deleteOrder()
                     "client_id" => "",
                     "status" => 3,
                     "master_search" => json_encode($l),
-                    "lead_date" => date('Y-m-d', strtotime($l['date'])),
+                    "lead_date" => date('Y-m-d H:i:s'),
 
                 ];
                 array_push($post_data, $temp_post_data);
