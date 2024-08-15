@@ -26,6 +26,12 @@ if (session()->has('branch_set')) {
 ?>
 
 <style>
+    @media (min-width: 1200px) {
+    body[data-layout=horizontal] .container-fluid, 
+    body[data-layout=horizontal] .navbar-header {
+        max-width: 100%; /* or any other value you prefer */
+    }
+}
     <?php
 
     if (session()->has('branch_set')) { ?>.authentication-bg {

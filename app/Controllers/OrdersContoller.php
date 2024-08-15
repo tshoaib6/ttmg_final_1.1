@@ -264,7 +264,7 @@ public function deleteOrder()
 
             session()->setFlashdata('success', 'Order Created Successfully!');
         } else {
-            // Update existing order
+            unset($data['remainingLeads']);
             $this->order_model->update($id, $data);
 
             log_activity("Order Updated Id : " . $id, get_user_fullname());
