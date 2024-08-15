@@ -521,3 +521,11 @@ function get_categories()
     $camp = $builder->get()->getResultArray();
     return $camp;
 }
+
+function get_categories_by_id($id)
+{
+    $db = \Config\Database::connect();
+    $builder = $db->table('campaign')->select('campaign_name')->where('id',$id);
+    $camp = $builder->get()->getResultArray();
+    return $camp;
+}

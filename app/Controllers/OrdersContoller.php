@@ -47,6 +47,8 @@ class OrdersContoller extends BaseController
 
     public function index($vend_id = "")
     {
+
+       
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
             'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'Look For Leads']),
@@ -119,7 +121,7 @@ class OrdersContoller extends BaseController
     public function ajax_Datatable_orders($id = "")
 {
     $db = db_connect();
-    $builder = $db->table('ttmg_orders')->select('agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,notes,status,pkorderid,fkclientid');
+    $builder = $db->table('ttmg_orders')->select('categoryname,agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,ageranges,notes,status,pkorderid,fkclientid');
 
     if ($id != 0) {
         $builder->where('categoryname', $id);
@@ -134,7 +136,11 @@ class OrdersContoller extends BaseController
 
     $data = DataTable::of($builder)->edit('agent', function ($row) {
         return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
-    })->edit('pkorderid', function ($row) {
+    })->edit('categoryname',function($row){
+
+        return   '<a href="' . site_url('campaign-detail/') . $row->categoryname . '" class="px-3 text-primary">' . get_categories_by_id($row->categoryname)[0]['campaign_name']. '</a>';
+
+    }) ->edit('pkorderid', function ($row) {
         if (is_admin()) {
         $btn = '<a href="' . site_url('edit-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
       

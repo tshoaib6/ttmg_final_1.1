@@ -4,11 +4,13 @@
                 <thead>
                     <tr>
                         <th>Order Id</th>
+                        <th> Campaign Name </th>
                         <th>Agent Name</th>
                         <th>Options </th>
                         <th>Leads Requested</th>
                         <th>Remaining Leads</th>
                         <th>Vendor </th>
+                        <th> Age Range </th>
                         <th>Notes & Area</th>
                         <th>Status</th>
                         <th>Action </th>
