@@ -368,8 +368,9 @@
                 url: "<?php echo site_url('orders-datatable') ?>/" + <?php echo "0" ?>,
                 data: function(d) {
                     d.order_status = order_status;
-                    d.filter_campaign = $("#filter_campaign").val();
-                    d.filter_vendor = $("#filter_vendor").val();
+                    d.filter_campaign = $("#filter_campaign").val() ? $("#filter_campaign").val() : "";
+                    d.filter_vendor = $("#filter_vendor").val() ? $("#filter_vendor").val() : "";
+
                 },
             },
 
