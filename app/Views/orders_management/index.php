@@ -52,11 +52,12 @@
                 <button id="open-orders" class="btn btn-primary mb-3">Open Orders</button>
                 <button id="complete-orders" class="btn btn-primary mb-3">Complete Orders</button>
                 <button id="blocked-orders" class="btn btn-primary mb-3">Blocked Orders</button>
-                <?php if(is_admin()) {?>
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
+                            <?php if(is_admin()) {?>
+
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <label class="form-label" for="formclientinput">Select Category</label>
@@ -86,6 +87,8 @@
                                     </div>
 
                                 </div>
+                                <?php }?>
+
                                 <br>
                                 <div class="lead-summary">
                                     <button class="btn btn-default btn-with-tooltip" id="slideDown">
@@ -109,7 +112,6 @@
                         </div>
                     </div>
                 </div>
-                <?php } ?>
             </div> <!-- container-fluid -->
         </div>
 
