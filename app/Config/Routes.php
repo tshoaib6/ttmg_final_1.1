@@ -47,33 +47,44 @@ $routes->post('/referral-register', 'Auth::referral_register', ['filter' => 'aut
 $routes->get('404', 'PageController::show_pages_404');
 
 $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
-    $routes->get('/register', 'Auth::register');
-    $routes->post('/create', 'Auth::register');
-    $routes->get('/allUsers', 'Auth::getAllUsers');
-    $routes->get('/ajax-user-datatable', 'Auth::ajaxAllUsers');
-    $routes->get('/deleteUser/(:any)', 'Auth::deleteUser/$1');
-    $routes->get('/editUser/(:any)', 'Auth::editUser/$1');
-    $routes->post('/editUser/(:any)', 'Auth::editUser/$1');
-    $routes->get('/getuserid/(:any)', 'Auth::getUserId/$1');
-    $routes->get('/blockUser/(:any)/(:any)', 'Auth::blockUser/$1/$2');
+    $routes->get('/all-referral', 'Referral::index');
+
+
+    $routes->group('', ['filter' => 'admin'], static function ($routes) {
+        $routes->get('/register', 'Auth::register');
+        $routes->post('/create', 'Auth::register');
+        $routes->get('/allUsers', 'Auth::getAllUsers');
+        $routes->get('/ajax-user-datatable', 'Auth::ajaxAllUsers');
+        $routes->get('/deleteUser/(:any)', 'Auth::deleteUser/$1');
+        $routes->get('/editUser/(:any)', 'Auth::editUser/$1');
+        $routes->post('/editUser/(:any)', 'Auth::editUser/$1');
+        $routes->get('/getuserid/(:any)', 'Auth::getUserId/$1');
+        $routes->get('/blockUser/(:any)/(:any)', 'Auth::blockUser/$1/$2');
+
+        $routes->get('/allEmail', 'EmailTemplate::index');
+        $routes->get('/ajax-emailtemplates-datatable', 'EmailTemplate::ajaxAllEmailTemplates');
+        $routes->get('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
+        $routes->post('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
+
+        $routes->get('/settings', 'Settings::index');
+        $routes->post('/settings', 'Settings::index');
+        $routes->get('/email-action', 'Settings::notification_action');
+        $routes->post('/email-action', 'Settings::notification_action');
+        $routes->get('/all-activities', 'ActivityLog::index');
+        $routes->get('/ajax-activities-datatable', 'ActivityLog::ajaxActivitiesLogs');
+        $routes->get('/delete-activity/(:any)', 'ActivityLog::deleteActivity/$1');
+
+    });
+  
     $routes->get('/logout', 'Auth::logout');
     $routes->get('/profile', 'Auth::profile');
 
-    //Email Templates
-    $routes->get('/allEmail', 'EmailTemplate::index');
-    $routes->get('/ajax-emailtemplates-datatable', 'EmailTemplate::ajaxAllEmailTemplates');
-    $routes->get('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
-    $routes->post('/editTemplate/(:any)', 'EmailTemplate::editTemplate/$1');
+   
 
     //dashboard
     $routes->get('home', 'Home::index');
     $routes->get('ajax-dashboard-lead-chart/(:any)', 'Home::ajaxDashboardLeadChart/$1');
 
-    //settings
-    $routes->get('/settings', 'Settings::index');
-    $routes->post('/settings', 'Settings::index');
-    $routes->get('/email-action', 'Settings::notification_action');
-    $routes->post('/email-action', 'Settings::notification_action');
 
     //Notifications ajax_top_notification
     $routes->get('/all-notifications', 'Notifications::index');
@@ -82,9 +93,7 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
     $routes->get('/ajax-notifications-read/(:any)', 'Notifications::ajax_top_notification_read/$1');
 
     //Activity Logs
-    $routes->get('/all-activities', 'ActivityLog::index');
-    $routes->get('/ajax-activities-datatable', 'ActivityLog::ajaxActivitiesLogs');
-    $routes->get('/delete-activity/(:any)', 'ActivityLog::deleteActivity/$1');
+    
 
     //Support & Request
     $routes->get('/support-request-center', 'Support::index');
@@ -93,8 +102,6 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
     $routes->post('/ajax-chat-client-send-msg', 'Support::ajaxClientMsgSend');
     $routes->post('/ajax-chat-admin-send-msg', 'Support::ajaxSupportMsgSend');
 
-    //Referral
-    $routes->get('/all-referral', 'Referral::index');
     $routes->post('/add-referral', 'Referral::addReferral');
     $routes->get('/delete-referral/(:any)', 'Referral::deleteReferral/$1');
     $routes->get('/send-referral-email/(:any)', 'Referral::sendReferralEmail/$1');
@@ -105,14 +112,43 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
 // Shoaib
 $routes->get('/get-agents', 'Auth::get_agents', ['filter' => 'authenticate']);
 
+$routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1',['filter' => 'authenticate']);
 
-// Campaign 
-$routes->get('/campaign-index', 'CampaignController::index', ['filter' => 'authenticate']);
-$routes->match(["get", "post"], "/create-campaign", 'CampaignController::create', ['filter' => 'authenticate']);
-$routes->get('/create-campaign/(:any)', 'CampaignController::create/$1', ['filter' => 'authenticate']);
-$routes->get('/campaign-datatable', 'CampaignController::ajaxDataTables');
-$routes->get('/campaign-delete/(:any)', 'CampaignController::delete/$1', ['filter' => 'authenticate']);
-$routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1', ['filter' => 'authenticate']);
+
+$routes->group('', ['filter' => 'authenticate'], static function ($routes) {
+
+    $routes->group('', ['filter' => 'admin'], static function ($routes) {
+
+        $routes->get('/campaign-index', 'CampaignController::index');
+        $routes->match(["get", "post"], "/create-campaign", 'CampaignController::create', ['filter' => 'authenticate']);
+        $routes->get('/create-campaign/(:any)', 'CampaignController::create/$1');
+        $routes->get('/campaign-datatable', 'CampaignController::ajaxDataTables');
+        $routes->get('/campaign-delete/(:any)', 'CampaignController::delete/$1', ['filter' => 'authenticate']);
+        $routes->get('/campaign-detail/(:any)', 'CampaignController::campaign_detail/$1');
+        $routes->get('/edit-order/(:any)', 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
+        $routes->get('/lead-form-ajax', 'OrdersContoller::getLeadFormData');
+        $routes->post('/add-lead', 'OrdersContoller::lead_add');
+        $routes->get('/import-csv/(:any)', 'OrdersContoller::importCsv/$1', ['filter' => 'authenticate']);
+        $routes->post('/get-campaign-col', 'OrdersContoller::get_campaign_col', ['filter' => 'authenticate'], ['filter' => 'authenticate']);
+        $routes->post('/upload-lead', 'OrdersContoller::upload_lead');
+        $routes->get('/map-headers', 'OrdersContoller::map_headers');
+        $routes->post('/import-leads', 'OrdersContoller::importLeads');
+        $routes->get('/master-lead-index', 'LeadController::master_index');
+        $routes->get('/add-lead', 'LeadController::add_lead');
+        $routes->get('/add-lead/(:any)', 'LeadController::add_lead/$1');
+        $routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_master_leads/$1');
+
+        $routes->get('/all-clients', 'ClientaleController::index');
+        $routes->post('/upload-client-data', 'ClientaleController::upload_clients_data');
+        $routes->get('/map-headers-clients', 'ClientaleController::map_headers_clients');
+        $routes->post('/import-clients', 'ClientaleController::import_clients');
+        $routes->get('/ajax-clients-datatable', 'ClientaleController::ajaxClientDatatable');
+        
+    });
+});
+
+
+
 
 // $routes->match(["get", "post"], "/create-order/(:any)", 'OrdersContoller::create/$1', ['filter' => 'authenticate']);
 
@@ -129,13 +165,7 @@ $routes->get('(:any)?/order-index/(:any)', 'OrdersContoller::sub_vendor_index/$1
 
 $routes->get('/orders-datatable/(:any)?', 'OrdersContoller::ajax_Datatable_orders/$1');
 $routes->get('/sv_orders-datatable/(:any)?', 'OrdersContoller::ajax_sv_datatables_orders/$1');
-$routes->get('/lead-form-ajax', 'OrdersContoller::getLeadFormData');
-$routes->post('/add-lead', 'OrdersContoller::lead_add');
-$routes->get('/import-csv/(:any)', 'OrdersContoller::importCsv/$1', ['filter' => 'authenticate']);
-$routes->post('/get-campaign-col', 'OrdersContoller::get_campaign_col', ['filter' => 'authenticate'], ['filter' => 'authenticate']);
-$routes->post('/upload-lead', 'OrdersContoller::upload_lead', ['filter' => 'authenticate']);
-$routes->get('/map-headers', 'OrdersContoller::map_headers', ['filter' => 'authenticate']);
-$routes->post('/import-leads', 'OrdersContoller::importLeads', ['filter' => 'authenticate']);
+
 $routes->get('/order-detail/(:any)', 'OrdersContoller::order_detail/$1', ['filter' => 'authenticate']);
 // $routes->get('/order-delete/(:any)', 'OrdersContoller::delete/$1', ['filter' => 'authenticate']);
 $routes->post('/block-order', 'OrdersContoller::block_order', ['filter' => 'authenticate']);
@@ -145,17 +175,14 @@ $routes->post('/unblock-order', 'OrdersContoller::unblock_order', ['filter' => '
 
 //Leads
 $routes->get('/lead-index', 'LeadController::index', ['filter' => 'authenticate']);
-$routes->get('/master-lead-index', 'LeadController::master_index', ['filter' => 'authenticate']);
 
 
-$routes->get('/add-lead', 'LeadController::add_lead', ['filter' => 'authenticate']);
-$routes->get('/add-lead/(:any)', 'LeadController::add_lead/$1', ['filter' => 'authenticate']);
+
 $routes->get('/get-sv', 'Auth::get_subvendors', ['filter' => 'authenticate']);
 
 
 
 $routes->get('/leads-datatable/(:any)?', 'LeadController::ajax_Datatable_leads/$1', ['filter' => 'authenticate']);
-$routes->get('/master-leads-datatable/(:any)?', 'LeadController::ajax_Datatable_master_leads/$1', ['filter' => 'authenticate']);
 
 
 $routes->get('/getleaddetail/(:any)', 'LeadController::get_lead_detail/$1', ['filter' => 'authenticate']);
@@ -180,11 +207,6 @@ $routes->get('/replace-lead/(:any)', 'LeadController::add_lead/$1', ['filter' =>
 //Clientale
 
 
-$routes->get('/all-clients', 'ClientaleController::index',['filter' => 'authenticate']);
-$routes->post('/upload-client-data', 'ClientaleController::upload_clients_data', ['filter' => 'authenticate']);
-$routes->get('/map-headers-clients', 'ClientaleController::map_headers_clients', ['filter' => 'authenticate']);
-$routes->post('/import-clients', 'ClientaleController::import_clients', ['filter' => 'authenticate']);
-$routes->get('/ajax-clients-datatable', 'ClientaleController::ajaxClientDatatable');
 
 
 

@@ -29,6 +29,8 @@ class Auth extends BaseController
 
     public function index()
     {
+
+        
         if (session()->login_id) {
 
 

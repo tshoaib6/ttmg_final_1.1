@@ -44,20 +44,15 @@
 
     <?= $this->include('partials/menu') ?>
 
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
-
-
     <div class="main-content">
-        <div class="page-content">
-            <div class="container-fluid">
+        <div class="page-content"  >
+            <div class="container-fluid" >
                 <?php echo $page_title ?>
                 <button id="all-orders" class="btn btn-primary mb-3 active-btn">All Orders</button>
                 <button id="open-orders" class="btn btn-primary mb-3">Open Orders</button>
                 <button id="complete-orders" class="btn btn-primary mb-3">Complete Orders</button>
                 <button id="blocked-orders" class="btn btn-primary mb-3">Blocked Orders</button>
-                
+                <?php if(is_admin()) {?>
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card">
@@ -114,7 +109,7 @@
                         </div>
                     </div>
                 </div>
-
+                <?php } ?>
             </div> <!-- container-fluid -->
         </div>
 
@@ -162,10 +157,8 @@
 
         <?= $this->include('partials/footer') ?>
     </div>
-    <!-- end main content-->
-
 </div>
-<!-- END layout-wrapper -->
+<!-- END -wrapper -->
 
 <?= $this->include('partials/right-sidebar') ?>
 
@@ -199,25 +192,27 @@
     }
 
     function deleteOrder(orderId) {
-    if (confirm('Are you sure you want to delete this order?')) {
-        $.ajax({
-            url: '<?php echo site_url('delete-order')?>',
-            type: 'GET',
-            data:{orderId:orderId},
-            success: function(response) {
-                if (response.status === 'success') {
-                    alert(response.message);
-                    $('#table').DataTable().ajax.reload()
-                } else {
-                    alert('Error: ' + response.message);
+        if (confirm('Are you sure you want to delete this order?')) {
+            $.ajax({
+                url: '<?php echo site_url('delete-order') ?>',
+                type: 'GET',
+                data: {
+                    orderId: orderId
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        $('#table').DataTable().ajax.reload()
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error : ' + error);
                 }
-            },
-            error: function(xhr, status, error) {
-                alert('Error : ' + error);
-            }
-        });
+            });
+        }
     }
-}
 
 
     function unblockOrder(id = "") {
