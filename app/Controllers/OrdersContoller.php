@@ -154,8 +154,8 @@ class OrdersContoller extends BaseController
     }
 
     })->edit('fkvendorstaffid', function ($row) {
-        $vendor = get_vendors($row->fkvendorstaffid);
-        return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+        // $vendor = get_vendors($row->fkvendorstaffid);
+        // return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
     })->edit('status', function ($row) {
         $status = '';
         if ($row->status == 0) {
@@ -264,9 +264,10 @@ public function deleteOrder()
 
             session()->setFlashdata('success', 'Order Created Successfully!');
         } else {
-            unset($data['remainingLeads']);
+            $data['remainingLeads']=intval($data['lead_requested'])-$this->lead_model->where('order_id', $id)
+            ->where('status !=', 2) // Exclude rejected leads
+            ->countAllResults();
             $this->order_model->update($id, $data);
-
             log_activity("Order Updated Id : " . $id, get_user_fullname());
 
             session()->setFlashdata('success', 'Order Updated Successfully!');
@@ -644,7 +645,7 @@ public function deleteOrder()
                     "client_id" => "",
                     "status" => 3,
                     "master_search" => json_encode($l),
-                    "lead_date" => date('Y-m-d H:i:s'),
+                    "lead_date" =>  date('Y-m-d H:i:s'),
 
                 ];
                 array_push($post_data, $temp_post_data);
