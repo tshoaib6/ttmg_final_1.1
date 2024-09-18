@@ -105,15 +105,15 @@ function send_email($to, $event,$vendor_id="")
            $smtp_user=$vendor['smtpemail'];
            $smtp_pass=$vendor['smtppassword'];
         }else{
-            /*$smtp_host='smtp.gmail.com';
+            $smtp_host='smtp.gmail.com';
            $smtp_port=587;
-           $smtp_user='tshoaib10@gmail.com';
-           $smtp_pass='saac vsof mruj cmkh';*/
+           $smtp_user='contactlookforleads@gmail.com';
+           $smtp_pass='c0ntact321';
            
-           $smtp_host='smtppro.zoho.com';
-           $smtp_port=465;
-           $smtp_user='contact@lookforleads.com';
-           $smtp_pass='Rl]0l(GFil*8';
+        //    $smtp_host='smtppro.zoho.com';
+        //    $smtp_port=465;
+        //    $smtp_user='contact@lookforleads.com';
+        //    $smtp_pass='Rl]0l(GFil*8';
         }
         $email->initialize([
             'mailType' => 'html',
