@@ -84,51 +84,117 @@ if (!function_exists('send_referral_email')) {
     }
 }
 
-function send_email($to, $event,$vendor_id="")
-{
+// function send_email($to, $event,$vendor_id="")
+// {
     
+//     try {
+//         $db = \Config\Database::connect();
+//         $builder = $db->table('emailtemplate')->select('subject,message');
+//         $email_template = $builder->where('event', $event)->get()->getResultArray();
+    
+//         $htmlMessage = '';
+//         //$htmlMessage = view('emails\header');
+//         $htmlMessage .= $email_template[0]['message'];//.= view('emails\body', ['message' => $email_template[0]['message']]);
+//        // $htmlMessage .= view('emails\footer');
+
+//         $email = \Config\Services::email();
+//         // if($vendor_id!=""){
+//         //    $vendor= vendor_smtp($vendor_id);
+//         //    $smtp_host=$vendor['smtpincomingserver'];
+//         //    $smtp_port=$vendor['smtpport'];
+//         //    $smtp_user=$vendor['smtpemail'];
+//         //    $smtp_pass=$vendor['smtppassword'];
+//         // }else{
+
+//            $smtp_host='smtp.gmail.com';
+//            $smtp_port=587;
+//            $smtp_user='tshoaib10@gmail.com';
+//            $smtp_pass='kfbv erdq vifs ibtg';
+           
+//         //    $smtp_host='smtppro.zoho.com';
+//         //    $smtp_port=465;
+//         //    $smtp_user='contact@lookforleads.com';
+//         //    $smtp_pass='Rl]0l(GFil*8';
+//         // }
+//         $email->initialize([
+//             'mailType' => 'html',
+//             'protocol' => 'smtp',
+//             'SMTPHost' => $smtp_host, // Correct parameter name for SMTP hostname
+//             'SMTPPort' => $smtp_port, // Correct parameter name for SMTP port
+//             'SMTPUser' => $smtp_user,
+//             'SMTPPass' => $smtp_pass,
+//             'SMTPCrypto' => 'ssl',
+//             'charset' => 'utf-8',
+//             'wordwrap' => TRUE,
+//         ]);
+//         $email->setFrom('contact@lookforleads.com', 'Support Team');
+//         $email->setNewline("\r\n");
+//         $email->setCRLF("\r\n");
+//         $email->setTo($to);
+//         $email->setSubject($email_template[0]['subject']);
+//         $email->setMessage($htmlMessage);
+
+//         if (!$email->send()) {
+//             throw new \Exception('Email sending failed: ' . $email->printDebugger(['headers']));
+//         }
+
+//         return true; // Email sent successfully
+//     } catch (\Exception $e) {
+//         // Log or handle the error
+//         log_message('error', 'Email sending failed: ' . $e->getMessage());
+//         return $e->getMessage(); // Email sending failed
+//     }
+
+// }
+
+
+function send_email($to, $event, $vendor_id = "")
+{
     try {
         $db = \Config\Database::connect();
-        $builder = $db->table('emailtemplate')->select('subject,message');
+        $builder = $db->table('emailtemplate')->select('subject, message');
         $email_template = $builder->where('event', $event)->get()->getResultArray();
-    
+
         $htmlMessage = '';
-        //$htmlMessage = view('emails\header');
-        $htmlMessage .= $email_template[0]['message'];//.= view('emails\body', ['message' => $email_template[0]['message']]);
-       // $htmlMessage .= view('emails\footer');
+        $htmlMessage .= $email_template[0]['message'];
 
         $email = \Config\Services::email();
-        // if($vendor_id!=""){
-        //    $vendor= vendor_smtp($vendor_id);
-        //    $smtp_host=$vendor['smtpincomingserver'];
-        //    $smtp_port=$vendor['smtpport'];
-        //    $smtp_user=$vendor['smtpemail'];
-        //    $smtp_pass=$vendor['smtppassword'];
-        // }else{
-           $smtp_host='smtp.gmail.com';
-           $smtp_port=587;
-           $smtp_user='tshoaib10@gmail.com';
-           $smtp_pass='saac vsof mruj cmkh';
-           
+
+       
+        
+        if($vendor_id!=""){
+           $vendor= vendor_smtp($vendor_id);
+           $smtp_host=$vendor['smtpincomingserver'];
+           $smtp_port=$vendor['smtpport'];
+           $smtp_user=$vendor['smtpemail'];
+           $smtp_pass=$vendor['smtppassword'];
+        }else{
+
+            $smtp_host = 'smtp.gmail.com';
+        $smtp_port = 587; // For TLS
+        $smtp_user = 'contactlookforleads@gmail.com';
+        $smtp_pass = 'wuqi inqm teex amor'; 
+        
+         
         //    $smtp_host='smtppro.zoho.com';
         //    $smtp_port=465;
         //    $smtp_user='contact@lookforleads.com';
         //    $smtp_pass='Rl]0l(GFil*8';
-        // }
+        }
+
         $email->initialize([
             'mailType' => 'html',
             'protocol' => 'smtp',
-            'SMTPHost' => $smtp_host, // Correct parameter name for SMTP hostname
-            'SMTPPort' => $smtp_port, // Correct parameter name for SMTP port
+            'SMTPHost' => $smtp_host,
+            'SMTPPort' => $smtp_port,
             'SMTPUser' => $smtp_user,
             'SMTPPass' => $smtp_pass,
-            'SMTPCrypto' => 'ssl',
+            'SMTPCrypto' => 'tls', // Use 'tls' for port 587
             'charset' => 'utf-8',
             'wordwrap' => TRUE,
         ]);
+
         $email->setFrom('contact@lookforleads.com', 'Support Team');
-        $email->setNewline("\r\n");
-        $email->setCRLF("\r\n");
         $email->setTo($to);
         $email->setSubject($email_template[0]['subject']);
         $email->setMessage($htmlMessage);
@@ -139,12 +205,11 @@ function send_email($to, $event,$vendor_id="")
 
         return true; // Email sent successfully
     } catch (\Exception $e) {
-        // Log or handle the error
         log_message('error', 'Email sending failed: ' . $e->getMessage());
         return $e->getMessage(); // Email sending failed
     }
-
 }
+
 function email_allowed($event){
     $action=get_option('emailaction');
     $action=json_decode($action,1);
