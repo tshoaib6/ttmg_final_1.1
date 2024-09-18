@@ -98,23 +98,23 @@ function send_email($to, $event,$vendor_id="")
        // $htmlMessage .= view('emails\footer');
 
         $email = \Config\Services::email();
-        if($vendor_id!=""){
-           $vendor= vendor_smtp($vendor_id);
-           $smtp_host=$vendor['smtpincomingserver'];
-           $smtp_port=$vendor['smtpport'];
-           $smtp_user=$vendor['smtpemail'];
-           $smtp_pass=$vendor['smtppassword'];
-        }else{
-            $smtp_host='smtp.gmail.com';
+        // if($vendor_id!=""){
+        //    $vendor= vendor_smtp($vendor_id);
+        //    $smtp_host=$vendor['smtpincomingserver'];
+        //    $smtp_port=$vendor['smtpport'];
+        //    $smtp_user=$vendor['smtpemail'];
+        //    $smtp_pass=$vendor['smtppassword'];
+        // }else{
+           $smtp_host='smtp.gmail.com';
            $smtp_port=587;
-           $smtp_user='contactlookforleads@gmail.com';
-           $smtp_pass='c0ntact321';
+           $smtp_user='tshoaib10@gmail.com';
+           $smtp_pass='saac vsof mruj cmkh';
            
         //    $smtp_host='smtppro.zoho.com';
         //    $smtp_port=465;
         //    $smtp_user='contact@lookforleads.com';
         //    $smtp_pass='Rl]0l(GFil*8';
-        }
+        // }
         $email->initialize([
             'mailType' => 'html',
             'protocol' => 'smtp',
