@@ -267,6 +267,9 @@ public function deleteOrder()
             $data['remainingLeads']=intval($data['lead_requested'])-$this->lead_model->where('order_id', $id)
             ->where('status !=', 2) // Exclude rejected leads
             ->countAllResults();
+            if($data['remainingLeads']<=0){
+                $data['status']=3;
+            }
             $this->order_model->update($id, $data);
             log_activity("Order Updated Id : " . $id, get_user_fullname());
 
