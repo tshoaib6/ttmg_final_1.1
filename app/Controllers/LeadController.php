@@ -223,10 +223,10 @@ public function ajax_Datatable_master_leads($id = "")
             // This block is currently empty as per your provided code
         } elseif ($id != "") {
             // Editing an existing lead
-            $lead = $this->lead_master_model->find($id);
+            $lead = $this->lead_model->find($id);
             $order = $this->order_model->find($lead['order_id']);
             $camp_name = $this->campaign_model->select('id,campaign_name')->find($order['categoryname']);
-
+            
             $data = [
                 'title_meta' => view('partials/title-meta', ['title' => 'Edit Lead']),
                 'page_title' => view('partials/page-title', ['title' => 'Edit Lead', 'pagetitle' => 'Look For Leads']),
