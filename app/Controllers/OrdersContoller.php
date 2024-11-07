@@ -351,14 +351,76 @@ public function deleteOrder()
 
     public function lead_add()
     {
+        $session = session();
 
         $data = $this->request->getPost();
-
-
-        if ($data['order_id'] != "") {
-            $order_detail = $this->order_model->select('fkclientid,fkvendorstaffid,categoryname')->find($data['order_id']);
-            $lead_check = $this->lead_model->where('phone_number', $data['phone_number'])->where('client_id', $order_detail['fkclientid'])->where('camp_id', $order_detail['categoryname'])->first();
-
+    
+        // Check if the request is for editing an existing lead
+        if (!empty($data['lead_id'])) {
+            // Fetch the existing lead details using the lead_id
+            $existing_lead = $this->lead_model->find($data['lead_id']);
+    
+            if (!$existing_lead) {
+                // If the lead doesn't exist, return an error
+                $session->setFlashdata('error', 'Lead not found.');
+                return redirect()->to('order-index')->withInput();
+            }
+    
+            // Prepare updated data for the lead
+            $updated_data = [
+                "phone_number" => $data['phone_number'],
+                "agent_name" => $data['agent_name'],
+                "firstname" => $data['first_name'],
+                "lastname" => $data['last_name'],
+                "state" => $data['state'],
+                "complete_lead" => json_encode($data),
+                "order_id" => $existing_lead['order_id'] ?? $data['order_id'], // keep existing or use new
+                "camp_id" => $existing_lead['camp_id'] ?? $data['camp_id'],    // keep existing or use new
+                "vendor_id" => $existing_lead['vendor_id'], // assuming vendor_id remains unchanged
+                "client_id" => $existing_lead['client_id'], // assuming client_id remains unchanged
+                "lead_date" => $data['date'],
+            ];
+    
+            // Update the lead in the database
+            $this->lead_model->update($data['lead_id'], $updated_data);
+    
+            // Log the lead update
+            log_activity("Lead Updated: ID: " . $data['lead_id'], get_user_fullname());
+    
+            // Add notification for lead update
+            $notification_data = [
+                'description' => 'Lead Updated: ID ' . $data['lead_id'],
+                'to_user_id' => $existing_lead['client_id'],  // Notify the client
+                'link' => base_url() . "lead-detail/" . $data['lead_id'],
+            ];
+            add_notification($notification_data);
+            
+            if (email_allowed('clientleads')) {
+                send_email(get_email_by_user_id($existing_lead['client_id']), "Lead Updated: ID " . $data['lead_id']);
+            }
+    
+            if (email_allowed('vendorleads')) {
+                send_email(get_email_by_user_id($existing_lead['vendor_id']), "Lead Updated: ID " . $data['lead_id']);
+            }
+    
+            if (email_allowed('adminleads')) {
+                send_email("tshoaib10@gmail.com", "Lead Updated: ID " . $data['lead_id']);
+            }
+    
+            // Set success message for update
+            $session->setFlashdata('success', 'Lead Updated Successfully.');
+            
+            return redirect()->to('order-index')->withInput();
+        }
+    
+        // Check if the order ID is provided for new lead creation
+        if (!empty($data['order_id'])) {
+            $order_detail = $this->order_model->select('fkclientid, fkvendorstaffid, categoryname')->find($data['order_id']);
+            $lead_check = $this->lead_model->where('phone_number', $data['phone_number'])
+                ->where('client_id', $order_detail['fkclientid'])
+                ->where('camp_id', $order_detail['categoryname'])
+                ->first();
+    
             $post_data = [
                 "phone_number" => $data['phone_number'],
                 "agent_name" => $data['agent_name'],
@@ -376,6 +438,7 @@ public function deleteOrder()
                 "assigned" => 1
             ];
         } else {
+            // No order ID provided, so we create a new lead without an associated order
             $post_data = [
                 "phone_number" => $data['phone_number'],
                 "agent_name" => $data['agent_name'],
@@ -390,73 +453,78 @@ public function deleteOrder()
                 "client_id" => "",
                 "master_search" => json_encode($data),
                 "lead_date" => $data['date'],
-
             ];
         }
-
+    
+        // Insert the new lead into the lead master model
         $insert_id = $this->lead_master_model->insert($post_data);
-
-
-
-        if ($data['order_id'] != "") {
+    
+        // Handle notifications and logs if there is an order ID
+        if (!empty($data['order_id'])) {
             if ($lead_check) {
+                // Duplicate lead detected
                 $session = session();
                 $session->setFlashdata('error', 'Duplicate Lead Detected.');
                 return redirect()->to('order-index')->withInput();
             }
+    
+            // Insert lead into lead model
             $this->lead_model->insert($post_data);
             $remaining = $this->order_model->update_order(1, $data['order_id']);
-            if ($remaining == 0 || $remaining < 0) {
-
+    
+            // Check if the order is completed
+            if ($remaining <= 0) {
                 $notification_data = [
                     'description' => 'Order Completed',
                     'to_user_id' => $order_detail['fkclientid'],
                     'link' => base_url() . "order-detail/" . $data['order_id'],
                 ];
                 add_notification($notification_data);
-                // if (!is_vendor() && email_allowed('')) {
-                //     send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
-                // } // Order Complete Email
             }
-
+    
+            // Add notifications and send emails
             $notification_data = [
                 'description' => '1 Lead Added to Order',
                 'to_user_id' => $order_detail['fkclientid'],
                 'link' => base_url() . "order-detail/" . $data['order_id'],
             ];
-
             add_notification($notification_data);
-
+    
             if (email_allowed('vendorleads')) {
                 send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
             }
-            if (email_allowed('clientleads') && $post_data['client_id']!=0) {
+            if (email_allowed('clientleads') && $post_data['client_id'] != 0) {
                 send_email(get_email_by_user_id($post_data['client_id']), "Add Lead", $post_data['vendor_id']);
             }
             if (email_allowed('adminleads')) {
                 send_email("tshoaib10@gmail.com", "Add Lead");
             }
-
+    
             $notification_data = [
                 'description' => '1 Lead Added to Order',
                 'to_user_id' => $order_detail['fkvendorstaffid'],
                 'link' => base_url() . "order-detail/" . $data['order_id'],
             ];
             add_notification($notification_data);
-            log_activity("Lead Added to Order  : " . $data['order_id'], get_user_fullname());
+            log_activity("Lead Added to Order: " . $data['order_id'], get_user_fullname());
         } else {
-            log_activity("Lead Added : ID :  " . $insert_id, get_user_fullname());
+            // Log activity for leads without an order
+            log_activity("Lead Added: ID: " . $insert_id, get_user_fullname());
         }
-
+    
+        // Set success message
         $session = session();
-        $session->setFlashdata('success', 'Lead Added Sucessfully.');
-       
-        if ($data['order_id'] == "") {
+        $session->setFlashdata('success', 'Lead Added Successfully.');
+    
+        // Redirect based on whether the lead was part of an order
+        if (empty($data['order_id'])) {
             return redirect()->to('master-lead-index')->withInput();
         } else {
             return redirect()->to('order-index')->withInput();
         }
     }
+    
+
 
 
     public function get_campaign_col()

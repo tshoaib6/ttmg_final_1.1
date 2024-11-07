@@ -50,6 +50,10 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
     $routes->get('/all-referral', 'Referral::index');
 
 
+    $routes->get('/clients', 'Auth::getVendorClients');
+    $routes->get('/ajax-vendor-client-datatable', 'Auth::ajaxVendorClients');
+
+
     $routes->group('', ['filter' => 'admin'], static function ($routes) {
         $routes->get('/register', 'Auth::register');
         $routes->post('/create', 'Auth::register');

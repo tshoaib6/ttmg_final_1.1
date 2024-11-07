@@ -1,6 +1,5 @@
 <script>
     $(document).ready(function () {
-        console.log("Test Lead JS")
 
         $('#import-lead').click(function () {
             $('#importLeadsModal').modal('show');
@@ -49,7 +48,6 @@
             lead = <?php echo json_encode($lead); ?>;
             complete_lead = JSON.parse(lead.complete_lead);
 
-
             $.ajax({
                 url: "<?php echo site_url('get-campaign-col_by_id') ?>",
                 method: 'POST',
@@ -57,7 +55,7 @@
                 success: function (response) {
                     $a = JSON.parse(response);
                     col = JSON.parse($a[0].campaign_columns);
-                    formHtml = generateLeadForm(col, "", camp_id);
+                    formHtml = generateLeadForm(col, "", camp_id,lead.id);
                     $("#form-container").html(formHtml);
                     for (var key in complete_lead) {
                         $('input[name="' + key + '"]').val(complete_lead[key]);

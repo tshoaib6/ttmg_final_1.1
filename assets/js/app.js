@@ -408,7 +408,25 @@ function generateStateSelect() {
         "NE": "Nebraska",
         "NH": "New Hampshire",
         "NJ": "New Jersey",
-        "NM": "New Mexico"
+        "NM": "New Mexico",
+        "NV": "Nevada",
+        "NY": "New York",
+        "OH": "Ohio",
+        "OK": "Oklahoma",
+        "OR": "Oregon",
+        "PA": "Pennsylvania",
+        "RI": "Rhode Island",
+        "SC": "South Carolina",
+        "SD": "South Dakota",
+        "TN": "Tennessee",
+        "TX": "Texas",
+        "UT": "Utah",
+        "VA": "Virginia",
+        "VT": "Vermont",
+        "WA": "Washington",
+        "WI": "Wisconsin",
+        "WV": "West Virginia",
+        "WY": "Wyoming"
     };
 
     let selectHTML = '<div class="col-sm-6 mb-3">';
@@ -425,8 +443,9 @@ function generateStateSelect() {
     return selectHTML;
 }
 
-function generateLeadForm(col, orderId = "", camp_id = "") {
+function generateLeadForm(col, orderId = "", camp_id = "",lead_id="") {
 
+    console.log("Lead IDDD",lead_id)
     var formElements = col.map(function (column) {
         console.log(column);
         if (column.col_slug == "state") {
@@ -434,7 +453,7 @@ function generateLeadForm(col, orderId = "", camp_id = "") {
         }
         else {
             var label = `<label class="form-label" for="formrow-${column.col_slug}-input">${column.col_name}</label>`;
-            var input = `<input type="${column.col_type}" name="${column.col_slug}" class="form-control rform" required="" id="${column.col_slug}" value="${column.col_default}">`;
+            var input = `<input type="${column.col_type}" name="${column.col_slug}" class="form-control rform"  id="${column.col_slug}" value="${column.col_default}">`;
             return `<div class="col-sm-6 mb-3">${label}${input}</div>`;
         }
 
@@ -442,6 +461,8 @@ function generateLeadForm(col, orderId = "", camp_id = "") {
     formElements.push('<div class="col-sm-12"><button type="submit"  id="btnaddlead" onClick="onformsubmit()" class="btn btn-primary" >Submit</button></div>');
     formElements.push('<input type="hidden" name="order_id" value="' + orderId + '">');
     formElements.push('<input type="hidden" name="camp_id" value="' + camp_id + '">');
+    formElements.push('<input type="hidden" name="lead_id" value="' + lead_id + '">');
+
 
     var base_url = $('#base-url').attr('data-target');
     var action_url = base_url + 'add-lead';

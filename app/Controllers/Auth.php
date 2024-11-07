@@ -777,6 +777,16 @@ class Auth extends BaseController
         return view('user-management', $data);
     }
 
+    public function getVendorClients()
+    {
+        $data = [
+            'title_meta' => view('partials/title-meta', ['title' => 'Clients']),
+            'page_title' => view('partials/page-title', ['title' => 'Clients', 'pagetitle' => 'Home'])
+
+        ];
+        return view('get_vendor_clients', $data);
+    }
+
     public function ajaxAllUsers()
     {
         $db = db_connect();
@@ -833,6 +843,43 @@ class Auth extends BaseController
             })
             ->toJson();
     }
+
+    public function ajaxVendorClients()
+    {
+        $db = db_connect();
+        $builder = $db->table('ttmg_users')
+            ->select('id,,firstname, lastname, email,password,userrole,branchslug,block')
+            ->where('userrole', 3);
+
+        return DataTable::of($builder)
+            ->edit('userrole', function ($row) {
+                $userrole = '';
+                if ($row->userrole == 1) {
+                    $userrole = '<span class="badge bg-primary">Admin</span>';
+                } else if ($row->userrole == 2) {
+                    $userrole = '<span class="badge bg-success">Vendor</span>';
+                } else {
+                    $userrole = '<span class="badge bg-info">Client</span>';
+                }
+                return $userrole;
+            })
+            ->edit('branchslug', function ($row) {
+                return '<a href="#">' . base_url('login/') . $row->branchslug . '</a>';
+            })
+            ->edit('block', function ($row) {
+
+                if ($row->block == 0) {
+                    return '<span class="badge bg-success">Active</span>';
+                } else {
+                    return '<span class="badge bg-danger">Blocked</span>';
+                }
+            })
+            
+
+            ->toJson();
+    }
+
+    
 
     public function get_subvendors()
     {
