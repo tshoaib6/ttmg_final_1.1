@@ -511,8 +511,8 @@
                     d.condition = condition;
                     d.filterActive = filterActive;
                     d.category = category;
-                    d.start_date = $("#start_date").val();
-                    d.end_date = $("#end_date").val();
+                    d.start_date = $("#start_date").val()?  $("#start_date").val():"";
+                    d.end_date = $("#end_date").val()?$("#end_date").val():"";
 
 
                     d.lead_status = radioValue;
