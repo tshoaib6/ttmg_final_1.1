@@ -152,9 +152,20 @@ class OrdersContoller extends BaseController
                 return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
             })
             ->edit('orderdate', function ($row) {
-                $date = DateTime::createFromFormat('m-d-Y H:i', $row->orderdate)->format('Y-m-d');
-                return $date;
+                // Check if orderdate exists and is not empty
+                if (!empty($row->orderdate)) {
+                    $date = DateTime::createFromFormat('m-d-Y H:i', $row->orderdate);
+                    
+                    // Check if the date was successfully parsed
+                    if ($date !== false) {
+                        return $date->format('Y-m-d');
+                    }
+                }
+                
+                // Return 'N/A' if orderdate is missing or invalid
+                return 'N/A';
             })
+            
             ->edit('categoryname', function ($row) {
                 return '<a href="' . site_url('campaign-detail/') . $row->categoryname . '" class="px-3 text-primary">' . get_categories_by_id($row->categoryname)[0]['campaign_name'] . '</a>';
             })
@@ -180,7 +191,6 @@ class OrdersContoller extends BaseController
                     return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
                 }
             
-                // If vendor does not exist, show 'N/A'
                 return 'N/A';
             })
             
