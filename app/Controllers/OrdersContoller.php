@@ -867,9 +867,9 @@ class OrdersContoller extends BaseController
     {
         if ($orderId == 0) {
             if (is_vendor()) {
-                $leads = $this->lead_model->select('complete_lead')->where('vendor_id', get_user_id());
+                $leads = $this->lead_model->select('complete_lead')->where('vendor_id', get_user_id())->findAll();
             } else if (is_client()) {
-                $leads = $this->lead_model->select('complete_lead')->where('client_id', get_user_id());
+                $leads = $this->lead_model->select('complete_lead')->where('client_id', get_user_id())->findAll();
             } else {
                 $leads = $this->lead_model->select('complete_lead')->findAll();
             }
