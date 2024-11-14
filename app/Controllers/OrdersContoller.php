@@ -174,8 +174,16 @@ class OrdersContoller extends BaseController
             })
             ->edit('fkvendorstaffid', function ($row) {
                 $vendor = get_vendors($row->fkvendorstaffid);
-                return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+                
+                // Check if the vendor exists and has a valid result
+                if (!empty($vendor) && isset($vendor[0]['firstname'], $vendor[0]['lastname'])) {
+                    return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+                }
+            
+                // If vendor does not exist, show 'N/A'
+                return 'N/A';
             })
+            
             ->edit('client_id', function ($row) {
                 $client = get_client($row->client_id);
                 return isset($client) && !empty($client) ? $client[0]['firstname'] . ' ' . $client[0]['lastname'] : "N/A";
