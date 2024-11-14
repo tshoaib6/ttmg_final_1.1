@@ -127,6 +127,8 @@
                     d.order_status = order_status;
                     d.filter_campaign ="";
                     d.filter_vendor = "";
+                    d.filter_client = "";
+
                 },
                     
     },
