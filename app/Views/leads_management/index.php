@@ -69,8 +69,9 @@
                     <?= $this->include('partials/add-alert') ?>
 
                     <div class="col-md-12">
+                    <?php if (is_admin()) { ?>
+
                         <div class="card">
-                            <?php if (is_admin()) { ?>
 
                                 <div class="card-body">
                                     <div class="row d-flex">
@@ -108,7 +109,6 @@
                                         <button type="button" class="btn btn-primary btn-rounded waves-effect waves-light filter-clear" style="display:none; margin-right:2px;">Clear Filter</button>
 
                                     </div>
-                                <?php } ?>
 
                                 <div class="d-flex flex-row align-item-center">
 
@@ -128,6 +128,8 @@
 
                                 </div>
                         </div>
+
+                        <?php } ?>
 
 
                     </div>
