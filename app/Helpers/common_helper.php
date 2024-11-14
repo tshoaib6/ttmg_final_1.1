@@ -212,7 +212,7 @@ if (!function_exists('send_referral_email')) {
 function send_email($to, $event, $vendor_id = "")
 {
     try {
-        // Block specific email addresses
+        
         $blockedEmails = ['rkirc5@aol.com'];
         if (in_array($to, $blockedEmails)) {
             throw new \Exception('Email sending blocked to this address: ' . $to);
