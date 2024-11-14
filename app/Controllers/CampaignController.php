@@ -198,4 +198,12 @@ class CampaignController extends BaseController
         return view('campaigns/campaign-detail', $data);
     }
 
+    public function getCampaignColumns()
+{
+
+    $catid =  $this->request->getPost('catid'); 
+    $columns = get_campaign_columns($catid);
+    echo json_encode($columns);
+}
+
 }

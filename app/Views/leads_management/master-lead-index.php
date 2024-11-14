@@ -10,8 +10,6 @@
     <?= $this->include('partials/head-css') ?>
 
     <style>
-    
-
         .select2-container {
             z-index: 100000;
         }
@@ -63,12 +61,6 @@
 <div id="layout-wrapper">
 
     <?= $this->include('partials/menu') ?>
-
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
-
-
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
@@ -196,31 +188,36 @@
                                 <label>WHERE </label>
                             </div>
 
+                            <div id="#dynamic-fields-container">
+                                <div class="col-md-3">
+                                    <select class="form-control" name="column[]" id="column" onchange="searchKeyChange(this)">
+                                        <option value="vendor_name">Vendor</option>
+                                        <option value="client_name">Client </option>
+                                        <option value="phone_number">Phone Number</option>
+                                        <option value="state">State</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="operator[]" style="width: 170px;font-size: 14px;display: inline;" id="operator">
+                                        <option value="is">is</option>
+                                        <option value="is not">is not</option>
+                                        <option value="contains">contains</option>
+                                        <option value="does not contain">does not contain</option>
+                                        <option value="is blank">is blank</option>
+                                        <option value="is not blank">is not blank</option>
 
-                            <div class="col-md-3">
-                                <select class="form-control" name="column[]" id="column" onchange="searchKeyChange(this)">
-                                    <option value="agent_name">Agent</option>
-                                    <option value="name">Name </option>
-                                    <option value="phone_number">Phone Number</option>
-                                    <option value="address">Address</option>
-                                    <option value="state">State</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-control" name="operator[]" style="width: 170px;font-size: 14px;display: inline;" id="operator">
-                                    <option value="is">is</option>
-                                    <option value="is not">is not</option>
-                                    <option value="contains">contains</option>
-                                    <option value="does not contain">does not contain</option>
-                                    <option value="is blank">is blank</option>
-                                    <option value="is not blank">is not blank</option>
+                                    </select>
+                                </div>
 
-                                </select>
+                                <div class="col-md-3 value-div">
+                                    <select class="form-control search" name="value[]" style="width: 170px;font-size: 14px;display: inline-block;">
+                                    </select>
+                                </div>
+
+
                             </div>
-                            <div class="col-md-3 value-div">
-                                <select class="form-control search" name="value[]" style="width: 170px;font-size: 14px;display: inline-block;">
-                                </select>
-                            </div>
+
+
                         </div>
 
                     </div>
@@ -269,8 +266,7 @@
 
 
 <script type="text/javascript">
-
-     function deleteLead(id) {
+    function deleteLead(id) {
         if (confirm('Are you sure you want to delete this lead?')) {
             $.ajax({
                 url: '<?= site_url('delete-master-lead/') ?>' + id,
@@ -754,7 +750,7 @@
             } else {
                 $('input.lead-check').prop('checked', false);
             }
-            console.log("Ids Here",checkedIds)
+            console.log("Ids Here", checkedIds)
 
             if (checkedIds.length > 0) {
                 $("#assign-container").show();

@@ -831,11 +831,21 @@ class Auth extends BaseController
                     $block = 1;
                     $drow = '<i class="uil uil-lock font-size-18"></i>';
                 }
-                return '<a href="' . site_url('editUser/') . $row->id . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>
-                <a href="' . base_url('deleteUser/') . $row->id . '" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>
-                 <a href="' . base_url('blockUser/') . $row->id . '/' . $block . '" class="px-3 text-danger">' . $drow . '</a>';
+            
+                return '
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <a href="' . site_url('editUser/') . $row->id . '" class="text-primary">
+                            <i class="uil uil-pen font-size-18"></i>
+                        </a>
+                        <a href="' . base_url('deleteUser/') . $row->id . '" class="text-danger">
+                            <i class="uil uil-trash-alt font-size-18"></i>
+                        </a>
+                        <a href="' . base_url('blockUser/') . $row->id . '/' . $block . '" class="text-danger">
+                            ' . $drow . '
+                        </a>
+                    </div>';
             }, 'last')
-
+            
             ->filter(function ($builder, $request) {
 
                 if ($request->filter_role)
@@ -864,8 +874,10 @@ class Auth extends BaseController
                 return $userrole;
             })
             ->edit('branchslug', function ($row) {
-                return '<a href="#">' . base_url('login/') . $row->branchslug . '</a>';
+                $url = base_url('login/') . $row->branchslug;
+                return '<a href="#" onclick="copyToClipboard(\'' . $url . '\')">' . $url . '</a>';
             })
+            
             ->edit('block', function ($row) {
 
                 if ($row->block == 0) {
@@ -888,6 +900,17 @@ class Auth extends BaseController
     }
 
 
+    public function getVendors(){
+        $vendors=get_vendors();
+        return json_encode($vendors);
+    }
+
+    public function getClients(){
+        $clients=get_client();
+        return json_encode($clients);
+    }
+
+    
 
 
     // API 

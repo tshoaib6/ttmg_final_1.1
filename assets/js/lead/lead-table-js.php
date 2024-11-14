@@ -98,7 +98,7 @@
         }
 
         function convertToCSV(arr) {
-            
+
             const array = [Object.keys(arr[0])].concat(arr);
 
             return array.map(row => {
@@ -109,7 +109,9 @@
         }
 
         function downloadCSV(csv, filename) {
-            const csvFile = new Blob([csv], { type: 'text/csv' });
+            const csvFile = new Blob([csv], {
+                type: 'text/csv'
+            });
             const downloadLink = document.createElement('a');
             downloadLink.download = filename;
             downloadLink.href = window.URL.createObjectURL(csvFile);
@@ -119,47 +121,46 @@
         }
 
         // <button  id="download-csv" class="btn btn-primary mb-3">Download CSV</button>
- if(currentURL.includes('order-detail')){
-    var button = $('<button id="download-csv" class="btn btn-primary mb-3">Download CSV</button>');
-    $('.button').append(button);
- }
-       
+        //  if(currentURL.includes('order-detail')){
+        var button = $('<button id="download-csv" class="btn btn-primary mb-3">Download CSV</button>');
+        $('.button').append(button);
+        //  }
+
         $("#download-csv").click(function() {
+            if (currentURL.includes('lead-index')) {
+                url = '<?= base_url() ?>get_leads_for_csv/' + 0;
+                fileIntialName = 'order';
+            } else {
+                orderId = <?php echo isset($order['pkorderid']) ? $order['pkorderid'] : '_'; ?>;
+                fileIntialName = '<?php echo isset($order['agent']) ? $order['agent'] : '_'; ?>';
+                url = '<?= base_url() ?>get_leads_for_csv/' + orderId;
 
-            if(currentURL.includes('lead-index')){
-            url='<?= base_url() ?>get_leads_for_csv/' + 0;
-            fileIntialName='order';
-        }else{
-            orderId= <?php echo isset($order['pkorderid'])?$order['pkorderid']:'_'; ?>;
-            fileIntialName= '<?php echo isset($order['agent'])?$order['agent']:'_'; ?>';
-            url='<?= base_url() ?>get_leads_for_csv/' + orderId;
-
-        }
-
-        fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
             }
-            return response.text(); 
-        })
-        .then(data => {
-            json_data=JSON.parse(data);
-            const flattenedData = json_data.map(item => flattenObject(JSON.parse(item.complete_lead)));
-            
-            const csv = convertToCSV(flattenedData);
-            const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
-            const filename = `${fileIntialName}_${timestamp}.csv`;
-            downloadCSV(csv, filename);
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    json_data = JSON.parse(data);
+                    const flattenedData = json_data.map(item => flattenObject(JSON.parse(item.complete_lead)));
+
+                    const csv = convertToCSV(flattenedData);
+                    const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
+                    const filename = `${fileIntialName}_${timestamp}.csv`;
+                    downloadCSV(csv, filename);
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
         });
-});
 
-       
 
-        
+
+
 
 
 

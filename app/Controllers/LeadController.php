@@ -49,8 +49,14 @@ class LeadController extends BaseController
         $orders = $this->order_model->select('pkorderid,agent')->where("status !=", 0)->where("status !=", 3)->findAll();
 
         $client = get_client();
+        $vendor=get_vendors();
+
         $data['order'] = $orders;
         $data['client'] = $client;
+        $data['vendor'] = $vendor;
+        $camp_name = $this->campaign_model->select('id,campaign_name')->findAll();
+        $data['camp_name'] = $camp_name;
+
 
         return view('leads_management/index', $data);
     }
@@ -72,7 +78,7 @@ class LeadController extends BaseController
     public function ajax_Datatable_leads($id = "")
 {
     $db = db_connect();
-    $builder = $db->table('ttmg_leads')->select('id,agent_name,firstname,lastname,state,phone_number,reject_reason,id as option_id,id as lead_id,status,order_id');
+    $builder = $db->table('ttmg_leads')->select('id,lead_date,agent_name,firstname,lastname,state,phone_number,vendor_id,client_id,reject_reason,id as option_id,id as lead_id,status,order_id');
     
     // Order by 'id' in descending order to get the latest entries first
     $builder->orderBy('id', 'DESC');
@@ -106,9 +112,99 @@ class LeadController extends BaseController
         }
         })->hide('status')->hide('order_id')
         ->filter(function ($builder, $request) {
+
+            if ($request->filterActive == 1) {
+
+                $column = $request->column;
+                $operator = $request->operator;
+                $value = $request->value;
+                $condition = $request->condition;
+                $categoryId = $request->category;
+
+                if (count($value) > 0) {
+                    foreach ($column as $key => $col) {
+                        if ($key == 0) {
+                            if ($operator[$key] == "is") {
+                                $builder->where($col, $value[$key]);
+                            } else if ($operator[$key] == 'contains') {
+                                $builder->like($col, $value[$key]);
+                            } elseif ($operator[$key] == 'does not contain') {
+                                $builder->notLike($col, $value[$key]);
+                            } else if ($operator[$key] == 'is blank') {
+                                $builder->where($col, "");
+                            } else if ($operator[$key] == 'is not blank') {
+                                $builder->where($col . "!=", "");
+                            }
+                        } else {
+                            if ($condition[$key] == "AND") {
+                                if ($operator[$key] == "is") {
+                                    $builder->where($col, $value[$key]);
+                                } else if ($operator[$key] == 'contains') {
+                                    $builder->like($col, $value[$key]);
+                                } elseif ($operator[$key] == 'does not contain') {
+                                    $builder->notLike($col, $value[$key]);
+                                } else if ($operator[$key] == 'is blank') {
+                                    $builder->where($col, "");
+                                } else if ($operator[$key] == 'is not blank') {
+                                    $builder->where($col . "!=", "");
+                                }
+                            } else {  // OR condition
+                                if ($operator[$key] == "is") {
+                                    $builder->orWhere($col, $value[$key]);
+                                } else if ($operator[$key] == 'contains') {
+                                    $builder->orWhere($col, $value[$key]);
+                                } elseif ($operator[$key] == 'does not contain') {
+                                    $builder->orWhere($col . " NOT LIKE", "%$value[$key]%");
+                                } else if ($operator[$key] == 'is blank') {
+                                    $builder->orWhere($col, "");
+                                } else if ($operator[$key] == 'is not blank') {
+                                    $builder->orWhere($col . "!=", "");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ($categoryId != "0") {
+                    $builder->where('camp_id', $categoryId);
+                }
+
+            }
+
+
+
+
+            if ($request->start_date != '' && $request->end_date != '') {
+                $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') >=", $request->start_date);
+                $builder->where("DATE_FORMAT(lead_date,'%m-%d-%Y') <=", $request->end_date);
+            }
+
+
             if ($request->lead_status) {
                 $builder->where('client_id', $request->client);
             }
+
+            if($request->filter_vendor){
+                $builder->where('vendor_id', $request->filter_vendor);
+            }
+            if($request->filter_client){
+                $builder->where('client_id', $request->filter_client);
+            }
+        })
+        
+        ->edit('vendor_id', function ($row) {
+            $vendor = get_vendors($row->vendor_id);
+            return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+        })
+        ->edit('client_id', function ($row) {
+            $client = get_client($row->client_id);
+            if(isset($client) && !empty($client)){
+                return $client[0]['firstname'] . ' ' . $client[0]['lastname'];
+            }
+            else{
+                return "N/A";
+            }
+          
         })
         ->toJson();
 

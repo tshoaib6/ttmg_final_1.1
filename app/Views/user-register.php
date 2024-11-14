@@ -117,24 +117,24 @@
                 </div>
                 <h4 class="mb-3 mt-3">Mail Setting</h4>
                     <div class="col-sm-6 mb-3">
-                        <label class="form-label" for="formrow-email-input">SMTP Email / Username *</label>
-                        <input type="text" name="smtpemail" class="form-control"  placeholder="abc@example.com" required="" id="smtpemail">
+                        <label class="form-label" for="formrow-email-input">SMTP Email / Username </label>
+                        <input type="text" name="smtpemail" class="form-control"  placeholder="abc@example.com"  id="smtpemail">
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <label class="form-label" for="formrow-email-input">SMTP Password *</label>
-                        <input type="text" name="smtppassword" class="form-control"  placeholder="Password" required="" id="smtppassword">
+                        <label class="form-label" for="formrow-email-input">SMTP Password </label>
+                        <input type="text" name="smtppassword" class="form-control"  placeholder="Password"  id="smtppassword">
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <label class="form-label" for="formrow-email-input">SMTP Incoming Server *</label>
-                        <input type="text" name="smtpincomingserver" class="form-control"  placeholder="abc.example.com" required="" id="smtpincomingserver">
+                        <label class="form-label" for="formrow-email-input">SMTP Incoming Server </label>
+                        <input type="text" name="smtpincomingserver" class="form-control"  placeholder="abc.example.com"  id="smtpincomingserver">
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <label class="form-label" for="formrow-email-input">SMTP Outgoing Server *</label>
-                        <input type="text" name="smtpoutgoingserver" class="form-control"  placeholder="abc.example.com" required="" id="smtpoutgoingserver">
+                        <label class="form-label" for="formrow-email-input">SMTP Outgoing Server </label>
+                        <input type="text" name="smtpoutgoingserver" class="form-control"  placeholder="abc.example.com"  id="smtpoutgoingserver">
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <label class="form-label" for="formrow-email-input">SMTP Port *</label>
-                        <input type="text" name="smtpport" class="form-control"  placeholder="i.e 465" required="" id="smtpport">
+                        <label class="form-label" for="formrow-email-input">SMTP Port </label>
+                        <input type="text" name="smtpport" class="form-control"  placeholder="i.e 465"  id="smtpport">
                     </div>
                 <h4 class="mb-3 mt-3">Branch Details</h4>
                     <div class="col-sm-6 mb-3">

@@ -49,10 +49,6 @@
             min-height: 42px;
         }
     </style>
-
-
-
-
 </head>
 
 <?= $this->include('partials/body') ?>
@@ -62,12 +58,9 @@
 
     <?= $this->include('partials/menu') ?>
     <div class="main-content">
-
         <div class="page-content">
             <div class="container-fluid">
-
                 <?php echo $page_title ?>
-
                 <div class="row">
                     <?= $this->include('partials/add-alert') ?>
 
@@ -133,7 +126,6 @@
 
         <?= $this->include('leads_management/reject_lead_modal') ?>
         <?= $this->include('leads_management/lead_detail_canva') ?>
-        <?= $this->include('invoice/invoice_modal') ?>
         <?= $this->include('partials/footer') ?>
     </div>
 </div>
@@ -141,8 +133,8 @@
 <?= $this->include('partials/vendor-scripts') ?>
 <?= $this->include('partials/datatable-scripts') ?>
 
-<script src="<?=base_url('assets/libs/flatpickr/flatpickr.min.js')?>"></script>
-<script src="<?=base_url('assets/libs/select2/js/select2.min.js')?>"></script>
+<script src="<?= base_url('assets/libs/flatpickr/flatpickr.min.js') ?>"></script>
+<script src="<?= base_url('assets/libs/select2/js/select2.min.js') ?>"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.6/xlsx.full.min.js"></script>
 
@@ -165,6 +157,11 @@
                     d.lead_status = "";
                     d.state = "";
                     d.client = "";
+                    d.filterActive =0;
+                    d.start_date = "";
+                    d.end_date ="";
+                    d.filter_vendor = $("#filter_vendor").val() ? $("#filter_vendor").val() : "";
+                    d.filter_client = $("#filter_client").val() ? $("#filter_client").val() : "";
 
                 }
 
@@ -180,7 +177,7 @@
             $("#invoiceModal").modal('show');
         });
 
-       
+
 
         $('input[name=amount]').keyup(function(event) {
             var total = <?php echo $order['lead_requested']; ?>;
@@ -188,11 +185,9 @@
             $("input[name=total]").val(newTotal);
         });
 
-       
+
 
     });
-
-
 </script>
 <script src="<?php echo base_url('assets/js/app.js') ?>"></script>
 <?php require('assets/js/lead/lead-table-js.php'); ?>

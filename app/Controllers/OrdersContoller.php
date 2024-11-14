@@ -12,6 +12,8 @@ use App\Models\Lead;
 use App\Models\Auth as Auth_Model;
 use CodeIgniter\API\ResponseTrait;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use DateTime;
+
 
 
 
@@ -48,13 +50,20 @@ class OrdersContoller extends BaseController
     public function index($vend_id = "")
     {
 
-       
+
         $data = [
             'title_meta' => view('partials/title-meta', ['title' => 'All Orders']),
             'page_title' => view('partials/page-title', ['title' => 'All Orders', 'pagetitle' => 'Look For Leads']),
         ];
-        $data['campaigns'] = $this->campaign_model->select('id,campaign_name')->findAll();
-        $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
+        if (is_admin()) {
+            $data['campaigns'] = $this->campaign_model->select('id,campaign_name')->findAll();
+            $data['vendors'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 2)->findAll();
+        }
+        if (is_vendor()) {
+            $vendor_id = get_user_id();
+            $data['clients'] = $this->auth_model->select('id,firstname,lastname')->where('userrole', 3)->where('vendor', $vendor_id)->findAll();
+        }
+
         return view('orders_management/index', $data);
     }
     public function sub_vendor_index($sub_ven = "", $sv_id)
@@ -75,11 +84,13 @@ class OrdersContoller extends BaseController
             $builder->where('fkvendorstaffid', $id);
         }
 
-        // if (is_vendor()) {
-        //     $builder->where('fkvendorstaffid', get_user_id());
-        // } elseif (is_client()) {
-        //     $builder->where('fkclientid', get_user_id());
-        // }
+        if (is_vendor()) {
+            $builder->where('fkvendorstaffid', get_user_id());
+        } elseif (is_client()) {
+            $builder->where('fkclientid', get_user_id());
+        }
+
+
         $data = DataTable::of($builder)->edit('agent', function ($row) {
             return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
         })->edit('pkorderid', function ($row) {
@@ -114,217 +125,267 @@ class OrdersContoller extends BaseController
                     return "N/A";
                 }
             })
+
             ->addNumbering()
             ->toJson();
         return $data;
     }
     public function ajax_Datatable_orders($id = "")
-{
-    $db = db_connect();
-    $builder = $db->table('ttmg_orders')->select('categoryname,agent, pkorderid as id ,lead_requested,remainingLeads,fkvendorstaffid,ageranges,notes,status,pkorderid,fkclientid');
+    {
+        $db = db_connect();
+        $builder = $db->table('ttmg_orders')
+            ->select('pkorderid as order_id,orderdate,categoryname, agent, pkorderid as id, lead_requested, remainingLeads, fkvendorstaffid, fkclientid as client_id, ageranges, notes, status, pkorderid, fkclientid');
 
-    if ($id != 0) {
-        $builder->where('categoryname', $id);
+        if ($id != 0) {
+            $builder->where('categoryname', $id);
+        }
+
+        if (is_vendor()) {
+            $builder->where('fkvendorstaffid', get_user_id());
+        } elseif (is_client()) {
+            $builder->where('fkclientid', get_user_id());
+        }
+
+
+        return DataTable::of($builder)
+            ->edit('agent', function ($row) {
+                return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
+            })
+            ->edit('orderdate', function ($row) {
+                $date = DateTime::createFromFormat('m-d-Y H:i', $row->orderdate)->format('Y-m-d');
+                return $date;
+            })
+            ->edit('categoryname', function ($row) {
+                return '<a href="' . site_url('campaign-detail/') . $row->categoryname . '" class="px-3 text-primary">' . get_categories_by_id($row->categoryname)[0]['campaign_name'] . '</a>';
+            })
+            ->edit('pkorderid', function ($row) {
+                if (is_admin()) {
+                    $btn = '<div style="display: flex; gap: 8px; align-items: center;">';
+                    $btn .= '<a href="' . site_url('edit-order/') . $row->pkorderid . '" class="text-primary"><i class="uil uil-pen font-size-18"></i></a>';
+                    if ($row->status == 0) {
+                        $btn .= '<a href="#" onclick="unblockOrder(' . $row->pkorderid . ')" class="text-danger"><i class="fas fa-lock font-size-18"></i></a>';
+                    } else {
+                        $btn .= '<a href="#" onclick="blockOrder(' . $row->pkorderid . ')" class="text-success"><i class="fas fa-lock-open font-size-18"></i></a>';
+                    }
+                    $btn .= '<a href="#" onclick="deleteOrder(' . $row->pkorderid . ')" class="text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>';
+                    $btn .= '</div>';
+                    return $btn;
+                }
+            })
+            ->edit('fkvendorstaffid', function ($row) {
+                $vendor = get_vendors($row->fkvendorstaffid);
+                return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
+            })
+            ->edit('client_id', function ($row) {
+                $client = get_client($row->client_id);
+                return isset($client) && !empty($client) ? $client[0]['firstname'] . ' ' . $client[0]['lastname'] : "N/A";
+            })
+            ->edit('status', function ($row) {
+                switch ($row->status) {
+                    case 0:
+                        return '<span class="badge bg-danger">Blocked</span>';
+                    case 1:
+                        return '<span class="badge bg-primary">Active</span>';
+                    case 3:
+                        return '<span class="badge bg-success">Completed</span>';
+                    default:
+                        return 'N/A';
+                }
+            })
+            ->edit('id', function ($row) {
+                if (is_admin() && $row->status != 0 && $row->status != 3) {
+                    return '<div class="d-flex flex-row">
+                    <button class="btn btn-primary m-1" style="font-size: 12px;" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>
+                    <button class="btn btn-secondary m-1" style="font-size: 12px;" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>
+                </div>';
+                } else {
+                    return "N/A";
+                }
+            })
+            ->filter(function ($builder, $request) {
+                if ($request->order_status == "0") {
+                    $builder->where('status', 0);
+                }
+                if ($request->order_status == '1') {
+                    $builder->where('status', 1);
+                }
+                if ($request->order_status == '3') {
+                    $builder->where('status', 3);
+                }
+
+                if (is_admin()) {
+                    if ($request->filter_campaign) {
+                        $builder->where('categoryname', $request->filter_campaign);
+                    }
+                    if ($request->filter_vendor) {
+                        $builder->where('fkvendorstaffid', $request->filter_vendor);
+                    }
+                }
+                if (is_vendor() && $request->filter_client) {
+                    $builder->where('fkclientid', $request->filter_client);
+                }
+            })
+            ->toJson();
     }
-    $builder->orderBy('id', 'DESC');
 
-    if (is_vendor()) {
-        $builder->where('fkvendorstaffid', get_user_id());
-    } elseif (is_client()) {
-        $builder->where('fkclientid', get_user_id());
+    public function deleteOrder()
+    {
+        $id =    $this->request->getGet('orderId');
+
+        $this->order_model->delete($id);
+        log_activity("Order Deleted Id : " . $id, get_user_fullname());
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Order deleted successfully']);
     }
 
-    $data = DataTable::of($builder)->edit('agent', function ($row) {
-        return '<a href="' . site_url('order-detail/') . $row->pkorderid . '" class="px-3 text-primary">' . $row->agent . '</a>';
-    })->edit('categoryname',function($row){
 
-        return   '<a href="' . site_url('campaign-detail/') . $row->categoryname . '" class="px-3 text-primary">' . get_categories_by_id($row->categoryname)[0]['campaign_name']. '</a>';
-
-    }) ->edit('pkorderid', function ($row) {
-        if (is_admin()) {
-        $btn = '<a href="' . site_url('edit-order/') . $row->pkorderid . '" class="px-3 text-primary"><i class="uil uil-pen font-size-18"></i></a>';
-      
-            if ($row->status == 0) {
-                $btn .= '<a href="#" onclick="unblockOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="fas fa-lock font-size-18"></i></a>';
-            } else {
-                $btn .= '<a href="#" onclick="blockOrder(' . $row->pkorderid . ')" class="px-3 text-success"><i class="fas fa-lock-open font-size-18"></i></a>';
-            }
-        $btn .= '<a href="#" onclick="deleteOrder(' . $row->pkorderid . ')" class="px-3 text-danger"><i class="uil uil-trash-alt font-size-18"></i></a>';
-        return $btn;
-    }
-
-    })->edit('fkvendorstaffid', function ($row) {
-        // $vendor = get_vendors($row->fkvendorstaffid);
-        // return $vendor[0]['firstname'] . ' ' . $vendor[0]['lastname'];
-    })->edit('status', function ($row) {
-        $status = '';
-        if ($row->status == 0) {
-            $status = '<span class="badge bg-danger">Blocked</span>';
-        } else if ($row->status == 1) {
-            $status = '<span class="badge bg-primary">Active</span>';
-        } else if ($row->status == 3) {
-            $status = '<span class="badge bg-success">Completed</span>';
-        }
-        return $status;
-    })->edit('id', function ($row) {
-        if (is_admin() && $row->status != 0 && $row->status != 3) {
-            return '<div class="d-flex flex-row">
-                        <button class="btn btn-primary m-1" onclick="addLeadToOrder(' . $row->pkorderid . ')">Add Lead to Order</button>
-                        <button class="btn btn-secondary m-1" onclick="importLeads(' . $row->pkorderid . ')">Import Leads</button>
-                    </div>';
-        } else {
-            return "N/A";
-        }
-    })->filter(function ($builder, $request) {
-        if ($request->order_status == "0") {// blocked orders
-            $builder->where('status', 0);
-        }
-        if ($request->order_status == '1') {// active/open/orders
-            $builder->where('status', 1);
-        }
-        if ($request->order_status == '3') {// complete_orders
-            $builder->where('status', 3);
-        }
-        if ($request->order_status == '4') {// All Orders
-        }
-
-        if ($request->filter_campaign) {
-            $builder->where('categoryname', $request->filter_campaign);
-        }
-        if ($request->filter_vendor) {
-            $builder->where('fkvendorstaffid', $request->filter_vendor);
-        }
-    })->addNumbering()->toJson();
-
-    return $data;
-}
-public function deleteOrder()
-{
-    $id=    $this->request->getGet('orderId');
-
-    $this->order_model->delete($id);
-    log_activity("Order Deleted Id : " . $id, get_user_fullname());
-    return $this->response->setJSON(['status' => 'success', 'message' => 'Order deleted successfully']);
-}
-
-    
     public function create($id = "")
-{
-    $states = [
-        "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "IA", "ID", "IL", 
-        "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", 
-        "NH", "NJ", "NM", "NV"
-    ];
-
-    if ($this->request->getMethod() === 'post') {
-        $data = [
-            'agent' => $this->request->getPost('agent'),
-            'categoryname' => $this->request->getPost('categoryname'),
-            'state' => $this->request->getPost('state'),
-            'fkvendorstaffid' => $this->request->getPost('fkvendorstaffid'),
-            'fkclientid' => $this->request->getPost('fkclientid'),
-            'prioritylevel' => $this->request->getPost('prioritylevel'),
-            'ageranges' => $this->request->getPost('ageranges'),
-            'lead_requested' => $this->request->getPost('lead_requested'),
-            'remainingLeads' => $this->request->getPost('lead_requested'),
-            'notes' => $this->request->getPost('notes'),
-            'orderdate' => $this->request->getPost('orderdate'),
-            'status' => "1"
+    {
+        $states = [
+            "AK",
+            "AL",
+            "AR",
+            "AZ",
+            "CA",
+            "CO",
+            "CT",
+            "DC",
+            "DE",
+            "FL",
+            "GA",
+            "HI",
+            "IA",
+            "ID",
+            "IL",
+            "IN",
+            "KS",
+            "KY",
+            "LA",
+            "MA",
+            "MD",
+            "ME",
+            "MI",
+            "MN",
+            "MO",
+            "MS",
+            "MT",
+            "NC",
+            "ND",
+            "NE",
+            "NH",
+            "NJ",
+            "NM",
+            "NV"
         ];
 
-        if ($id == "") {
-            // Create new order
-            $insert_id = $this->order_model->insert($data);
-
-            // Notification for the client
-            $notification_data = [
-                'description' => 'New Order Has Been Created',
-                'to_user_id' => $data['fkclientid'],
-                'link' => base_url() . "order-detail/" . $insert_id,
-            ];
-            add_notification($notification_data);
-
-            // Send email if not vendor
-            if (!is_vendor()) {
-                send_email(get_email_by_user_id($data['fkvendorstaffid']), "Add Order");
-            }
-            if ($data['fkclientid'] != 0) {
-                send_email(get_email_by_user_id($data['fkclientid']), "Add Order");
-            }
-
-            // Notification for the vendor staff
-            $notification_data = [
-                'description' => 'New Order Has Been Created',
-                'to_user_id' => $data['fkvendorstaffid'],
-                'link' => base_url() . "order-detail/" . $insert_id,
-            ];
-            add_notification($notification_data);
-
-            log_activity("Order Added Id : " . $insert_id, get_user_fullname());
-
-            session()->setFlashdata('success', 'Order Created Successfully!');
-        } else {
-            $data['remainingLeads']=intval($data['lead_requested'])-$this->lead_model->where('order_id', $id)
-            ->where('status !=', 2) // Exclude rejected leads
-            ->countAllResults();
-            if($data['remainingLeads']<=0){
-                $data['status']=3;
-            }
-            $this->order_model->update($id, $data);
-            log_activity("Order Updated Id : " . $id, get_user_fullname());
-
-            session()->setFlashdata('success', 'Order Updated Successfully!');
-        }
-
-        return redirect()->to('order-index');
-    } else {
-        // Prepare data for view
-        if ($id != "") {
-            // Edit order
+        if ($this->request->getMethod() === 'post') {
             $data = [
-                'title_meta' => view('partials/title-meta', ['title' => 'Edit Order']),
-                'page_title' => view('partials/page-title', ['title' => 'Edit Order', 'pagetitle' => 'Look For Leads']),
-                'order' => $this->order_model->find($id),
-                'campaigns' => $this->campaign_model->select('id, campaign_name')->orderBy('id', 'DESC')->findAll(),
-                'states' => $states
+                'agent' => $this->request->getPost('agent'),
+                'categoryname' => $this->request->getPost('categoryname'),
+                'state' => $this->request->getPost('state'),
+                'fkvendorstaffid' => $this->request->getPost('fkvendorstaffid'),
+                'fkclientid' => $this->request->getPost('fkclientid'),
+                'prioritylevel' => $this->request->getPost('prioritylevel'),
+                'ageranges' => $this->request->getPost('ageranges'),
+                'lead_requested' => $this->request->getPost('lead_requested'),
+                'remainingLeads' => $this->request->getPost('lead_requested'),
+                'notes' => $this->request->getPost('notes'),
+                'orderdate' => $this->request->getPost('orderdate'),
+                'status' => "1"
             ];
 
-            if (is_vendor()) {
-                $data['vendors'] = get_vendors(get_user_id());
-                $data['clients'] = get_client("", get_user_id());
-            } elseif (is_admin()) {
-                $data['vendors'] = get_vendors();
-                $data['clients'] = get_client();
+            if ($id == "") {
+                // Create new order
+                $insert_id = $this->order_model->insert($data);
+
+                // Notification for the client
+                $notification_data = [
+                    'description' => 'New Order Has Been Created',
+                    'to_user_id' => $data['fkclientid'],
+                    'link' => base_url() . "order-detail/" . $insert_id,
+                ];
+                add_notification($notification_data);
+
+                // Send email if not vendor
+                if (!is_vendor()) {
+                    send_email(get_email_by_user_id($data['fkvendorstaffid']), "Add Order");
+                }
+                if ($data['fkclientid'] != 0) {
+                    send_email(get_email_by_user_id($data['fkclientid']), "Add Order");
+                }
+
+                // Notification for the vendor staff
+                $notification_data = [
+                    'description' => 'New Order Has Been Created',
+                    'to_user_id' => $data['fkvendorstaffid'],
+                    'link' => base_url() . "order-detail/" . $insert_id,
+                ];
+                add_notification($notification_data);
+
+                log_activity("Order Added Id : " . $insert_id, get_user_fullname());
+
+                session()->setFlashdata('success', 'Order Created Successfully!');
+            } else {
+                $data['remainingLeads'] = intval($data['lead_requested']) - $this->lead_model->where('order_id', $id)
+                    ->where('status !=', 2) // Exclude rejected leads
+                    ->countAllResults();
+                if ($data['remainingLeads'] <= 0) {
+                    $data['status'] = 3;
+                }
+                $this->order_model->update($id, $data);
+                log_activity("Order Updated Id : " . $id, get_user_fullname());
+
+                session()->setFlashdata('success', 'Order Updated Successfully!');
             }
 
-            $data['form_action'] = base_url('create-order/' . $id);
-
-            return view('orders_management/add_order', $data);
+            return redirect()->to('order-index');
         } else {
-            // New order
-            $data = [
-                'title_meta' => view('partials/title-meta', ['title' => 'New Order']),
-                'page_title' => view('partials/page-title', ['title' => 'New Order', 'pagetitle' => 'Look For Leads']),
-                'campaigns' => $this->campaign_model->select('id, campaign_name')->orderBy('id', 'DESC')->findAll(),
-                'states' => $states
-            ];
+            // Prepare data for view
+            if ($id != "") {
+                // Edit order
+                $data = [
+                    'title_meta' => view('partials/title-meta', ['title' => 'Edit Order']),
+                    'page_title' => view('partials/page-title', ['title' => 'Edit Order', 'pagetitle' => 'Look For Leads']),
+                    'order' => $this->order_model->find($id),
+                    'campaigns' => $this->campaign_model->select('id, campaign_name')->orderBy('id', 'DESC')->findAll(),
+                    'states' => $states
+                ];
 
-            if (is_vendor()) {
-                $data['vendors'] = get_vendors(get_user_id());
-                $data['clients'] = get_client("", get_user_id());
-            } elseif (is_admin()) {
-                $data['vendors'] = get_vendors();
-                $data['clients'] = get_client();
+                if (is_vendor()) {
+                    $data['vendors'] = get_vendors(get_user_id());
+                    $data['clients'] = get_client("", get_user_id());
+                } elseif (is_admin()) {
+                    $data['vendors'] = get_vendors();
+                    $data['clients'] = get_client();
+                }
+
+                $data['form_action'] = base_url('create-order/' . $id);
+
+                return view('orders_management/add_order', $data);
+            } else {
+                // New order
+                $data = [
+                    'title_meta' => view('partials/title-meta', ['title' => 'New Order']),
+                    'page_title' => view('partials/page-title', ['title' => 'New Order', 'pagetitle' => 'Look For Leads']),
+                    'campaigns' => $this->campaign_model->select('id, campaign_name')->orderBy('id', 'DESC')->findAll(),
+                    'states' => $states
+                ];
+
+                if (is_vendor()) {
+                    $data['vendors'] = get_vendors(get_user_id());
+                    $data['clients'] = get_client("", get_user_id());
+                } elseif (is_admin()) {
+                    $data['vendors'] = get_vendors();
+                    $data['clients'] = get_client();
+                }
+
+                $data['form_action'] = base_url('create-order');
+
+                return view('orders_management/add_order', $data);
             }
-
-            $data['form_action'] = base_url('create-order');
-
-            return view('orders_management/add_order', $data);
         }
     }
-}
 
-    
+
     public function getLeadFormData()
     {
         $orderId = $this->request->getGet('orderId');
@@ -350,22 +411,28 @@ public function deleteOrder()
 
 
     public function lead_add()
+
     {
+
+        var_dump("RIGHT");
+            return 0 ;
+            
+            
         $session = session();
 
         $data = $this->request->getPost();
-    
+
         // Check if the request is for editing an existing lead
         if (!empty($data['lead_id'])) {
             // Fetch the existing lead details using the lead_id
             $existing_lead = $this->lead_model->find($data['lead_id']);
-    
+            
             if (!$existing_lead) {
                 // If the lead doesn't exist, return an error
                 $session->setFlashdata('error', 'Lead not found.');
                 return redirect()->to('order-index')->withInput();
             }
-    
+
             // Prepare updated data for the lead
             $updated_data = [
                 "phone_number" => $data['phone_number'],
@@ -380,13 +447,13 @@ public function deleteOrder()
                 "client_id" => $existing_lead['client_id'], // assuming client_id remains unchanged
                 "lead_date" => $data['date'],
             ];
-    
+
             // Update the lead in the database
             $this->lead_model->update($data['lead_id'], $updated_data);
-    
+
             // Log the lead update
             log_activity("Lead Updated: ID: " . $data['lead_id'], get_user_fullname());
-    
+
             // Add notification for lead update
             $notification_data = [
                 'description' => 'Lead Updated: ID ' . $data['lead_id'],
@@ -394,25 +461,25 @@ public function deleteOrder()
                 'link' => base_url() . "lead-detail/" . $data['lead_id'],
             ];
             add_notification($notification_data);
-            
+
             if (email_allowed('clientleads')) {
                 send_email(get_email_by_user_id($existing_lead['client_id']), "Lead Updated: ID " . $data['lead_id']);
             }
-    
+
             if (email_allowed('vendorleads')) {
                 send_email(get_email_by_user_id($existing_lead['vendor_id']), "Lead Updated: ID " . $data['lead_id']);
             }
-    
+
             if (email_allowed('adminleads')) {
                 send_email("tshoaib10@gmail.com", "Lead Updated: ID " . $data['lead_id']);
             }
-    
+
             // Set success message for update
             $session->setFlashdata('success', 'Lead Updated Successfully.');
-            
+
             return redirect()->to('order-index')->withInput();
         }
-    
+
         // Check if the order ID is provided for new lead creation
         if (!empty($data['order_id'])) {
             $order_detail = $this->order_model->select('fkclientid, fkvendorstaffid, categoryname')->find($data['order_id']);
@@ -420,7 +487,7 @@ public function deleteOrder()
                 ->where('client_id', $order_detail['fkclientid'])
                 ->where('camp_id', $order_detail['categoryname'])
                 ->first();
-    
+
             $post_data = [
                 "phone_number" => $data['phone_number'],
                 "agent_name" => $data['agent_name'],
@@ -455,10 +522,10 @@ public function deleteOrder()
                 "lead_date" => $data['date'],
             ];
         }
-    
+
         // Insert the new lead into the lead master model
         $insert_id = $this->lead_master_model->insert($post_data);
-    
+
         // Handle notifications and logs if there is an order ID
         if (!empty($data['order_id'])) {
             if ($lead_check) {
@@ -467,11 +534,11 @@ public function deleteOrder()
                 $session->setFlashdata('error', 'Duplicate Lead Detected.');
                 return redirect()->to('order-index')->withInput();
             }
-    
+
             // Insert lead into lead model
             $this->lead_model->insert($post_data);
             $remaining = $this->order_model->update_order(1, $data['order_id']);
-    
+
             // Check if the order is completed
             if ($remaining <= 0) {
                 $notification_data = [
@@ -481,7 +548,7 @@ public function deleteOrder()
                 ];
                 add_notification($notification_data);
             }
-    
+
             // Add notifications and send emails
             $notification_data = [
                 'description' => '1 Lead Added to Order',
@@ -489,7 +556,7 @@ public function deleteOrder()
                 'link' => base_url() . "order-detail/" . $data['order_id'],
             ];
             add_notification($notification_data);
-    
+
             if (email_allowed('vendorleads')) {
                 send_email(get_email_by_user_id($post_data['vendor_id']), "Add Lead");
             }
@@ -499,7 +566,7 @@ public function deleteOrder()
             if (email_allowed('adminleads')) {
                 send_email("tshoaib10@gmail.com", "Add Lead");
             }
-    
+
             $notification_data = [
                 'description' => '1 Lead Added to Order',
                 'to_user_id' => $order_detail['fkvendorstaffid'],
@@ -511,11 +578,11 @@ public function deleteOrder()
             // Log activity for leads without an order
             log_activity("Lead Added: ID: " . $insert_id, get_user_fullname());
         }
-    
+
         // Set success message
         $session = session();
         $session->setFlashdata('success', 'Lead Added Successfully.');
-    
+
         // Redirect based on whether the lead was part of an order
         if (empty($data['order_id'])) {
             return redirect()->to('master-lead-index')->withInput();
@@ -523,7 +590,7 @@ public function deleteOrder()
             return redirect()->to('order-index')->withInput();
         }
     }
-    
+
 
 
 
@@ -534,61 +601,60 @@ public function deleteOrder()
         echo json_encode($camp_col);
     }
     public function upload_lead()
-{
-    $session = session();
-    $id = $this->request->getPost('order_id');
-    $camp_id = $this->request->getPost('camp_id');
-    $order_detail = $this->order_model->find($id);
+    {
+        $session = session();
+        $id = $this->request->getPost('order_id');
+        $camp_id = $this->request->getPost('camp_id');
+        $order_detail = $this->order_model->find($id);
 
-    // Check if a file was uploaded
-    $load_file = $this->request->getFile('csvfile');
-    $fileExtension = pathinfo($load_file->getName(), PATHINFO_EXTENSION);
+        // Check if a file was uploaded
+        $load_file = $this->request->getFile('csvfile');
+        $fileExtension = pathinfo($load_file->getName(), PATHINFO_EXTENSION);
 
-    if (!$load_file->isValid()) {
-        // Set an error message
-        $session->setFlashdata('error', 'File upload failed.');
+        if (!$load_file->isValid()) {
+            // Set an error message
+            $session->setFlashdata('error', 'File upload failed.');
 
-        // Redirect back to the previous page
-        return redirect()->back();
+            // Redirect back to the previous page
+            return redirect()->back();
+        }
+
+        $newName = $load_file->getRandomName();
+        $load_file->move('uploads/orders', "Order_ID_" . $id . "_" . $newName);
+
+        if ($fileExtension === 'csv') {
+            $session->set('uploaded_file', [
+                'file_name' => './uploads/orders/' . "Order_ID_" . $id . "_" . $newName,
+                'order_id' => $id,
+                'camp_id' => $camp_id
+            ]);
+        } else if ($fileExtension === 'xlsx') {
+            // Convert XLSX to CSV
+            $xlsxFile = 'uploads/orders/' . "Order_ID_" . $id . "_" . $newName;
+            $csvFile = 'uploads/orders/' . "Order_ID_" . $id . "_" . pathinfo($newName, PATHINFO_FILENAME) . '.csv';
+
+            $excelReader = IOFactory::createReader('Xlsx');
+            $excel = $excelReader->load($xlsxFile);
+
+            $writer = IOFactory::createWriter($excel, 'Csv');
+            $writer->setDelimiter(',');
+            $writer->setEnclosure('"');
+            $writer->setLineEnding("\r\n");
+            $writer->save($csvFile);
+
+            $session->set('uploaded_file', [
+                'file_name' => $csvFile,
+                'order_id' => $id,
+                'camp_id' => $camp_id
+            ]);
+
+            unlink($xlsxFile);
+        }
+
+
+
+        return redirect()->to('map-headers');
     }
-
-    $newName = $load_file->getRandomName();
-    $load_file->move('uploads/orders', "Order_ID_" . $id . "_" . $newName);
-
-    if ($fileExtension === 'csv') {
-        $session->set('uploaded_file', [
-            'file_name' => './uploads/orders/' . "Order_ID_" . $id . "_" . $newName,
-            'order_id' => $id,
-            'camp_id' => $camp_id
-        ]);
-
-    }else if ($fileExtension === 'xlsx') {
-        // Convert XLSX to CSV
-        $xlsxFile = 'uploads/orders/' . "Order_ID_" . $id . "_" . $newName;
-        $csvFile = 'uploads/orders/' . "Order_ID_" . $id . "_" . pathinfo($newName, PATHINFO_FILENAME) . '.csv';
-
-        $excelReader = IOFactory::createReader('Xlsx');
-        $excel = $excelReader->load($xlsxFile);
-       
-        $writer = IOFactory::createWriter($excel, 'Csv');
-        $writer->setDelimiter(',');
-        $writer->setEnclosure('"');
-        $writer->setLineEnding("\r\n");
-        $writer->save($csvFile);
-
-        $session->set('uploaded_file', [
-            'file_name' => $csvFile,
-            'order_id' => $id,
-            'camp_id' => $camp_id
-        ]);
-
-        unlink($xlsxFile);
-    }
-
-    
-
-    return redirect()->to('map-headers');
-}
 
     public function map_headers()
     {
@@ -616,7 +682,7 @@ public function deleteOrder()
         } else {
             $mapping_headers = $this->order_model->get_camp_headers("", $uploadedFile['camp_id']);
         }
-    
+
         foreach ($import_data[0] as $key => $value) {
             $header[] = $value;
         }
@@ -664,20 +730,20 @@ public function deleteOrder()
                         if (isset($row[$h])) {
                             $temp[$mapping_headers[$key]] = $row[$h];
                         } else {
-                            $temp[$mapping_headers[$key]] = null; 
+                            $temp[$mapping_headers[$key]] = null;
                         }
                     }
                 }
             }
             array_push($leads, $temp);
         }
-        
+
         $post_data = array();
         $duplicate = array();
         if ($o_id != "") {
             foreach ($leads as $l) {
                 $lead_check = $this->lead_model->where('phone_number', $l['phone_number'])->where('vendor_id', $order_detail['fkvendorstaffid'])->where('camp_id', $camp_id)->first();
-                $l['lead_date']=date('Y-m-d H:i:s');
+                $l['lead_date'] = date('Y-m-d H:i:s');
                 $temp_post_data = [
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
@@ -702,7 +768,7 @@ public function deleteOrder()
             }
         } else {
             foreach ($leads as $l) {
-                $l['lead_date']=date('Y-m-d H:i:s');
+                $l['lead_date'] = date('Y-m-d H:i:s');
                 $temp_post_data = [
                     "phone_number" => $l['phone_number'],
                     "agent_name" => $l['agent_name'],
@@ -742,9 +808,9 @@ public function deleteOrder()
                 send_email(get_email_by_user_id($temp_post_data['vendor_id']), "Add Lead");
             }
 
-            if($temp_post_data['client_id']!=0){
-            send_email(get_email_by_user_id($temp_post_data['client_id']), "Add Lead");
-        }
+            if ($temp_post_data['client_id'] != 0) {
+                send_email(get_email_by_user_id($temp_post_data['client_id']), "Add Lead");
+            }
             log_activity("Leads Added " . count($post_data), get_user_fullname());
             $notification_data = [
                 'description' => count($post_data) . ' Lead Added to Order',
@@ -779,20 +845,20 @@ public function deleteOrder()
         return view('orders_management/order_detail', $data);
     }
 
-    public function get_leads_for_csv($orderId){
-        if($orderId==0){
+    public function get_leads_for_csv($orderId)
+    {
+        if ($orderId == 0) {
             if (is_vendor()) {
-               $leads= $this->lead_model->select('complete_lead')->where('vendor_id', get_user_id());
+                $leads = $this->lead_model->select('complete_lead')->where('vendor_id', get_user_id());
             } else if (is_client()) {
-               $leads= $this->lead_model->select('complete_lead')->where('client_id', get_user_id());
-            }else{
+                $leads = $this->lead_model->select('complete_lead')->where('client_id', get_user_id());
+            } else {
                 $leads = $this->lead_model->select('complete_lead')->findAll();
             }
-
-        }else{
-            $leads = $this->lead_model->select('complete_lead')->where('order_id',$orderId)->findAll();
+        } else {
+            $leads = $this->lead_model->select('complete_lead')->where('order_id', $orderId)->findAll();
         }
-        
+
         echo json_encode($leads);
     }
 
@@ -817,51 +883,51 @@ public function deleteOrder()
         echo json_encode($response);
     }
 
-    public function order_api(){
+    public function order_api()
+    {
 
         $id = $this->request->getGet('id');
-        $token= $this->request->getGet('token');
-        $page=$this->request->getGet('page');
-        $offset=$this->request->getGet('offset');
-        $user=$this->auth_model->find($id);
-        if($user['token']==$token){
-           if($user['userrole']==3){
-            $orders=$this->order_model->where('fkclientid',$id)->countAllResults();            
-            $pagination = array(
-                "total_records" => $orders,
-                "current_page" => $page,
-                "total_pages" =>ceil($orders/10),
-                "off_set" => $offset,
-                "next_page" => intval($page)+1,
-                "prev_page" => intval($page)-1,
-            );
-            $orders=$this->order_model->where('fkclientid',$id)->findAll(10,$offset);  
-            $response['orders']=$orders;
-            $pagination['current_records']=count($orders);
-            $response['pagination']=$pagination;
-           }
-           elseif($user['userrole']==2){
-            $orders=$this->order_model->where('fkvendorstaffid',$id)->findAll();
+        $token = $this->request->getGet('token');
+        $page = $this->request->getGet('page');
+        $offset = $this->request->getGet('offset');
+        $user = $this->auth_model->find($id);
+        if ($user['token'] == $token) {
+            if ($user['userrole'] == 3) {
+                $orders = $this->order_model->where('fkclientid', $id)->countAllResults();
+                $pagination = array(
+                    "total_records" => $orders,
+                    "current_page" => $page,
+                    "total_pages" => ceil($orders / 10),
+                    "off_set" => $offset,
+                    "next_page" => intval($page) + 1,
+                    "prev_page" => intval($page) - 1,
+                );
+                $orders = $this->order_model->where('fkclientid', $id)->findAll(10, $offset);
+                $response['orders'] = $orders;
+                $pagination['current_records'] = count($orders);
+                $response['pagination'] = $pagination;
+            } elseif ($user['userrole'] == 2) {
+                $orders = $this->order_model->where('fkvendorstaffid', $id)->findAll();
 
 
-            
 
-            $response['leads']=$orders;
-           }
-           $response['message']="Sucessfull";
-        }else{
-            $response['message']=$this->fail('', 403,'Forbidden');
+
+                $response['leads'] = $orders;
+            }
+            $response['message'] = "Sucessfull";
+        } else {
+            $response['message'] = $this->fail('', 403, 'Forbidden');
         }
-        
+
         echo json_encode($response);
     }
 
-    public function dashboard_api(){
+    public function dashboard_api()
+    {
 
         $id = $this->request->getGet('id');
-        $token= $this->request->getGet('token');
+        $token = $this->request->getGet('token');
 
         echo json_encode($id);
-
     }
 }

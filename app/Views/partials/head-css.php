@@ -61,4 +61,21 @@ if (session()->has('branch_set')) {
     .notification-item .unread {
         background-color: #f8f9fa !important;
     }
+
+    table.table tbody td {
+        padding: 8px 10px;
+        font-size: 12px;
+        /* white-space: nowrap; */
+    }
+    table.table thead th {
+        padding: 8px 10px;
+        font-size: 12px;
+        /* white-space: nowrap; */
+    }
+
+    @media (min-width: 769px) {
+    body[data-sidebar-size=sm] {
+        min-height: auto !important;
+    }
+}
 </style>

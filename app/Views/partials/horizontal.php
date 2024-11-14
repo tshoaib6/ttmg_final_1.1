@@ -495,7 +495,6 @@
                             </li>
                         <?php } ?>
 
-                        <?php if (is_admin() || is_vendor()) { ?>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
                                     <i class="uil-user me-2"></i>Orders <div class="arrow-down"></div>
@@ -509,10 +508,12 @@
                                         </a>
 
                                     <?php } ?>
+                                     <?php if (is_admin() || is_vendor()) { ?>
                                     <a href="<?= base_url('create-order') ?>" class="dropdown-item">Create New Order</a>
+                                    <?php } ?>
+
                                 </div>
                             </li>
-                        <?php } ?>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">

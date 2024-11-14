@@ -52,6 +52,11 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
 
     $routes->get('/clients', 'Auth::getVendorClients');
     $routes->get('/ajax-vendor-client-datatable', 'Auth::ajaxVendorClients');
+    $routes->get('/get-vendors', 'Auth::getVendors');
+    $routes->get('/get-clients', 'Auth::getClients');
+
+
+
 
 
     $routes->group('', ['filter' => 'admin'], static function ($routes) {
@@ -147,7 +152,8 @@ $routes->group('', ['filter' => 'authenticate'], static function ($routes) {
         $routes->get('/map-headers-clients', 'ClientaleController::map_headers_clients');
         $routes->post('/import-clients', 'ClientaleController::import_clients');
         $routes->get('/ajax-clients-datatable', 'ClientaleController::ajaxClientDatatable');
-        
+        $routes->post('/get-campaign-col-by-id', 'CampaignController::getCampaignColumns');
+
     });
 });
 
