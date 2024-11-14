@@ -191,7 +191,7 @@
                                 <?= lang('Files.Dashboard') ?>
                             </a>
                         </li>
-                <?php if(is_vendor()) {?>
+                <?php if(is_admin()) {?>
                         <li class="nav-item">
                             <a class="nav-link" href="<?=  base_url('clients') ?>">
                                 <i class="uil-home-alt me-2"></i>
