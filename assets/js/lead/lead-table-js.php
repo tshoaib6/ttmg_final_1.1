@@ -145,6 +145,7 @@
                     return response.text();
                 })
                 .then(data => {
+                    console.log("DA",data)
                     json_data = JSON.parse(data);
                     const flattenedData = json_data.map(item => flattenObject(JSON.parse(item.complete_lead)));
 
