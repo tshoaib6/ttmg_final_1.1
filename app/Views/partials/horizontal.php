@@ -192,12 +192,12 @@
                             </a>
                         </li>
                 <?php if(is_admin()) {?>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link" href="<?=  base_url('clients') ?>">
                                 <i class="uil-home-alt me-2"></i>
                                 <?= "Clients" ?>
                             </a>
-                        </li>
+                        </li> -->
                 <?php }?>
 
                         <!-- <li class="nav-item dropdown">
