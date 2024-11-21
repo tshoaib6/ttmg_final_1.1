@@ -108,6 +108,16 @@
             }).join('\n');
         }
 
+        function printLeadDetail() {
+            var printContent = document.getElementById('lead-detail').innerHTML;
+            var originalContent = document.body.innerHTML;
+
+            document.body.innerHTML = printContent;
+
+            window.print();
+            document.body.innerHTML = originalContent;
+        }
+
         function downloadCSV(csv, filename) {
             const csvFile = new Blob([csv], {
                 type: 'text/csv'
@@ -130,6 +140,7 @@
             if (currentURL.includes('lead-index')) {
                 url = '<?= base_url() ?>get_leads_for_csv/' + 0;
                 fileIntialName = 'order';
+
             } else {
                 orderId = <?php echo isset($order['pkorderid']) ? $order['pkorderid'] : '_'; ?>;
                 fileIntialName = '<?php echo isset($order['agent']) ? $order['agent'] : '_'; ?>';
@@ -145,7 +156,6 @@
                     return response.text();
                 })
                 .then(data => {
-                    console.log("DA",data)
                     json_data = JSON.parse(data);
                     const flattenedData = json_data.map(item => flattenObject(JSON.parse(item.complete_lead)));
 
@@ -304,11 +314,18 @@
                 url: '<?= base_url() ?>/getleaddetail/' + uid,
                 type: 'get',
                 success: function(data) {
-                    console.log("SSS");
-                    console.log(data);
                     $("#lead-detail").html(data);
+
+                    $("#lead-detail").append('<button id="print-lead" class="btn btn-primary mt-3">Print Lead</button>');
+
+                    $("#print-lead").on('click', function() {
+                        printLeadDetail();
+                    });
                 }
             });
+
+
+
             var bsOffcanvas2 = new bootstrap.Offcanvas(offcanvasright);
             bsOffcanvas2.show();
         });

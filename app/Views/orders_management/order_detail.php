@@ -6,6 +6,12 @@
 
     <link rel="stylesheet" href="<?php echo base_url('assets/libs/flatpickr/flatpickr.min.css') ?>">
     <link href="<?php echo base_url('assets/libs/select2/css/select2.min.css') ?>" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
 
     <?= $this->include('partials/datatable-css') ?>
     <?= $this->include('partials/head-css') ?>
@@ -17,7 +23,6 @@
 
         .offcanvas-body {
             max-height: calc(100vh - 150px);
-            /* Adjust based on your header height */
             overflow-y: auto;
         }
 
@@ -151,21 +156,31 @@
                 searchable: false
             }, ],
             order: [],
+            pageLength: 50, 
             ajax: {
                 url: "<?php echo site_url('leads-datatable') ?>/" + <?php echo $order['pkorderid'] ?>,
                 data: function(d) {
                     d.lead_status = "";
                     d.state = "";
                     d.client = "";
-                    d.filterActive =0;
+                    d.filterActive = 0;
                     d.start_date = "";
-                    d.end_date ="";
+                    d.end_date = "";
                     d.filter_vendor = $("#filter_vendor").val() ? $("#filter_vendor").val() : "";
                     d.filter_client = $("#filter_client").val() ? $("#filter_client").val() : "";
 
                 }
 
             },
+            dom: 'Bfrtip', // This adds buttons to the DataTable
+            buttons: [{
+                extend: 'print',
+                text: 'Print Table', // Custom label for the print button
+                title: 'Leads Data',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7,8] // Include only the first 8 columns (0-based indexing)
+                }
+            }],
             "fnCreatedRow": function(nRow, aData, iDataIndex) {
                 $(nRow).attr('id', aData[0]);
                 console.log(aData[0]);

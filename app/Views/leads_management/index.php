@@ -473,6 +473,16 @@
             ],
 
             order: [],
+            dom: 'Bfrtip', 
+            buttons: [{
+                extend: 'print',
+                text: 'Print Table', 
+                title: 'Leads Data',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7,8] 
+                }
+            }],
+            pageLength:50,
             ajax: {
                 url: "<?php echo site_url('leads-datatable') ?>/" + 0,
                 data: function(d) {
