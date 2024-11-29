@@ -432,10 +432,7 @@ class OrdersContoller extends BaseController
 
     {
 
-        var_dump("RIGHT");
-            return 0 ;
-            
-            
+        
         $session = session();
 
         $data = $this->request->getPost();

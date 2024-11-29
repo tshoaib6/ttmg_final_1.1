@@ -280,13 +280,6 @@ function email_allowed($event){
     }
 }
 
-
-
-
-/**
- *   Email functions -> End 
- *   Options Table Handler -> Start
- */
 function add_option($name, $value = '')
 {
     if (!option_exists($name)) {
