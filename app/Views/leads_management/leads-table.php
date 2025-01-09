@@ -15,7 +15,7 @@
                         <th>Phone Number</th>
                         <th>Vendor</th> 
                         <th>Client</th> 
-                        <th>Reason</th>
+                        <th>Notes</th>
                         <th>Options</th>
                         <?php if(is_admin()){ ?>
                         <th>Action</th>

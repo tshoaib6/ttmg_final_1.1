@@ -78,7 +78,12 @@ class LeadController extends BaseController
     public function ajax_Datatable_leads($id = "")
 {
     $db = db_connect();
-    $builder = $db->table('ttmg_leads')->select('id,lead_date,agent_name,firstname,lastname,state,phone_number,vendor_id,client_id,reject_reason,id as option_id,id as lead_id,status,order_id');
+    $builder = $db->table('ttmg_leads')->select('id,lead_date,agent_name,firstname,lastname,state,phone_number,vendor_id,client_id,note_text,id as option_id,id as lead_id,status,order_id')
+    ->join(
+        '(SELECT lead_id, note_text FROM ttmg_notes WHERE created_at = (SELECT MAX(created_at) FROM ttmg_notes n2 WHERE n2.lead_id = ttmg_notes.lead_id)) as notes',
+        'ttmg_leads.id = notes.lead_id',
+        'left')
+    ;
     
     // Order by 'id' in descending order to get the latest entries first
     $builder->orderBy('id', 'DESC');
